@@ -10,24 +10,24 @@ const Signup = () => {
                     <h2 className='text-center text-xl' style={{fontSize: "2rem"}}>Let's Login Now!</h2>
                     <div class="credit-card-info--form">
                         <div class="input_container">
-                            <label for="password_field" class="input_label">First Name</label>
-                            <input id="password_field" class="input_field w-full" type="text" name="input-name" title="Inpit title" placeholder="Enter your First Name" />
+                            <label for="password_field" class="input_label">Enter Full Name</label>
+                            <input id="password_field" class="input_field w-full" type="text" name="input-name" title="Inpit title" placeholder="Enter Full Name" />
                         </div>
                         <div class="input_container">
-                            <label for="password_field" class="input_label">Last Name</label>
-                            <input id="password_field" class="input_field w-full" type="text" name="input-name" title="Inpit title" placeholder="Enter your Last Name" />
+                            <label for="password_field" class="input_label">Contact No</label>
+                            <input id="password_field" class="input_field w-full" type="number" name="input-name" title="Inpit title" placeholder="Enter your Contact No" />
                         </div>
                         <div class="input_container">
-                            <label for="password_field" class="input_label">Username</label>
-                            <input id="password_field" class="input_field w-full" type="text" name="input-name" title="Inpit title" placeholder="Enter your Username" />
+                            <label for="password_field" class="input_label">Email Address</label>
+                            <input id="password_field" class="input_field w-full" type="email" name="input-name" title="Inpit title" placeholder="Enter your Email Address" />
                         </div>
                         <div class="input_container">
                             <label for="password_field" class="input_label">Password</label>
-                            <input id="password_field" class="input_field w-full" type="number" name="input-name" title="Inpit title" placeholder="" />
+                            <input id="password_field" class="input_field w-full" type="password" name="input-name" title="Inpit title" placeholder="Password" />
                         </div>
                         <div class="input_container">
                             <label for="password_field" class="input_label">Confirm Password</label>
-                            <input id="password_field" class="input_field w-full" type="number" name="input-name" title="Inpit title" placeholder="" />
+                            <input id="password_field" class="input_field w-full" type="password" name="input-name" title="Inpit title" placeholder="Confirm Password" />
                         </div>
 
                     </div>

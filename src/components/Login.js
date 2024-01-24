@@ -10,12 +10,12 @@ const Login = () => {
                     <h2 className='text-center text-xl' style={{fontSize: "2rem"}}>Let's Login Now!</h2>
                     <div class="credit-card-info--form">
                         <div class="input_container">
-                            <label for="password_field" class="input_label">Username</label>
-                            <input id="password_field" class="input_field w-full" type="text" name="input-name" title="Inpit title" placeholder="Enter your full name" />
+                            <label class="input_label">Email</label>
+                            <input class="input_field w-full" type="email" name="input-name" title="Inpit title" placeholder="Enter your full name" />
                         </div>
                         <div class="input_container">
-                            <label for="password_field" class="input_label">Password</label>
-                            <input id="password_field" class="input_field w-full" type="number" name="input-name" title="Inpit title" placeholder="" />
+                            <label class="input_label">Password</label>
+                            <input class="input_field w-full" type="number" name="input-name" title="Inpit title" placeholder="" />
                         </div>
 
                     </div>
