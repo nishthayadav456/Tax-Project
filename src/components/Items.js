@@ -20,8 +20,10 @@ const Items = () => {
     const [sortedColumn, setSortedColumn] = useState(null);
     const [sortDirection, setSortDirection] = useState(1);
     const [isDivClicked, setDivClicked] = useState(false);
+    const [toggle, setToggle] = useState(false);
     const [stock, setStock] = useState(false);
     const [viewInputs, setViewInputs] = useState('pricing');
+
 
     const [showAdjustItemModal, setshowAdjustItemModal] = useState(false);
     const [showAddItemModal, setshowAddItemModal] = useState(false);
@@ -84,7 +86,7 @@ const Items = () => {
 
     const handleStockCheckBox = () => {
         setStock(!stock)
-        console.log(stock);
+
     }
 
     const handleViewInputButton = (selectedView) => {
@@ -295,7 +297,7 @@ const Items = () => {
                                             <div className='mx-2'>
 
                                                 <label class="relative inline-flex items-center cursor-pointer">
-                                                    <input type="checkbox" value="" class="sr-only peer" checked={stock} onChange={handleStockCheckBox} />
+                                                    <input type="checkbox" value="" className="sr-only peer" checked={stock} onChange={handleStockCheckBox} />
                                                     <div class="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-blue-600 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                                                 </label>
                                             </div>
@@ -374,15 +376,15 @@ const Items = () => {
                                             Add Item
                                         </h3>
                                         <div className='flex mx-2 '>
-                                            <p className={` font-semibold ${stock ? "text-gray-400" : "text-blue-500"} `}>Add Stock</p>
+                                            <p className={` font-semibold ${toggle ? "text-gray-400" : "text-blue-500"} `}>Product</p>
                                             <div className='mx-2'>
 
                                                 <label class="relative inline-flex items-center cursor-pointer">
-                                                    <input type="checkbox" value="" class="sr-only peer" checked={stock} onChange={handleStockCheckBox} />
+                                                    <input type="checkbox" value="" class="sr-only peer" checked={toggle} onChange={() => setToggle(!toggle)} />
                                                     <div class="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-blue-600 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                                                 </label>
                                             </div>
-                                            <p className={` font-semibold ${stock ? "text-blue-500" : "text-gray-400"} `}>Reduce Stock</p>
+                                            <p className={` font-semibold ${toggle ? "text-blue-500" : "text-gray-400"} `}>Service</p>
                                         </div>
                                     </div>
                                     <button
@@ -395,154 +397,332 @@ const Items = () => {
                                     </button>
                                 </div>
 
-                                <div className="relative p-6 flex">
+                                {!toggle ?
 
-                                    <div class="input_container mx-2 ">
-                                        <label class="input_label">Category :</label>
-                                        <input class="input_field" type="text" name="input-name" title="Input title" />
-                                    </div>
-                                    <div class="input_container mx-2 ">
-                                        <label class="input_label">Item Name :</label>
-                                        <input class="input_field" type="number" name="input-name" title="Input title" placeholder="" />
-                                    </div>
+                                    <div>
+                                        <div className="relative p-6">
+                                        <div className='flex'>
+                                            <div class="input_container mx-2 ">
+                                                <label class="input_label">Item Name :</label>
+                                                <input class="input_field" type="number" name="input-name" title="Input title" placeholder="" />
+                                            </div>
+                                            <div class="input_container mx-2 ">
+                                                <label class="input_label">Category :</label>
+                                                <input class="input_field" type="text" name="input-name" title="Input title" />
+                                            </div>
 
-                                    <div class="input_container mx-2 ">
-                                        <label class="input_label">ItemHsn :</label>
-                                        <input class="input_field" type="number" name="input-name" title="Input title" placeholder="" />
-                                    </div>
-                                    <div class="input_container mx-2 ">
-                                        <label class="input_label">Brand :</label>
-                                        <input class="input_field" type="number" name="input-name" title="Input title" placeholder="" />
-                                    </div>
-
-                                </div>
-
-
-                                <div className="relative p-6 flex">
-                                    <button
-                                        className="bg-gray-500 text-white active:bg-gray-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                                        type="button"
-                                        onClick={() => setShowEditUnitModal(!showEditUnitModal)}
-                                    >
-                                        Edit Unit
-                                    </button>
-                                </div>
-
-                                <div className='p-6'>
-                                    <div className='border-b-2'>
-                                        <button className={`px-3 py-2 text-xl active:bg-gray-200 ${viewInputs === 'pricing' && "border-b-2 border-blue-500 text-blue-500"} `} onClick={() => handleViewInputButton('pricing')}>Pricing</button>
-                                        <button className={`px-3 py-2 text-xl active:bg-gray-200 ${viewInputs === 'stock' && "border-b-2 border-blue-500 text-blue-500"} `} onClick={() => handleViewInputButton('stock')}>Stock</button>
-                                        <button className={`px-3 py-2 text-xl active:bg-gray-200 ${viewInputs === 'manufacturing' && "border-b-2 border-blue-500 text-blue-500"} `} onClick={() => handleViewInputButton('manufacturing')}>Manufacturing</button>
-                                    </div>
-
-                                    {viewInputs === 'pricing' && (
-                                        <div>
-                                            <div className="p-6 flex">
-
-                                                <div class="input_container mx-2 ">
-                                                    <label class="input_label">MRP</label>
-                                                    <input class="input_field w-full" type="text" name="input-name" title="Input title" placeholder="MRP" />
-                                                </div>
-                                                <div class="input_container mx-2 ">
-                                                    <label class="input_label">Sales Price</label>
-                                                    <input class="input_field w-full" type="number" name="input-name" title="Input title" placeholder="Sales Price" />
+                                            <div class="input_container mx-2 ">
+                                                <label class="input_label">ItemHsn :</label>
+                                                <input class="input_field" type="number" name="input-name" title="Input title" placeholder="" />
+                                            </div>
+                                            <div class="input_container mx-2 ">
+                                                <label class="input_label">Item Code</label>
+                                                <div className='flex'>
+                                                    <input class="input_field" type="number" name="input-name" title="Input title" placeholder="" />
+                                                    <a href="" className='border text-xs text-white bg-blue-500 font-semibold whitespace-nowrap flex items-center px-2 rounded-xl'>Assign Code</a>
                                                 </div>
                                             </div>
-                                            <div className="p-6 flex">
-
-                                                <div class="input_container mx-2 ">
-                                                    <label class="input_label">Disc.On MRP For Sale (%):</label>
-                                                    <input class="input_field w-full" type="number" name="input-name" title="Input title" placeholder="Disc.On MRP For Sale (%)" />
-                                                </div>
-                                                <div class="input_container mx-2 ">
-                                                    <label class="input_label">Wholesale Price :</label>
-                                                    <input class="input_field w-full" type="number" name="input-name" title="Input title" placeholder="Wholesale Price" />
-                                                </div>
-
+                                            
                                             </div>
-                                            <div className="p-6 flex">
-
-                                                <div class="input_container mx-2 ">
-                                                    <label class="input_label">Disc. on MRP For WholeSale(%) :</label>
-                                                    <input class="input_field w-full" type="number" name="input-name" title="Input title" placeholder="Disc. on MRP For WholeSale(%)" />
+                                            <div className='flex w-full'>
+                                                
+                                                <div class="mx-2 w-1/3">
+                                                    <label class="input_label">Add Image</label>
+                                                    <input class="input_field" type="file" name="input-name" title="Input title" placeholder="" />
                                                 </div>
-                                                <div class="input_container mx-2 ">
-                                                    <label class="input_label">Minimum Wholesale Qty:</label>
-                                                    <input class="input_field w-full" type="number" name="input-name" title="Input title" placeholder="Minimum Wholesale Qty" />
-                                                </div>
-
-                                            </div>
-                                            <div className="p-6 flex">
-
-                                                <div class="input_container mx-2 ">
-                                                    <label class="input_label">Purchase Price:</label>
-                                                    <input class="input_field w-full" type="number" name="input-name" title="Input title" placeholder="Purchase Price:" />
-                                                </div>
-                                                <div class="input_container mx-2 ">
-                                                    <label class="input_label">GST Rate:</label>
-                                                    <select class="input_field">
-                                                        <option value=''>None</option>
-                                                        <option value='0'>GST@0</option>
-                                                        <option value='0'>IGST@0</option>
-                                                        <option value='0.25'>IGST@0.25%</option>
-                                                        <option value='0.25'>GST@0.25%</option>
-                                                        <option value='3'>IGST@3%</option>
-                                                        <option value='3'>GST@3%</option>
-                                                        <option value='5'>IGST@5%</option>
-                                                        <option value='5'>GST@5%</option>
-                                                        <option value='12'>IGST@12%</option>
-                                                        <option value='12'>GST@12%</option>
-                                                        <option value='18'>IGST@18%</option>
-                                                        <option value='18'>GST@18%</option>
-                                                        <option value='28'>IGST@28%</option>
-                                                        <option value='28'>GST@28%</option>
-                                                        <option value='exmpt'>exmpt</option>
-                                                    </select>
-                                                </div>
-
                                             </div>
                                         </div>
-                                    )}
 
-                                    {viewInputs === 'stock' && (
-                                        <div>
-                                            <div className="p-6 flex">
 
+                                        <div className="relative p-6 flex">
+                                            <button
+                                                className="bg-gray-500 text-white active:bg-gray-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                                                type="button"
+                                                onClick={() => setShowEditUnitModal(!showEditUnitModal)}
+                                            >
+                                                Edit Unit
+                                            </button>
+                                        </div>
+
+                                        <div className='p-6'>
+                                            <div className='border-b-2'>
+                                                <button className={`px-3 py-2 text-xl active:bg-gray-200 ${viewInputs === 'pricing' && "border-b-2 border-blue-500 text-blue-500"} `} onClick={() => handleViewInputButton('pricing')}>Pricing</button>
+                                                <button className={`px-3 py-2 text-xl active:bg-gray-200 ${viewInputs === 'stock' && "border-b-2 border-blue-500 text-blue-500"} `} onClick={() => handleViewInputButton('stock')}>Stock</button>
+                                                <button className={`px-3 py-2 text-xl active:bg-gray-200 ${viewInputs === 'manufacturing' && "border-b-2 border-blue-500 text-blue-500"} `} onClick={() => handleViewInputButton('manufacturing')}>Manufacturing</button>
+                                            </div>
+
+                                            {viewInputs === 'pricing' && (
+
+                                                <div>
+                                                    <div className='border my-8 bg-gray-100'>
+                                                        <div className='p-6'>
+                                                            <h2 className=' text-lg font-semibold'>Sale Price</h2>
+                                                            <div className='flex'>
+
+                                                                <div className='p-2'>
+                                                                    <input type="text" placeholder='Sale Price' className='border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none' />
+                                                                    <select name="" id="" className='border-2 rounded-r hover:border-black focus:border-blue-500 px-2 py-1'>
+                                                                        <option value="With Tax">With Tax</option>
+                                                                        <option value="Without Tax">Without Tax</option>
+                                                                    </select>
+                                                                </div>
+                                                                <div className='p-2'>
+                                                                    <input type="text" placeholder='Disc. on Sales Price' className='border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none' />
+                                                                    <select name="" id="" className='border-2 rounded-r hover:border-black focus:border-blue-500 px-2 py-1'>
+                                                                        <option value="Percentage">Percentage</option>
+                                                                        <option value="Amount">Amount</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className='p-6'>
+                                                            <h2 className='py-6 text-lg font-semibold'>Wholesale Price</h2>
+                                                            <div className='flex'>
+
+                                                                <div className='p-2'>
+                                                                    <input type="text" placeholder='Wholesale Price' className='border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none' />
+                                                                    <select name="" id="" className='border-2 rounded-r hover:border-black focus:border-blue-500 px-2 py-1'>
+                                                                        <option value="With Tax">With Tax</option>
+                                                                        <option value="Without Tax">Without Tax</option>
+                                                                    </select>
+                                                                </div>
+                                                                <div className='p-2'>
+                                                                    <input type="text" placeholder='Minimum Wholesale Qty' className='border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none' />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className='flex gap-8 w-full'>
+                                                        <div className='border my-8 bg-gray-100 w-6/12'>
+                                                            <div className='p-6'>
+                                                                <h2 className=' text-lg font-semibold'>Purchase Price</h2>
+                                                                <div className='flex'>
+
+                                                                    <div className='p-2'>
+                                                                        <input type="text" placeholder='Purchase Price' className='border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none' />
+                                                                        <select name="" id="" className='border-2 rounded-r hover:border-black focus:border-blue-500 px-2 py-1'>
+                                                                            <option value="With Tax">With Tax</option>
+                                                                            <option value="Without Tax">Without Tax</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+                                                        <div className='border my-8 bg-gray-100 w-6/12'>
+                                                            <div className='p-6'>
+                                                                <h2 className=' text-lg font-semibold'>Taxes</h2>
+                                                                <div className='flex'>
+
+                                                                    <div className='p-2 flex flex-col input_container'>
+                                                                        {/* <label className='input_label'>Tax rate</label> */}
+                                                                        <select name="" id="" className='border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1'>
+                                                                            <option value=''>None</option>
+                                                                            <option value='0'>GST@0</option>
+                                                                            <option value='0'>IGST@0</option>
+                                                                            <option value='0.25'>IGST@0.25%</option>
+                                                                            <option value='0.25'>GST@0.25%</option>
+                                                                            <option value='3'>IGST@3%</option>
+                                                                            <option value='3'>GST@3%</option>
+                                                                            <option value='5'>IGST@5%</option>
+                                                                            <option value='5'>GST@5%</option>
+                                                                            <option value='12'>IGST@12%</option>
+                                                                            <option value='12'>GST@12%</option>
+                                                                            <option value='18'>IGST@18%</option>
+                                                                            <option value='18'>GST@18%</option>
+                                                                            <option value='28'>IGST@28%</option>
+                                                                            <option value='28'>GST@28%</option>
+                                                                            <option value='exmpt'>exmpt</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+
+
+
+                                                </div>
+                                            )}
+
+                                            {viewInputs === 'stock' && (
+                                                <div>
+                                                    <div className="p-6 flex">
+
+                                                        <div class="input_container mx-2 ">
+                                                            <label class="input_label">Opening Qty:</label>
+                                                            <input class="input_field w-full" type="text" name="input-name" title="Input title" placeholder="Opening Qty" />
+                                                        </div>
+                                                        <div class="input_container mx-2 ">
+                                                            <label class="input_label">At Price :</label>
+                                                            <input class="input_field w-full" type="number" name="input-name" title="Input title" placeholder="At Price" />
+                                                        </div>
+                                                        <div class="input_container mx-2 ">
+                                                            <label class="input_label">As Of Date :</label>
+                                                            <input class="input_field w-full" type="date" name="input-name" title="Input title" placeholder="As Of Date :" />
+                                                        </div>
+                                                    </div>
+                                                    <div className="p-6 flex">
+
+                                                        <div class="input_container mx-2 ">
+                                                            <label class="input_label">Min.StockMaintain:</label>
+                                                            <input class="input_field w-full" type="text" name="input-name" title="Input title" placeholder="Min.StockMaintain" />
+                                                        </div>
+                                                        <div class="input_container mx-2 ">
+                                                            <label class="input_label">Location :</label>
+                                                            <input class="input_field w-full" type="number" name="input-name" title="Input title" placeholder="Location" />
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            )}
+
+
+                                        </div>
+
+
+
+
+                                    </div>
+                                    :
+                                    <div>
+                                        <div className="relative p-6">
+                                            <div className='flex'>
                                                 <div class="input_container mx-2 ">
-                                                    <label class="input_label">Opening Qty:</label>
-                                                    <input class="input_field w-full" type="text" name="input-name" title="Input title" placeholder="Opening Qty" />
+                                                    <label class="input_label">Service Name :</label>
+                                                    <input class="input_field" type="number" name="input-name" title="Input title" placeholder="" />
                                                 </div>
                                                 <div class="input_container mx-2 ">
-                                                    <label class="input_label">At Price :</label>
-                                                    <input class="input_field w-full" type="number" name="input-name" title="Input title" placeholder="At Price" />
+                                                    <label class="input_label">Category :</label>
+                                                    <input class="input_field" type="text" name="input-name" title="Input title" />
+                                                </div>
+
+                                                <div class="input_container mx-2 ">
+                                                    <label class="input_label">Service Hsn :</label>
+                                                    <input class="input_field" type="number" name="input-name" title="Input title" placeholder="" />
                                                 </div>
                                                 <div class="input_container mx-2 ">
-                                                    <label class="input_label">As Of Date :</label>
-                                                    <input class="input_field w-full" type="date" name="input-name" title="Input title" placeholder="As Of Date :" />
+                                                    <label class="input_label">Service Code</label>
+                                                    <div className='flex'>
+                                                        <input class="input_field" type="number" name="input-name" title="Input title" placeholder="" />
+                                                        <a href="" className='border text-xs text-white bg-blue-500 font-semibold whitespace-nowrap flex items-center px-2 rounded-xl'>Assign Code</a>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div className="p-6 flex">
-
-                                                <div class="input_container mx-2 ">
-                                                    <label class="input_label">Min.StockMaintain:</label>
-                                                    <input class="input_field w-full" type="text" name="input-name" title="Input title" placeholder="Min.StockMaintain" />
+                                            <div className='flex w-full'>
+                                                
+                                                <div class="mx-2 w-1/3">
+                                                    <label class="input_label">Add Image</label>
+                                                    <input class="input_field" type="file" name="input-name" title="Input title" placeholder="" />
                                                 </div>
-                                                <div class="input_container mx-2 ">
-                                                    <label class="input_label">Location :</label>
-                                                    <input class="input_field w-full" type="number" name="input-name" title="Input title" placeholder="Location" />
-                                                </div>
-
                                             </div>
-                                        </div>
-                                    )}
-
-                                    {viewInputs === 'manufacturing' && (
-                                        <div>
 
                                         </div>
-                                    )}
-                                </div>
 
+
+                                        <div className="relative p-6 flex">
+                                            <button
+                                                className="bg-gray-500 text-white active:bg-gray-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                                                type="button"
+                                                onClick={() => setShowEditUnitModal(!showEditUnitModal)}
+                                            >
+                                                Edit Unit
+                                            </button>
+                                        </div>
+
+                                        <div className='p-6'>
+                                            <div className='border-b-2'>
+                                                <button className={`px-3 py-2 text-xl active:bg-gray-200 ${viewInputs === 'pricing' && "border-b-2 border-blue-500 text-blue-500"} `} onClick={() => handleViewInputButton('pricing')}>Pricing</button>
+                                            </div>
+
+                                            {viewInputs === 'pricing' && (
+
+                                                <div>
+                                                    <div className='border my-8 bg-gray-100'>
+                                                        <div className='p-6'>
+                                                            <h2 className=' text-lg font-semibold'>Sale Price</h2>
+                                                            <div className='flex'>
+
+                                                                <div className='p-2'>
+                                                                    <input type="text" placeholder='Sale Price' className='border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none' />
+                                                                    <select name="" id="" className='border-2 rounded-r hover:border-black focus:border-blue-500 px-2 py-1'>
+                                                                        <option value="With Tax">With Tax</option>
+                                                                        <option value="Without Tax">Without Tax</option>
+                                                                    </select>
+                                                                </div>
+                                                                <div className='p-2'>
+                                                                    <input type="text" placeholder='Disc. on Sales Price' className='border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none' />
+                                                                    <select name="" id="" className='border-2 rounded-r hover:border-black focus:border-blue-500 px-2 py-1'>
+                                                                        <option value="Percentage">Percentage</option>
+                                                                        <option value="Amount">Amount</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className='p-6'>
+                                                            <h2 className='py-6 text-lg font-semibold'>Wholesale Price</h2>
+                                                            <div className='flex'>
+
+                                                                <div className='p-2'>
+                                                                    <input type="text" placeholder='Wholesale Price' className='border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none' />
+                                                                    <select name="" id="" className='border-2 rounded-r hover:border-black focus:border-blue-500 px-2 py-1'>
+                                                                        <option value="With Tax">With Tax</option>
+                                                                        <option value="Without Tax">Without Tax</option>
+                                                                    </select>
+                                                                </div>
+                                                                <div className='p-2'>
+                                                                    <input type="text" placeholder='Minimum Wholesale Qty' className='border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none' />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                        
+                                                        <div className='border my-8 bg-gray-100'>
+                                                            <div className='p-6'>
+                                                                <h2 className=' text-lg font-semibold'>Taxes</h2>
+                                                                <div className='flex'>
+
+                                                                    <div className='p-2 flex flex-col input_container'>
+                                                                        {/* <label className='input_label'>Tax rate</label> */}
+                                                                        <select name="" id="" className='w-1/3 border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1'>
+                                                                            <option value=''>None</option>
+                                                                            <option value='0'>GST@0</option>
+                                                                            <option value='0'>IGST@0</option>
+                                                                            <option value='0.25'>IGST@0.25%</option>
+                                                                            <option value='0.25'>GST@0.25%</option>
+                                                                            <option value='3'>IGST@3%</option>
+                                                                            <option value='3'>GST@3%</option>
+                                                                            <option value='5'>IGST@5%</option>
+                                                                            <option value='5'>GST@5%</option>
+                                                                            <option value='12'>IGST@12%</option>
+                                                                            <option value='12'>GST@12%</option>
+                                                                            <option value='18'>IGST@18%</option>
+                                                                            <option value='18'>GST@18%</option>
+                                                                            <option value='28'>IGST@28%</option>
+                                                                            <option value='28'>GST@28%</option>
+                                                                            <option value='exmpt'>exmpt</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+
+
+
+                                                </div>
+                                            )}
+
+
+                                        </div>
+
+
+
+
+                                    </div>
+
+                                }
 
 
 
@@ -589,62 +769,58 @@ const Items = () => {
                                         </span>
                                     </button>
                                 </div>
-
-                                <div className=" px-3">
-                                    <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-900">Select Basic Unit</label>
-                                    <select id="countries" class=" border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                        <option value="">None</option>
-                                        <option value="bags">BAGS(Bag)</option>
-                                        <option value="bottle">BOTTLE(Btl)</option>
-                                        <option value="box">BOX(Box)</option>
-                                        <option value="bundles">BUNDLES(Bdl)</option>
-                                        <option value="cans">CANS(can)</option>
-                                        <option value="cartons">CARTONS(Ctn)</option>
-                                        <option value="dogens">DOGENS(Dzn)</option>
-                                        <option value="grammes">GRAMMES(GM)</option>
-                                        <option value="kilograms">KILOGRAMS(KG)</option>
-                                        <option value="litters">LITTERS(Ltr)</option>
-                                        <option value="meaters">MEATERS(Mtr)</option>
-                                        <option value="mililiter">MILILITER(Ml)</option>
-                                        <option value="numbers">NUMBERS(Nos)</option>
-                                        <option value="packs">PACKS(Pac)</option>
-                                        <option value="pairs">PAIRS(Prs)</option>
-                                        <option value="pieces">PIECES(Pcs)</option>
-                                        <option value="quintals">QUINTALS(Qtl)</option>
-                                        <option value="rolls">ROLLS(Rol)</option>
-                                        <option value="squarefeet">SQUARE FEET(Sqf)</option>
-                                    </select>
+                                <div className='flex'>
+                                    <div className=" px-3">
+                                        <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-900">Select Basic Unit</label>
+                                        <select id="countries" class=" border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                            <option value="">None</option>
+                                            <option value="bags">BAGS(Bag)</option>
+                                            <option value="bottle">BOTTLE(Btl)</option>
+                                            <option value="box">BOX(Box)</option>
+                                            <option value="bundles">BUNDLES(Bdl)</option>
+                                            <option value="cans">CANS(can)</option>
+                                            <option value="cartons">CARTONS(Ctn)</option>
+                                            <option value="dogens">DOGENS(Dzn)</option>
+                                            <option value="grammes">GRAMMES(GM)</option>
+                                            <option value="kilograms">KILOGRAMS(KG)</option>
+                                            <option value="litters">LITTERS(Ltr)</option>
+                                            <option value="meaters">MEATERS(Mtr)</option>
+                                            <option value="mililiter">MILILITER(Ml)</option>
+                                            <option value="numbers">NUMBERS(Nos)</option>
+                                            <option value="packs">PACKS(Pac)</option>
+                                            <option value="pairs">PAIRS(Prs)</option>
+                                            <option value="pieces">PIECES(Pcs)</option>
+                                            <option value="quintals">QUINTALS(Qtl)</option>
+                                            <option value="rolls">ROLLS(Rol)</option>
+                                            <option value="squarefeet">SQUARE FEET(Sqf)</option>
+                                        </select>
+                                    </div>
+                                    <div className="px-3">
+                                        <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-900">Select Secondary Unit:</label>
+                                        <select id="countries" class=" border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                            <option value="">None</option>
+                                            <option value="bags">BAGS(Bag)</option>
+                                            <option value="bottle">BOTTLE(Btl)</option>
+                                            <option value="box">BOX(Box)</option>
+                                            <option value="bundles">BUNDLES(Bdl)</option>
+                                            <option value="cans">CANS(can)</option>
+                                            <option value="cartons">CARTONS(Ctn)</option>
+                                            <option value="dogens">DOGENS(Dzn)</option>
+                                            <option value="grammes">GRAMMES(GM)</option>
+                                            <option value="kilograms">KILOGRAMS(KG)</option>
+                                            <option value="litters">LITTERS(Ltr)</option>
+                                            <option value="meaters">MEATERS(Mtr)</option>
+                                            <option value="mililiter">MILILITER(Ml)</option>
+                                            <option value="numbers">NUMBERS(Nos)</option>
+                                            <option value="packs">PACKS(Pac)</option>
+                                            <option value="pairs">PAIRS(Prs)</option>
+                                            <option value="pieces">PIECES(Pcs)</option>
+                                            <option value="quintals">QUINTALS(Qtl)</option>
+                                            <option value="rolls">ROLLS(Rol)</option>
+                                            <option value="squarefeet">SQUARE FEET(Sqf)</option>
+                                        </select>
+                                    </div>
                                 </div>
-                                <div className="px-3">
-                                    <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-900">Select Secondary Unit:</label>
-                                    <select id="countries" class=" border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                        <option value="">None</option>
-                                        <option value="bags">BAGS(Bag)</option>
-                                        <option value="bottle">BOTTLE(Btl)</option>
-                                        <option value="box">BOX(Box)</option>
-                                        <option value="bundles">BUNDLES(Bdl)</option>
-                                        <option value="cans">CANS(can)</option>
-                                        <option value="cartons">CARTONS(Ctn)</option>
-                                        <option value="dogens">DOGENS(Dzn)</option>
-                                        <option value="grammes">GRAMMES(GM)</option>
-                                        <option value="kilograms">KILOGRAMS(KG)</option>
-                                        <option value="litters">LITTERS(Ltr)</option>
-                                        <option value="meaters">MEATERS(Mtr)</option>
-                                        <option value="mililiter">MILILITER(Ml)</option>
-                                        <option value="numbers">NUMBERS(Nos)</option>
-                                        <option value="packs">PACKS(Pac)</option>
-                                        <option value="pairs">PAIRS(Prs)</option>
-                                        <option value="pieces">PIECES(Pcs)</option>
-                                        <option value="quintals">QUINTALS(Qtl)</option>
-                                        <option value="rolls">ROLLS(Rol)</option>
-                                        <option value="squarefeet">SQUARE FEET(Sqf)</option>
-                                    </select>
-                                </div>
-                                <div className="px-3">
-                                    <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-900">Select Secondary Unit:</label>
-                                    <input class="input_field w-full" type="number" name="input-name" title="Input title" placeholder="" />
-                                </div>
-
 
 
 
