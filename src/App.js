@@ -12,6 +12,8 @@ import Parties from './components/Parties';
 import Items from './components/Items';
 import SalesInvoice from './components/Sales/SalesInvoice';
 import Estimate from './components/Sales/Estimate';
+import PaymentIn from './components/Sales/PaymentIn';
+// import ModalApp from './components/ModalApp';
 
 function App() {
   const [showModal, setShowModal] = useState(false);
@@ -31,6 +33,7 @@ function App() {
             <Route path="/items" exact element={<Items />} />
             <Route path="/sales-invoice" exact element={<SalesInvoice />} />
             <Route path="/estimate" exact element={<Estimate />} />
+            <Route path="/payment-in" exact element={<PaymentIn />} />
 
           </Routes>
         </div>

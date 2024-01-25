@@ -20,6 +20,7 @@ const Parties = () => {
     const [sortDirection, setSortDirection] = useState(1);
     const [isDivClicked, setDivClicked] = useState(false);
     const [showAddPartyModal, setshowAddPartyModal] = useState(false);
+    const [showAddGroupModal, setshowAddGroupModal] = useState(false);
     const [viewInputs, setViewInputs] = useState('gst-&-address');
     const [shippingAddress, setShippingAddress] = useState(false);
     const [creditLimit, setCreditLimit] = useState(false);
@@ -314,20 +315,32 @@ const Parties = () => {
                                     </button>
                                 </div>
 
-                                <div className="relative p-6 flex">
+                                <div className="relative p-6">
+                                    <div className='flex'>
 
-                                    <div class="input_container mx-2 ">
-                                        <label class="input_label">Party Name</label>
-                                        <input class="input_field w-full" type="text" name="input-name" title="Inpit title" placeholder='Party Name' />
-                                    </div>
-                                    <div class="input_container mx-2 ">
-                                        <label class="input_label">GSTIN</label>
-                                        <input class="input_field w-full" type="number" name="input-name" title="Inpit title" placeholder="GSTIN" />
-                                    </div>
+                                        <div class="input_container mx-2 ">
+                                            <label class="input_label">Party Name</label>
+                                            <input class="input_field w-full" type="text" name="input-name" title="Inpit title" placeholder='Party Name' />
+                                        </div>
+                                        <div class="input_container mx-2 ">
+                                            <label class="input_label">GSTIN</label>
+                                            <input class="input_field w-full" type="number" name="input-name" title="Inpit title" placeholder="GSTIN" />
+                                        </div>
 
-                                    <div class="input_container mx-2 ">
-                                        <label class="input_label">Phone Number</label>
-                                        <input class="input_field w-full" type="number" name="input-name" title="Inpit title" placeholder="Phone Number" />
+                                        <div class="input_container mx-2 ">
+                                            <label class="input_label">Phone Number</label>
+                                            <input class="input_field w-full" type="number" name="input-name" title="Inpit title" placeholder="Phone Number" />
+                                        </div>
+                                    </div>
+                                    <div className='py-3 flex justify-start items-center'>
+
+                                        <div class="flex flex-col mx-2 ">
+                                            <label class="input_label">Party Group</label>
+                                            <select className='input_field' name="" id="">
+                                                <option value="General">General</option>
+                                            </select>
+                                        </div>
+                                        <a onClick={()=>setshowAddGroupModal(!showAddGroupModal)} className='border text-xs mt-3 text-white bg-blue-500 font-semibold whitespace-nowrap flex items-center px-2 py-1 rounded'>New Group</a>
                                     </div>
 
                                 </div>
@@ -444,18 +457,7 @@ const Parties = () => {
                                                     <input class="input_field w-full" type="date" name="input-name" title="Input title" placeholder="As Of Date :" />
                                                 </div>
                                             </div>
-                                            <div className="p-6 flex">
-
-                                                <div class="input_container mx-2 ">
-                                                    <label class="input_label">Min.StockMaintain:</label>
-                                                    <input class="input_field w-full" type="text" name="input-name" title="Input title" placeholder="Min.StockMaintain" />
-                                                </div>
-                                                <div class="input_container mx-2 ">
-                                                    <label class="input_label">Location :</label>
-                                                    <input class="input_field w-full" type="number" name="input-name" title="Input title" placeholder="Location" />
-                                                </div>
-
-                                            </div>
+                                            
 
                                             <div className='p-6'>
                                                 <h2 className='py-2 text-xl'>Credit Limit</h2>
@@ -510,6 +512,55 @@ const Parties = () => {
                                         className="bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                                         type="button"
                                         onClick={() => setshowAddPartyModal(false)}
+                                    >
+                                        Save Changes
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
+                </>
+            ) : null}
+
+            
+
+            {showAddGroupModal ? (
+                <>
+                    <div
+                        className="justify-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none"
+                    >
+                        <div className="relative w-auto my-6 mx-auto">
+                            {/*content*/}
+                            <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                                {/*header*/}
+                                <div className="flex items-start justify-between p-5 border-blueGray-200 rounded-t">
+                                    <div className='flex'>
+                                        <h3 className="text-xl font-semibold mx-2">
+                                            Add Party
+                                        </h3>
+
+                                    </div>
+                                    <button
+                                        className="p-1 ml-auto  border-0 text-black  float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
+                                        onClick={() => setshowAddGroupModal(false)}
+                                    >
+                                        <span className=" text-black  h-6 w-6 text-2xl block outline-none focus:outline-none">
+                                            ×
+                                        </span>
+                                    </button>
+                                </div>
+
+                                <div class="input_container p-6">
+                                                    <label class="input_label">Enter Party Group Name</label>
+                                                    <input class="input_field w-full" type="text" name="input-name" title="Input title" placeholder="Enter Party Group Name" />
+                                                </div>
+                                
+                                <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
+                                    <button
+                                        className="bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                                        type="button"
+                                        onClick={() => setshowAddGroupModal(false)}
                                     >
                                         Save Changes
                                     </button>
