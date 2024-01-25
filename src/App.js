@@ -1,4 +1,4 @@
-import logo from './logo.svg';
+
 import React, { useState } from 'react';
 import './App.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
@@ -10,7 +10,8 @@ import Signup from './components/Signup';
 import MyCompany from './components/MyCompany';
 import Parties from './components/Parties';
 import Items from './components/Items';
-import SalesInvoice from './components/SalesInvoice';
+import Estimate from './components/Sales/Estimate';
+import SalesInvoice from './components/Sales/SalesInvoice';
 
 function App() {
   const [showModal, setShowModal] = useState(false);
@@ -29,7 +30,7 @@ function App() {
             <Route path="/Parties" exact element={<Parties />} />
             <Route path="/items" exact element={<Items />} />
             <Route path="/sales-invoice" exact element={<SalesInvoice />} />
-
+            <Route path="/estimate" exact element={<Estimate />} />
           </Routes>
         </div>
       </div>

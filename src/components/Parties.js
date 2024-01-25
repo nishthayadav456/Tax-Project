@@ -19,6 +19,12 @@ const Parties = () => {
     const [sortedColumn, setSortedColumn] = useState(null);
     const [sortDirection, setSortDirection] = useState(1);
     const [isDivClicked, setDivClicked] = useState(false);
+    const [showAddPartyModal, setshowAddPartyModal] = useState(false);
+    const [viewInputs, setViewInputs] = useState('gst-&-address');
+    const [shippingAddress, setShippingAddress] = useState(false);
+    const [creditLimit, setCreditLimit] = useState(false);
+    const [fields, setFields] = useState([{ name: '', value: '' }]);
+
     const divRef = useRef(null);
     const searchRef = useRef(null);
 
@@ -66,6 +72,27 @@ const Parties = () => {
     }, []);
 
 
+    const handleViewInputButton = (selectedView) => {
+        setViewInputs(selectedView);
+    };
+
+
+    const addField = () => {
+        if (fields.length < 4) {
+            setFields([...fields, { name: '', value: '' }]);
+        }
+    };
+    const removeField = (index) => {
+        const newFields = [...fields];
+        newFields.splice(index, 1);
+        setFields(newFields);
+    };
+
+    const handleFieldChange = (index, key, newValue) => {
+        const newFields = [...fields];
+        newFields[index][key] = newValue;
+        setFields(newFields);
+    };
 
     return (
         <>
@@ -119,8 +146,8 @@ const Parties = () => {
 
 
 
-                            <div className='flex text-white' style={{ display: isDivClicked ? "none" : "flex"}}>
-                                <div className='bg-orange-400 flex justify-around items-center rounded-l-lg px-3 py-2 shadow hover:shadow-lg hover:bg-orange-300 duration-100'>
+                            <div className='flex text-white' style={{ display: isDivClicked ? "none" : "flex" }}>
+                                <div onClick={() => setshowAddPartyModal(!showAddPartyModal)} className='bg-orange-400 flex justify-around items-center rounded-l-lg px-3 py-2 shadow hover:shadow-lg hover:bg-orange-300 duration-100'>
                                     <h2 className='text-white px-1 font-bold'>+</h2>
                                     <h2>Add Party</h2>
                                 </div>
@@ -254,6 +281,245 @@ const Parties = () => {
                     </div>
                 </div>
             </div>
+
+
+
+
+
+
+
+            {showAddPartyModal ? (
+                <>
+                    <div
+                        className="justify-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none"
+                    >
+                        <div className="relative w-auto my-6 mx-auto">
+                            {/*content*/}
+                            <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                                {/*header*/}
+                                <div className="flex items-start justify-between p-5 border-blueGray-200 rounded-t">
+                                    <div className='flex'>
+                                        <h3 className="text-xl font-semibold mx-2">
+                                            Add Party
+                                        </h3>
+
+                                    </div>
+                                    <button
+                                        className="p-1 ml-auto  border-0 text-black  float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
+                                        onClick={() => setshowAddPartyModal(false)}
+                                    >
+                                        <span className=" text-black  h-6 w-6 text-2xl block outline-none focus:outline-none">
+                                            ×
+                                        </span>
+                                    </button>
+                                </div>
+
+                                <div className="relative p-6 flex">
+
+                                    <div class="input_container mx-2 ">
+                                        <label class="input_label">Party Name</label>
+                                        <input class="input_field w-full" type="text" name="input-name" title="Inpit title" placeholder='Party Name' />
+                                    </div>
+                                    <div class="input_container mx-2 ">
+                                        <label class="input_label">GSTIN</label>
+                                        <input class="input_field w-full" type="number" name="input-name" title="Inpit title" placeholder="GSTIN" />
+                                    </div>
+
+                                    <div class="input_container mx-2 ">
+                                        <label class="input_label">Phone Number</label>
+                                        <input class="input_field w-full" type="number" name="input-name" title="Inpit title" placeholder="Phone Number" />
+                                    </div>
+
+                                </div>
+
+                                <div className='p-6'>
+                                    <div className='border-b-2'>
+                                        <button className={`px-3 py-2 text-xl active:bg-gray-200 ${viewInputs === 'gst-&-address' && "border-b-2 border-blue-500 text-blue-500"} `} onClick={() => handleViewInputButton('gst-&-address')}>GST & Address</button>
+                                        <button className={`px-3 py-2 text-xl active:bg-gray-200 ${viewInputs === 'credit-&-balance' && "border-b-2 border-blue-500 text-blue-500"} `} onClick={() => handleViewInputButton('credit-&-balance')}>Credit & Balance</button>
+                                        <button className={`px-3 py-2 text-xl active:bg-gray-200 ${viewInputs === 'additional-fields' && "border-b-2 border-blue-500 text-blue-500"} `} onClick={() => handleViewInputButton('additional-fields')}>Additional Fields</button>
+                                    </div>
+
+                                    {viewInputs === 'gst-&-address' && (
+                                        <div>
+                                            <div className="p-6 flex">
+
+                                                <div class="input_container mx-2 ">
+                                                    <label class="input_label">GST Type</label>
+                                                    <select class="input_field">
+                                                        <option value=''>Unregistered/Consumer</option>
+                                                        <option value=''>Registered Business - Regular</option>
+                                                        <option value=''>Registered Business - Composition</option>
+
+                                                    </select>
+                                                </div>
+
+                                                <div class="input_container mx-2">
+                                                    <label class="input_label">State</label>
+                                                    <select id="countries" class="input_field">
+                                                        <option value=''>None</option>
+                                                        <option value="Andhra Pradesh">Andhra Pradesh</option>
+                                                        <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                                                        <option value="Assam">Assam</option>
+                                                        <option value="Bihar">Bihar</option>
+                                                        <option value="Chhattisgarh">Chhattisgarh</option>
+                                                        <option value="Goa">Goa</option>
+                                                        <option value="Gujarat">Gujarat</option>
+                                                        <option value="Haryana">Haryana</option>
+                                                        <option value="Himachal Pradesh">Himachal Pradesh</option>
+                                                        <option value="Jharkhand">Jharkhand</option>
+                                                        <option value="Karnataka">Karnataka</option>
+                                                        <option value="Kerala">Kerala</option>
+                                                        <option value="Madhya Pradesh">Madhya Pradesh</option>
+                                                        <option value="Maharashtra">Maharashtra</option>
+                                                        <option value="Manipur">Manipur</option>
+                                                        <option value="Meghalaya">Meghalaya</option>
+                                                        <option value="Mizoram">Mizoram</option>
+                                                        <option value="Nagaland">Nagaland</option>
+                                                        <option value="Odisha">Odisha</option>
+                                                        <option value="Punjab">Punjab</option>
+                                                        <option value="Rajasthan">Rajasthan</option>
+                                                        <option value="Sikkim">Sikkim</option>
+                                                        <option value="Tamil Nadu">Tamil Nadu</option>
+                                                        <option value="Telangana">Telangana</option>
+                                                        <option value="Tripura">Tripura</option>
+                                                        <option value="Uttar Pradesh">Uttar Pradesh</option>
+                                                        <option value="Uttarakhand">Uttarakhand</option>
+                                                        <option value="West Bengal">West Bengal</option>
+                                                        <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
+                                                        <option value="Chandigarh">Chandigarh</option>
+                                                        <option value="Dadra and Nagar Haveli and Daman and Diu">Dadra and Nagar Haveli and Daman and Diu</option>
+                                                        <option value="Lakshadweep">Lakshadweep</option>
+                                                        <option value="Delhi">Delhi</option>
+                                                        <option value="Puducherry">Puducherry</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="input_container mx-2 ">
+                                                    <label class="input_label">Email</label>
+                                                    <input class="input_field w-full" type="email" name="input-name" title="Input title" placeholder="Email" />
+                                                </div>
+                                            </div>
+
+                                            <div className="p-6 flex ">
+                                                <div class="input_container mx-2 ">
+                                                    <label class="input_label">Billing Address</label>
+                                                    <textarea className='input_field' cols="30" rows="10" placeholder='Billing Address'></textarea>
+                                                    {/* <input class="input_field w-full" type="email" name="input-name" title="Input title" placeholder="Email" /> */}
+                                                </div>
+
+                                                <div class="input_container mx-2 ">
+                                                    {shippingAddress && (
+
+                                                        <label class="input_label">Shipping Address</label>
+                                                    )}
+                                                    {shippingAddress && (
+                                                        <textarea className='input_field' cols="30" rows="10" placeholder='Shipping Address'></textarea>
+                                                    )}
+
+                                                </div>
+
+                                            </div>
+
+                                            <div className='px-6 ' >
+                                                {shippingAddress ? (
+                                                    <h2 className='text-gray-500  cursor-pointer' onClick={() => setShippingAddress(!shippingAddress)} >- Disable Shipping Address</h2>
+                                                ) : (
+                                                    <h2 className='text-blue-500  cursor-pointer' onClick={() => setShippingAddress(!shippingAddress)} >+ Enable Shipping Address</h2>
+                                                )}
+                                            </div>
+
+                                        </div>
+                                    )}
+
+                                    {viewInputs === 'credit-&-balance' && (
+                                        <div>
+                                            <div className="p-6 flex">
+
+                                                <div class="input_container mx-2 ">
+                                                    <label class="input_label">Opening Balance:</label>
+                                                    <input class="input_field w-full" type="text" name="input-name" title="Input title" placeholder="Opening Qty" />
+                                                </div>
+                                                <div class="input_container mx-2 ">
+                                                    <label class="input_label">As Of Date :</label>
+                                                    <input class="input_field w-full" type="date" name="input-name" title="Input title" placeholder="As Of Date :" />
+                                                </div>
+                                            </div>
+                                            <div className="p-6 flex">
+
+                                                <div class="input_container mx-2 ">
+                                                    <label class="input_label">Min.StockMaintain:</label>
+                                                    <input class="input_field w-full" type="text" name="input-name" title="Input title" placeholder="Min.StockMaintain" />
+                                                </div>
+                                                <div class="input_container mx-2 ">
+                                                    <label class="input_label">Location :</label>
+                                                    <input class="input_field w-full" type="number" name="input-name" title="Input title" placeholder="Location" />
+                                                </div>
+
+                                            </div>
+
+                                            <div className='p-6'>
+                                                <h2 className='py-2 text-xl'>Credit Limit</h2>
+                                                <div className="flex">
+                                                    <p className={` font-semibold ${creditLimit ? "text-gray-400" : "text-blue-500"} `}>No Limit</p>
+                                                    <div className='mx-2'>
+                                                        <label class="relative inline-flex items-center cursor-pointer">
+                                                            <input type="checkbox" value="" class="sr-only peer" checked={creditLimit} onChange={() => setCreditLimit(!creditLimit)} />
+                                                            <div class="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-blue-600 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                                        </label>
+                                                    </div>
+                                                    <p className={` font-semibold ${creditLimit ? "text-blue-500" : "text-gray-400"} `}>Custom Limit</p>
+                                                </div>
+                                                {creditLimit && (
+                                                    // <div class="input_container mx-2 ">
+                                                    <input class="input_field w-full" type="number" name="input-name" title="Input title" placeholder="Custom Limit" />
+                                                    // </div>
+                                                )}
+                                            </div>
+
+                                        </div>
+                                    )}
+
+                                    {viewInputs === 'additional-fields' && (
+                                        <div>
+                                            {fields.map((field, index) => (
+                                                <div className='flex justify-center items-center' key={index}>
+                                                    <div class="input_container mx-2 ">
+                                                        <label class="input_label">Field Name</label>
+                                                        <input class="input_field w-full" type="text" name="input-name" title="Input title" placeholder="Field Name" value={field.name} onChange={(e) => handleFieldChange(index, 'name', e.target.value)} />
+                                                    </div>
+                                                    <div class="input_container mx-2 ">
+                                                        <label class="input_label">Field Value</label>
+                                                        <input class="input_field w-full" type="text" name="input-name" title="Input title" placeholder="Field Value" value={field.value} onChange={(e) => handleFieldChange(index, 'value', e.target.value)} />
+                                                    </div>
+                                                    <button className='text-white bg-red-600 px-2 py-1 rounded' onClick={() => removeField(index)}>Remove</button>
+
+                                                </div>
+                                            ))}
+                                            <button className='text-white bg-green-600 px-2 py-1 rounded m-2' onClick={addField}>Add Field</button>
+                                        </div>
+                                    )}
+
+                                </div>
+
+
+
+
+
+                                <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
+                                    <button
+                                        className="bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                                        type="button"
+                                        onClick={() => setshowAddPartyModal(false)}
+                                    >
+                                        Save Changes
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
+                </>
+            ) : null}
         </>
     )
 }

@@ -2,22 +2,40 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-
+import axios from "axios";
 const Sidebar = ({ showModal, setShowModal, isSidebarOpen, setIsSidebarOpen }) => {
-
+  const [companyData, setCompanyData] = useState(null);
   // const [showModal, setShowModal] = React.useState(false);
   // const [additionalFields, setAdditionalFields] = useState(false);
   const [salesExpanded, setSalesExpanded] = useState(false);
 
 
-  const handleButtonClick = () => {
+  const handleButtonClick = async () => {
     setShowModal(!showModal);
+    await fetchCompanyData();
   };
 
   const toggleSales = () => {
     setSalesExpanded(!salesExpanded);
   };
 
+  const fetchCompanyData = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+
+      const response = await axios.get(
+        'https://ca-backend-api.onrender.com/firm_registration',
+        { headers }
+      );
+
+      setCompanyData(response.data.result);
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
 
 
 
@@ -25,13 +43,20 @@ const Sidebar = ({ showModal, setShowModal, isSidebarOpen, setIsSidebarOpen }) =
     <>
       <div className={`bg-gray-800 text-white h-full w-1/4 sm:w-1/5 md:w-1/6 lg:w-1/7 xl:w-1/8 ${isSidebarOpen ? 'block' : 'hidden'}`}>
         <div className="lg:block">
-          <div className='flex items-center p-5 border border-black' onClick={handleButtonClick}>
+        <div className='flex items-center p-5 border border-black' onClick={handleButtonClick}>
             <div className='rounded-full bg-blue-400 p-1 '>
-              <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-house-add-fill" viewBox="0 0 16 16">
-                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 1 1-1 0v-1h-1a.5.5 0 1 1 0-1h1v-1a.5.5 0 0 1 1 0" />
-                <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L8 2.207l6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293z" />
-                <path d="m8 3.293 4.712 4.712A4.5 4.5 0 0 0 8.758 15H3.5A1.5 1.5 0 0 1 2 13.5V9.293z" />
-              </svg>
+              {/* Conditionally render company image based on the fetched data */}
+              {companyData && companyData.companyLogo ? (
+                <img src={companyData.companyLogo} // Use the actual property name from your API response
+                  alt="Company Logo"
+                  className="w-8 h-8 rounded-full" width="30" height="30"
+                />
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-house-add-fill" viewBox="0 0 16 16">
+                 
+                </svg>
+              )
+              }
             </div>
             <h2>My Company</h2>
           </div>

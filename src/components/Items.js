@@ -1,29 +1,31 @@
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 // import OnClickOutside from 'react-onclickoutside';
 
 function classNames(...classes) {
-    // const [data, setData] = useState(
-    //     {
-    //         category:"",
-    //         Itemname:"",
-    //         ItemHsn:"",
-    //         Brand:"",
-    //         MRP:"",
-    //         Sales:"",
-    //         DiscOnMRP:"",
-    //         wholesalePrice:"",
-    //         DiscMRP:"",
-    //         wholesaleqty:"",
-    //         purchaseprice:"",
-    //         openingqty:"",
-    //         Atprice:"",
-    //         Atdate:"",
-    //         stockmaintain:"",
-    //         location:""
-    //     }
-    // )
+    
+  const initialItemState = {
+            category:"",
+            itemName:"",
+            itemHsn:"",
+            baseUnit:"",
+            secondaryUnit:"",
+            mrp:"",
+            disOnMrpForSale:"",
+            disOnMrpForWholesale:"",
+            salePrice:"",
+            wholesalePrice:"",
+           minimumWholesaleQty:"",
+           purchasePrice:"",
+           taxRate:"",
+           openingQuantity:"",
+           atPrice:"",
+            asOfDate:"",
+            minStockToMaintain:"",
+            location:""
+        }
+   
   return classes.filter(Boolean).join(" ");
 }
 
@@ -93,7 +95,9 @@ const Items = () => {
   //for model
 
   const handleAdjustModelButtonClick = () => {
-    setshowAdjustItemModal(!showAdjustItemModal);
+ setshowAdjustItemModal(!showAdjustItemModal);
+ 
+
   };
 
   const handleStockCheckBox = () => {
@@ -107,8 +111,10 @@ const Items = () => {
 
 
   const changeHandle = (event) => {
-    // setData({ ...data, [event.target.name]: event.target.value })
-}
+  
+  };
+
+
   return (
     <>
       <div className="" style={{ height: "90vh" }}>
@@ -651,9 +657,9 @@ const Items = () => {
                     <input
                       class="input_field"
                       type="number"
-                      name="Itemname"
+                      name="itemName"
                       title="Input title"
-                      placeholder=""  value={data.Itemname} onChange={changeHandle}
+                      placeholder=""  value={data.itemName} onChange={changeHandle}
                     />
                   </div>
 
@@ -662,9 +668,9 @@ const Items = () => {
                     <input
                       class="input_field"
                       type="number"
-                      name="ItemHsn"
+                      name="itemHsn"
                       title="Input title"
-                      placeholder=""  value={data.ItemHsn} onChange={changeHandle}
+                      placeholder=""  value={data.itemHsn} onChange={changeHandle}
                     />
                   </div>
                   <div class="input_container mx-2 ">
@@ -728,9 +734,9 @@ const Items = () => {
                           <input
                             class="input_field w-full"
                             type="text"
-                            name="MRP"
+                            name="mrp"
                             title="Input title"
-                            placeholder="MRP" value={data.MRP} onChange={changeHandle}
+                            placeholder="mrp" value={data.mrp} onChange={changeHandle}
                           />
                         </div>
                         <div class="input_container mx-2 ">
@@ -738,9 +744,9 @@ const Items = () => {
                           <input
                             class="input_field w-full"
                             type="number"
-                            name="Sales"
+                            name="salePrices"
                             title="Input title"
-                            placeholder="Sales Price" value={data.Sales} onChange={changeHandle}
+                            placeholder="salePrice" value={data.salePrice} onChange={changeHandle}
                           />
                         </div>
                       </div>
@@ -752,9 +758,9 @@ const Items = () => {
                           <input
                             class="input_field w-full"
                             type="number"
-                            name="DiscOnMRP"
+                            name="disOnMrpForSaleP"
                             title="Input title"
-                            placeholder="Disc.On MRP For Sale (%)" value={data.DiscOnMRP} onChange={changeHandle} 
+                            placeholder="Disc.On MRP For Sale (%)" value={data.disOnMrpForSale} onChange={changeHandle} 
                           />
                         </div>
                         <div class="input_container mx-2 ">
@@ -776,9 +782,9 @@ const Items = () => {
                           <input
                             class="input_field w-full"
                             type="number"
-                            name="DiscMRP"
+                            name="disOnMrpForWholesale"
                             title="Input title"
-                            placeholder="Disc. on MRP For WholeSale(%)"  value={data.DiscMRP} onChange={changeHandle}
+                            placeholder="Disc. on MRP For WholeSale(%)"  value={data.disOnMrpForWholesale} onChange={changeHandle}
                           />
                         </div>
                         <div class="input_container mx-2 ">
@@ -788,9 +794,9 @@ const Items = () => {
                           <input
                             class="input_field w-full"
                             type="number"
-                            name="wholesaleqty"
+                            name="minimumWholesaleQty"
                             title="Input title"
-                            placeholder="Minimum Wholesale Qty" value={data.wholesaleqty} onChange={changeHandle} 
+                            placeholder="Minimum Wholesale Qty" value={data.minimumWholesaleQty} onChange={changeHandle} 
                           />
                         </div>
                       </div>
@@ -800,14 +806,14 @@ const Items = () => {
                           <input
                             class="input_field w-full"
                             type="number"
-                            name="purchaseprice"
+                            name="purchasePrice"
                             title="Input title"
-                            placeholder="Purchase Price:" value={data.purchaseprice} onChange={changeHandle} 
+                            placeholder="Purchase Price:" value={data.purchasePrice} onChange={changeHandle} 
                           />
                         </div>
                         <div class="input_container mx-2 ">
                           <label class="input_label">GST Rate:</label>
-                          <select id="countries" class="input_field">
+                          <select id="countries" class="input_field"   name="taxRate" value={data.taxRate} onChange={changeHandle} >
                             <option value="">None</option>
                             <option value="0">GST@0</option>
                             <option value="0">IGST@0</option>
@@ -838,9 +844,9 @@ const Items = () => {
                           <input
                             class="input_field w-full"
                             type="text"
-                            name="openingqty"
+                            name="openingQuantity"
                             title="Input title"
-                            placeholder="Opening Qty"  value={data.openingqty} onChange={changeHandle} 
+                            placeholder="Opening Qty"  value={data.openingQuantity} onChange={changeHandle} 
                           />
                         </div>
                         <div class="input_container mx-2 ">
@@ -848,9 +854,9 @@ const Items = () => {
                           <input
                             class="input_field w-full"
                             type="number"
-                            name="Atprice"
+                            name="atPrice"
                             title="Input title"
-                            placeholder="At Price" value={data.Atprice} onChange={changeHandle}
+                            placeholder="At Price" value={data.atPrice} onChange={changeHandle}
                           />
                         </div>
                         <div class="input_container mx-2 ">
@@ -858,9 +864,9 @@ const Items = () => {
                           <input
                             class="input_field w-full"
                             type="date"
-                            name="Atdate"
+                            name="asOfDate"
                             title="Input title"
-                            placeholder="As Of Date :" value={data.Atdate} onChange={changeHandle}
+                            placeholder="As Of Date :" value={data.asOfDate} onChange={changeHandle}
                           />
                         </div>
                       </div>
@@ -870,9 +876,9 @@ const Items = () => {
                           <input
                             class="input_field w-full"
                             type="text"
-                            name="stockmaintain"
+                            name="minStockToMaintain"
                             title="Input title"
-                            placeholder="Min.StockMaintain" value={data.stockmaintain} onChange={changeHandle}
+                            placeholder="Min.StockMaintain" value={data.minStockToMaintain} onChange={changeHandle}
                           />
                         </div>
                         <div class="input_container mx-2 ">
@@ -934,13 +940,13 @@ const Items = () => {
                   <label
                     for="countries"
                     class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-900"
-                  >
+                 >
                     Select Basic Unit
                   </label>
                   <select
                     id="countries"
                     class=" border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  >
+                    name="baseUnit"  value={data.baseUnit} onChange={changeHandle} >
                     <option value="">None</option>
                     <option value="bags">BAGS(Bag)</option>
                     <option value="bottle">BOTTLE(Btl)</option>
@@ -973,7 +979,7 @@ const Items = () => {
                   <select
                     id="countries"
                     class=" border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  >
+                    name="secondaryUnit"  value={data.secondaryUnit} onChange={changeHandle}  >
                     <option value="">None</option>
                     <option value="bags">BAGS(Bag)</option>
                     <option value="bottle">BOTTLE(Btl)</option>
