@@ -29,6 +29,7 @@ const Items = () => {
     const [showAddItemModal, setshowAddItemModal] = useState(false);
     const [showEditUnitModal, setShowEditUnitModal] = useState(false);
 
+    const [tracking, setTracking] = useState(null);
 
     const divRef = useRef(null);
     const searchRef = useRef(null);
@@ -401,32 +402,36 @@ const Items = () => {
 
                                     <div>
                                         <div className="relative p-6">
-                                        <div className='flex'>
-                                            <div class="input_container mx-2 ">
-                                                <label class="input_label">Item Name :</label>
-                                                <input class="input_field" type="number" name="input-name" title="Input title" placeholder="" />
-                                            </div>
-                                            <div class="input_container mx-2 ">
-                                                <label class="input_label">Category :</label>
-                                                <input class="input_field" type="text" name="input-name" title="Input title" />
-                                            </div>
-
-                                            <div class="input_container mx-2 ">
-                                                <label class="input_label">ItemHsn :</label>
-                                                <input class="input_field" type="number" name="input-name" title="Input title" placeholder="" />
-                                            </div>
-                                            <div class="input_container mx-2 ">
-                                                <label class="input_label">Item Code</label>
-                                                <div className='flex'>
+                                            <div className='flex'>
+                                                <div class="input_container mx-2 ">
+                                                    <label class="input_label">Item Name :</label>
                                                     <input class="input_field" type="number" name="input-name" title="Input title" placeholder="" />
-                                                    <a href="" className='border text-xs text-white bg-blue-500 font-semibold whitespace-nowrap flex items-center px-2 rounded-xl'>Assign Code</a>
                                                 </div>
+                                                <div class="input_container mx-2 ">
+                                                    <label class="input_label">Category :</label>
+                                                    <input class="input_field" type="text" name="input-name" title="Input title" />
+                                                </div>
+
+                                                <div class="input_container mx-2 ">
+                                                    <label class="input_label">ItemHsn :</label>
+                                                    <input class="input_field" type="number" name="input-name" title="Input title" placeholder="" />
+                                                </div>
+                                                <div class="input_container mx-2 ">
+                                                    <label class="input_label">Item Code</label>
+                                                    <div className='flex'>
+                                                        <input class="input_field" type="number" name="input-name" title="Input title" placeholder="" />
+                                                        <a href="" className='border text-xs text-white bg-blue-500 font-semibold whitespace-nowrap flex items-center px-2 rounded-xl'>Assign Code</a>
+                                                    </div>
+                                                </div>
+
                                             </div>
-                                            
-                                            </div>
-                                            <div className='flex w-full'>
-                                                
-                                                <div class="mx-2 w-1/3">
+                                            <div className='flex'>
+
+                                                <div class="input_container mx-2">
+                                                    <label class="input_label">Descriptions</label>
+                                                    <textarea className='input_field' id="" cols="30" rows="10"></textarea>
+                                                </div>
+                                                <div class="input_container mx-2">
                                                     <label class="input_label">Add Image</label>
                                                     <input class="input_field" type="file" name="input-name" title="Input title" placeholder="" />
                                                 </div>
@@ -444,6 +449,37 @@ const Items = () => {
                                             </button>
                                         </div>
 
+                                        <div className="flex items-center mb-4 p-6">
+                                            <input
+                                                type="radio"
+                                                id="option1"
+                                                name="options"
+                                                value="option1"
+                                                checked={tracking === 'option1'}
+                                                onChange={() => setTracking('option1')}
+                                                className="mr-2 h-4 w-4"
+                                            />
+                                            <label htmlFor="option1" className="mr-4">Batch Tracking</label>
+
+                                            <input
+                                                type="radio"
+                                                id="option2"
+                                                name="options"
+                                                value="option2"
+                                                checked={tracking === 'option2'}
+                                                onChange={() => setTracking('option2')}
+                                                className="mr-2 h-4 w-4"
+                                            />
+                                            <label htmlFor="option2">Serial No. Tracking</label>
+                                            <button
+                                                onClick={() => setTracking(null)}
+                                                className="text-blue-500 font-bold py-2 px-4 rounded"
+                                            >
+                                                Clear Tracking
+                                            </button>
+                                        </div>
+
+
                                         <div className='p-6'>
                                             <div className='border-b-2'>
                                                 <button className={`px-3 py-2 text-xl active:bg-gray-200 ${viewInputs === 'pricing' && "border-b-2 border-blue-500 text-blue-500"} `} onClick={() => handleViewInputButton('pricing')}>Pricing</button>
@@ -454,6 +490,25 @@ const Items = () => {
                                             {viewInputs === 'pricing' && (
 
                                                 <div>
+                                                    <div className='border my-8 bg-gray-100 p-6'>
+                                                        <h2 className=' text-lg font-semibold'>MRP</h2>
+                                                        <div className='flex'>
+
+                                                            <div className='p-2 input_container'>
+                                                                <input type="text" placeholder='MRP' className='border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none' />
+                                                            </div>
+                                                            <div className='p-2 input_container'>
+                                                                <input type="text" placeholder='Disc. On MRP For Sale(%)' className='border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none' />
+                                                            </div>
+                                                            <div className='p-2 input_container'>
+                                                                <input type="text" placeholder='Disc. On MRP For Wholesale(%)' className='border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none' />
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+
+
                                                     <div className='border my-8 bg-gray-100'>
                                                         <div className='p-6'>
                                                             <h2 className=' text-lg font-semibold'>Sale Price</h2>
@@ -610,9 +665,13 @@ const Items = () => {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className='flex w-full'>
-                                                
-                                                <div class="mx-2 w-1/3">
+                                            <div className='flex'>
+
+                                                <div class="input_container mx-2">
+                                                    <label class="input_label">Descriptions</label>
+                                                    <textarea className='input_field' id="" cols="30" rows="10"></textarea>
+                                                </div>
+                                                <div class="input_container mx-2">
                                                     <label class="input_label">Add Image</label>
                                                     <input class="input_field" type="file" name="input-name" title="Input title" placeholder="" />
                                                 </div>
@@ -639,7 +698,24 @@ const Items = () => {
                                             {viewInputs === 'pricing' && (
 
                                                 <div>
+                                                    <div className='border my-8 bg-gray-100 p-6'>
+                                                        <h2 className=' text-lg font-semibold'>MRP</h2>
+                                                        <div className='flex'>
+
+                                                            <div className='p-2 input_container'>
+                                                                <input type="text" placeholder='MRP' className='border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none' />
+                                                            </div>
+                                                            <div className='p-2 input_container'>
+                                                                <input type="text" placeholder='Disc. On MRP For Sale(%)' className='border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none' />
+                                                            </div>
+                                                            <div className='p-2 input_container'>
+                                                                <input type="text" placeholder='Disc. On MRP For Wholesale(%)' className='border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none' />
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                     <div className='border my-8 bg-gray-100'>
+                                                        
                                                         <div className='p-6'>
                                                             <h2 className=' text-lg font-semibold'>Sale Price</h2>
                                                             <div className='flex'>
@@ -677,37 +753,37 @@ const Items = () => {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                        
-                                                        <div className='border my-8 bg-gray-100'>
-                                                            <div className='p-6'>
-                                                                <h2 className=' text-lg font-semibold'>Taxes</h2>
-                                                                <div className='flex'>
 
-                                                                    <div className='p-2 flex flex-col input_container'>
-                                                                        {/* <label className='input_label'>Tax rate</label> */}
-                                                                        <select name="" id="" className='w-1/3 border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1'>
-                                                                            <option value=''>None</option>
-                                                                            <option value='0'>GST@0</option>
-                                                                            <option value='0'>IGST@0</option>
-                                                                            <option value='0.25'>IGST@0.25%</option>
-                                                                            <option value='0.25'>GST@0.25%</option>
-                                                                            <option value='3'>IGST@3%</option>
-                                                                            <option value='3'>GST@3%</option>
-                                                                            <option value='5'>IGST@5%</option>
-                                                                            <option value='5'>GST@5%</option>
-                                                                            <option value='12'>IGST@12%</option>
-                                                                            <option value='12'>GST@12%</option>
-                                                                            <option value='18'>IGST@18%</option>
-                                                                            <option value='18'>GST@18%</option>
-                                                                            <option value='28'>IGST@28%</option>
-                                                                            <option value='28'>GST@28%</option>
-                                                                            <option value='exmpt'>exmpt</option>
-                                                                        </select>
-                                                                    </div>
+                                                    <div className='border my-8 bg-gray-100'>
+                                                        <div className='p-6'>
+                                                            <h2 className=' text-lg font-semibold'>Taxes</h2>
+                                                            <div className='flex'>
+
+                                                                <div className='p-2 flex flex-col input_container'>
+                                                                    {/* <label className='input_label'>Tax rate</label> */}
+                                                                    <select name="" id="" className='w-1/3 border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1'>
+                                                                        <option value=''>None</option>
+                                                                        <option value='0'>GST@0</option>
+                                                                        <option value='0'>IGST@0</option>
+                                                                        <option value='0.25'>IGST@0.25%</option>
+                                                                        <option value='0.25'>GST@0.25%</option>
+                                                                        <option value='3'>IGST@3%</option>
+                                                                        <option value='3'>GST@3%</option>
+                                                                        <option value='5'>IGST@5%</option>
+                                                                        <option value='5'>GST@5%</option>
+                                                                        <option value='12'>IGST@12%</option>
+                                                                        <option value='12'>GST@12%</option>
+                                                                        <option value='18'>IGST@18%</option>
+                                                                        <option value='18'>GST@18%</option>
+                                                                        <option value='28'>IGST@28%</option>
+                                                                        <option value='28'>GST@28%</option>
+                                                                        <option value='exmpt'>exmpt</option>
+                                                                    </select>
                                                                 </div>
                                                             </div>
-
                                                         </div>
+
+                                                    </div>
 
 
 
