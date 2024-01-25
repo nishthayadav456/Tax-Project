@@ -321,17 +321,17 @@ const Items = () => {
                                 <div className="relative p-6 flex">
 
                                     <div class="input_container mx-2 ">
-                                        <label  class="input_label">Total Qty</label>
-                                        <input  class="input_field w-full" type="text" name="input-name" title="Inpit title" />
+                                        <label class="input_label">Total Qty</label>
+                                        <input class="input_field w-full" type="text" name="input-name" title="Inpit title" />
                                     </div>
                                     <div class="input_container mx-2 ">
-                                        <label  class="input_label">At Price</label>
-                                        <input  class="input_field w-full" type="number" name="input-name" title="Inpit title" placeholder="" />
+                                        <label class="input_label">At Price</label>
+                                        <input class="input_field w-full" type="number" name="input-name" title="Inpit title" placeholder="" />
                                     </div>
 
                                     <div class="input_container mx-2 ">
-                                        <label  class="input_label">Details</label>
-                                        <input  class="input_field w-full" style={{ width: "30rem" }} type="number" name="input-name" title="Inpit title" placeholder="" />
+                                        <label class="input_label">Details</label>
+                                        <input class="input_field w-full" style={{ width: "30rem" }} type="number" name="input-name" title="Inpit title" placeholder="" />
                                     </div>
 
                                 </div>
@@ -398,21 +398,21 @@ const Items = () => {
                                 <div className="relative p-6 flex">
 
                                     <div class="input_container mx-2 ">
-                                        <label  class="input_label">Category :</label>
-                                        <input  class="input_field" type="text" name="input-name" title="Input title" />
+                                        <label class="input_label">Category :</label>
+                                        <input class="input_field" type="text" name="input-name" title="Input title" />
                                     </div>
                                     <div class="input_container mx-2 ">
-                                        <label  class="input_label">Item Name :</label>
-                                        <input  class="input_field" type="number" name="input-name" title="Input title" placeholder="" />
+                                        <label class="input_label">Item Name :</label>
+                                        <input class="input_field" type="number" name="input-name" title="Input title" placeholder="" />
                                     </div>
 
                                     <div class="input_container mx-2 ">
-                                        <label  class="input_label">ItemHsn :</label>
-                                        <input  class="input_field" type="number" name="input-name" title="Input title" placeholder="" />
+                                        <label class="input_label">ItemHsn :</label>
+                                        <input class="input_field" type="number" name="input-name" title="Input title" placeholder="" />
                                     </div>
                                     <div class="input_container mx-2 ">
-                                        <label  class="input_label">Brand :</label>
-                                        <input  class="input_field" type="number" name="input-name" title="Input title" placeholder="" />
+                                        <label class="input_label">Brand :</label>
+                                        <input class="input_field" type="number" name="input-name" title="Input title" placeholder="" />
                                     </div>
 
                                 </div>
@@ -440,47 +440,47 @@ const Items = () => {
                                             <div className="p-6 flex">
 
                                                 <div class="input_container mx-2 ">
-                                                    <label  class="input_label">MRP</label>
-                                                    <input  class="input_field w-full" type="text" name="input-name" title="Input title" placeholder="MRP" />
+                                                    <label class="input_label">MRP</label>
+                                                    <input class="input_field w-full" type="text" name="input-name" title="Input title" placeholder="MRP" />
                                                 </div>
                                                 <div class="input_container mx-2 ">
-                                                    <label  class="input_label">Sales Price</label>
-                                                    <input  class="input_field w-full" type="number" name="input-name" title="Input title" placeholder="Sales Price" />
+                                                    <label class="input_label">Sales Price</label>
+                                                    <input class="input_field w-full" type="number" name="input-name" title="Input title" placeholder="Sales Price" />
                                                 </div>
                                             </div>
                                             <div className="p-6 flex">
 
                                                 <div class="input_container mx-2 ">
-                                                    <label  class="input_label">Disc.On MRP For Sale (%):</label>
-                                                    <input  class="input_field w-full" type="number" name="input-name" title="Input title" placeholder="Disc.On MRP For Sale (%)" />
+                                                    <label class="input_label">Disc.On MRP For Sale (%):</label>
+                                                    <input class="input_field w-full" type="number" name="input-name" title="Input title" placeholder="Disc.On MRP For Sale (%)" />
                                                 </div>
                                                 <div class="input_container mx-2 ">
-                                                    <label  class="input_label">Wholesale Price :</label>
-                                                    <input  class="input_field w-full" type="number" name="input-name" title="Input title" placeholder="Wholesale Price" />
-                                                </div>
-
-                                            </div>
-                                            <div className="p-6 flex">
-
-                                                <div class="input_container mx-2 ">
-                                                    <label  class="input_label">Disc. on MRP For WholeSale(%) :</label>
-                                                    <input  class="input_field w-full" type="number" name="input-name" title="Input title" placeholder="Disc. on MRP For WholeSale(%)" />
-                                                </div>
-                                                <div class="input_container mx-2 ">
-                                                    <label  class="input_label">Minimum Wholesale Qty:</label>
-                                                    <input  class="input_field w-full" type="number" name="input-name" title="Input title" placeholder="Minimum Wholesale Qty" />
+                                                    <label class="input_label">Wholesale Price :</label>
+                                                    <input class="input_field w-full" type="number" name="input-name" title="Input title" placeholder="Wholesale Price" />
                                                 </div>
 
                                             </div>
                                             <div className="p-6 flex">
 
                                                 <div class="input_container mx-2 ">
-                                                    <label  class="input_label">Purchase Price:</label>
-                                                    <input  class="input_field w-full" type="number" name="input-name" title="Input title" placeholder="Purchase Price:" />
+                                                    <label class="input_label">Disc. on MRP For WholeSale(%) :</label>
+                                                    <input class="input_field w-full" type="number" name="input-name" title="Input title" placeholder="Disc. on MRP For WholeSale(%)" />
                                                 </div>
                                                 <div class="input_container mx-2 ">
-                                                    <label  class="input_label">GST Rate:</label>
-                                                    <select id="countries" class="input_field">
+                                                    <label class="input_label">Minimum Wholesale Qty:</label>
+                                                    <input class="input_field w-full" type="number" name="input-name" title="Input title" placeholder="Minimum Wholesale Qty" />
+                                                </div>
+
+                                            </div>
+                                            <div className="p-6 flex">
+
+                                                <div class="input_container mx-2 ">
+                                                    <label class="input_label">Purchase Price:</label>
+                                                    <input class="input_field w-full" type="number" name="input-name" title="Input title" placeholder="Purchase Price:" />
+                                                </div>
+                                                <div class="input_container mx-2 ">
+                                                    <label class="input_label">GST Rate:</label>
+                                                    <select class="input_field">
                                                         <option value=''>None</option>
                                                         <option value='0'>GST@0</option>
                                                         <option value='0'>IGST@0</option>
@@ -509,36 +509,36 @@ const Items = () => {
                                             <div className="p-6 flex">
 
                                                 <div class="input_container mx-2 ">
-                                                    <label  class="input_label">Opening Qty:</label>
-                                                    <input  class="input_field w-full" type="text" name="input-name" title="Input title" placeholder="Opening Qty" />
+                                                    <label class="input_label">Opening Qty:</label>
+                                                    <input class="input_field w-full" type="text" name="input-name" title="Input title" placeholder="Opening Qty" />
                                                 </div>
                                                 <div class="input_container mx-2 ">
-                                                    <label  class="input_label">At Price :</label>
+                                                    <label class="input_label">At Price :</label>
                                                     <input class="input_field w-full" type="number" name="input-name" title="Input title" placeholder="At Price" />
                                                 </div>
                                                 <div class="input_container mx-2 ">
-                                                    <label  class="input_label">As Of Date :</label>
+                                                    <label class="input_label">As Of Date :</label>
                                                     <input class="input_field w-full" type="date" name="input-name" title="Input title" placeholder="As Of Date :" />
                                                 </div>
                                             </div>
                                             <div className="p-6 flex">
 
                                                 <div class="input_container mx-2 ">
-                                                    <label  class="input_label">Min.StockMaintain:</label>
-                                                    <input  class="input_field w-full" type="text" name="input-name" title="Input title" placeholder="Min.StockMaintain" />
+                                                    <label class="input_label">Min.StockMaintain:</label>
+                                                    <input class="input_field w-full" type="text" name="input-name" title="Input title" placeholder="Min.StockMaintain" />
                                                 </div>
                                                 <div class="input_container mx-2 ">
-                                                    <label  class="input_label">Location :</label>
+                                                    <label class="input_label">Location :</label>
                                                     <input class="input_field w-full" type="number" name="input-name" title="Input title" placeholder="Location" />
                                                 </div>
-                                                
+
                                             </div>
                                         </div>
                                     )}
 
                                     {viewInputs === 'manufacturing' && (
                                         <div>
-                                            
+
                                         </div>
                                     )}
                                 </div>
@@ -546,7 +546,6 @@ const Items = () => {
 
 
 
-                                {/*footer*/}
                                 <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
                                     <button
                                         className="bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
