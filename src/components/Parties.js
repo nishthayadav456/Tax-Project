@@ -2,18 +2,30 @@ import { Fragment } from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 // import OnClickOutside from 'react-onclickoutside';
+import Table from './Table';
+
+
+// Sample data array
+const rowData = [
+    { date: '2022-01-01', categoryName: 'Category 1', type: 'Income', total: 1000, Number: '001', balance: 0 },
+    { date: '2022-01-02', categoryName: 'Category 2', type: 'Expense', total: 500, Number: '002', balance: 500 },
+    // Add more sample data as needed
+];
+
+// Column definitions
+const columnDefs = [
+    { headerName: 'Type', field: 'type' },
+    { headerName: 'Number', field: 'Number' },
+    { headerName: 'Date', field: 'date' },
+    { headerName: 'Total', field: 'total' },
+    { headerName: 'Balance', field: 'balance' },
+    { headerName: 'Category Name', field: 'categoryName' },
+];
+
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
-
-const data = [
-    { type: 'c', number: 23, date: '2024-01-20', total: 1000, balance: 500 },
-    { type: 'A', number: 123, date: '2024-01-20', total: 1000, balance: 500 },
-    { type: 'd', number: 4123, date: '2024-01-20', total: 1000, balance: 500 },
-    { type: 'b', number: 223, date: '2024-01-20', total: 1000, balance: 500 },
-    // Add more data entries as needed
-];
 
 const Parties = () => {
     const [sortedColumn, setSortedColumn] = useState(null);
@@ -29,28 +41,6 @@ const Parties = () => {
     const divRef = useRef(null);
     const searchRef = useRef(null);
 
-
-
-
-    const handleHeaderClick = (column) => {
-        if (sortedColumn === column) {
-            setSortDirection(-sortDirection);
-        } else {
-            setSortedColumn(column);
-            setSortDirection(1);
-        }
-    };
-
-    const sortedData = [...data].sort((a, b) => {
-        const aValue = a[sortedColumn];
-        const bValue = b[sortedColumn];
-
-        if (typeof aValue === 'string') {
-            return sortDirection * aValue.localeCompare(bValue);
-        }
-
-        return sortDirection * (aValue - bValue);
-    });
 
 
     const handleClickOutside = (event) => {
@@ -240,43 +230,8 @@ const Parties = () => {
                             </div>
                         </div>
                         <div className='border shadow-lg m-1 p-2 '>
-                            <div className='flex justify-between my-2'>
-                                <h2>TRANSACTIONS</h2>
-                                <input type="text" className='border-2 p-1' placeholder='Search' />
-                            </div>
                             <div>
-                                <table className="min-w-full bg-white border border-gray-300">
-                                    <thead className='border'>
-                                        <tr>
-                                            <th onClick={() => handleHeaderClick('type')} className="cursor-pointer p-2 border"><div className='flex justify-between items-center'><h2>Type</h2>  <svg class="w-4 h-4 text-gray-800 dark:text-red-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 18">
-                                                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m2.133 2.6 5.856 6.9L8 14l4 3 .011-7.5 5.856-6.9a1 1 0 0 0-.804-1.6H2.937a1 1 0 0 0-.804 1.6Z" />
-                                            </svg></div></th>
-                                            <th onClick={() => handleHeaderClick('number')} className="cursor-pointer p-2 border"><div className='flex justify-between items-center'><h2>Number</h2>  <svg class="w-4 h-4 text-gray-800 dark:text-red-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 18">
-                                                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m2.133 2.6 5.856 6.9L8 14l4 3 .011-7.5 5.856-6.9a1 1 0 0 0-.804-1.6H2.937a1 1 0 0 0-.804 1.6Z" />
-                                            </svg></div></th>
-                                            <th onClick={() => handleHeaderClick('date')} className="cursor-pointer p-2 border"><div className='flex justify-between items-center'><h2>Date</h2>  <svg class="w-4 h-4 text-gray-800 dark:text-red-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 18">
-                                                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m2.133 2.6 5.856 6.9L8 14l4 3 .011-7.5 5.856-6.9a1 1 0 0 0-.804-1.6H2.937a1 1 0 0 0-.804 1.6Z" />
-                                            </svg></div></th>
-                                            <th onClick={() => handleHeaderClick('total')} className="cursor-pointer p-2 border"><div className='flex justify-between items-center'><h2>Total</h2>  <svg class="w-4 h-4 text-gray-800 dark:text-red-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 18">
-                                                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m2.133 2.6 5.856 6.9L8 14l4 3 .011-7.5 5.856-6.9a1 1 0 0 0-.804-1.6H2.937a1 1 0 0 0-.804 1.6Z" />
-                                            </svg></div></th>
-                                            <th onClick={() => handleHeaderClick('balance')} className="cursor-pointer p-2 border"><div className='flex justify-between items-center'><h2>Balance</h2>  <svg class="w-4 h-4 text-gray-800 dark:text-red-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 18">
-                                                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m2.133 2.6 5.856 6.9L8 14l4 3 .011-7.5 5.856-6.9a1 1 0 0 0-.804-1.6H2.937a1 1 0 0 0-.804 1.6Z" />
-                                            </svg></div></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {sortedData.map((row, index) => (
-                                            <tr className='' key={index}>
-                                                <td>{row.type}</td>
-                                                <td>{row.number}</td>
-                                                <td>{row.date}</td>
-                                                <td>{row.total}</td>
-                                                <td>{row.balance}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                                <Table columnDefs={columnDefs} rowData={rowData} />
                             </div>
                         </div>
                     </div>
@@ -340,7 +295,7 @@ const Parties = () => {
                                                 <option value="General">General</option>
                                             </select>
                                         </div>
-                                        <a onClick={()=>setshowAddGroupModal(!showAddGroupModal)} className='border text-xs mt-3 text-white bg-blue-500 font-semibold whitespace-nowrap flex items-center px-2 py-1 rounded'>New Group</a>
+                                        <a onClick={() => setshowAddGroupModal(!showAddGroupModal)} className='border text-xs mt-3 text-white bg-blue-500 font-semibold whitespace-nowrap flex items-center px-2 py-1 rounded'>New Group</a>
                                     </div>
 
                                 </div>
@@ -457,7 +412,7 @@ const Parties = () => {
                                                     <input class="input_field w-full" type="date" name="input-name" title="Input title" placeholder="As Of Date :" />
                                                 </div>
                                             </div>
-                                            
+
 
                                             <div className='p-6'>
                                                 <h2 className='py-2 text-xl'>Credit Limit</h2>
@@ -493,7 +448,11 @@ const Parties = () => {
                                                         <label class="input_label">Field Value</label>
                                                         <input class="input_field w-full" type="text" name="input-name" title="Input title" placeholder="Field Value" value={field.value} onChange={(e) => handleFieldChange(index, 'value', e.target.value)} />
                                                     </div>
-                                                    <button className='text-white bg-red-600 px-2 py-1 rounded' onClick={() => removeField(index)}>Remove</button>
+                                                    <button className='text-white bg-red-600 px-2 py-1 rounded' onClick={() => removeField(index)}>
+                                                    <svg class="w-4 h-4 font-semibold text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
+                                                </svg>
+                                                    </button>
 
                                                 </div>
                                             ))}
@@ -523,7 +482,7 @@ const Parties = () => {
                 </>
             ) : null}
 
-            
+
 
             {showAddGroupModal ? (
                 <>
@@ -552,10 +511,10 @@ const Parties = () => {
                                 </div>
 
                                 <div class="input_container p-6">
-                                                    <label class="input_label">Enter Party Group Name</label>
-                                                    <input class="input_field w-full" type="text" name="input-name" title="Input title" placeholder="Enter Party Group Name" />
-                                                </div>
-                                
+                                    <label class="input_label">Enter Party Group Name</label>
+                                    <input class="input_field w-full" type="text" name="input-name" title="Input title" placeholder="Enter Party Group Name" />
+                                </div>
+
                                 <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
                                     <button
                                         className="bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
