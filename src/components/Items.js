@@ -2,23 +2,34 @@ import { Fragment } from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 // import OnClickOutside from 'react-onclickoutside';
+import Table from './Table';
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
-const data = [
-    { type: 'c', number: 23, date: '2024-01-20', total: 1000, balance: 500 },
-    { type: 'A', number: 123, date: '2024-01-20', total: 1000, balance: 500 },
-    { type: 'd', number: 4123, date: '2024-01-20', total: 1000, balance: 500 },
-    { type: 'b', number: 223, date: '2024-01-20', total: 1000, balance: 500 },
-    // Add more data entries as needed
+
+
+// Sample data array
+const rowData = [
+    { date: '2022-01-01', categoryName: 'Category 1', type: 'Income', total: 1000, Number: '001', balance: 0 },
+    { date: '2022-01-02', categoryName: 'Category 2', type: 'Expense', total: 500, Number: '002', balance: 500 },
+    // Add more sample data as needed
 ];
 
+// Column definitions
+const columnDefs = [
+    { headerName: 'Type', field: 'type' },
+    { headerName: 'Number', field: 'Number' },
+    { headerName: 'Date', field: 'date' },
+    { headerName: 'Total', field: 'total' },
+    { headerName: 'Balance', field: 'balance' },
+    { headerName: 'Category Name', field: 'categoryName' },
+];
+
+
 const Items = () => {
-    const [additionalFields, setAdditionalFields] = useState(false);
-    const [sortedColumn, setSortedColumn] = useState(null);
-    const [sortDirection, setSortDirection] = useState(1);
+
     const [isDivClicked, setDivClicked] = useState(false);
     const [toggle, setToggle] = useState(false);
     const [stock, setStock] = useState(false);
@@ -30,32 +41,18 @@ const Items = () => {
     const [showEditUnitModal, setShowEditUnitModal] = useState(false);
 
     const [tracking, setTracking] = useState(null);
+    const [addRawMaterial, setAddRawMaterial] = useState([{ name: '', quantity: '', price: '', tax: '', amount: '' }]);
+    const [addAdditionalCost, setAddAdditionalCost] = useState([{ name: '', quantity: '', price: '', tax: '', amount: '' }]);
+    const [additionalCostBtn, setAdditionalCostBtn] = useState(false);
+
+    const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+    const [selectedCategoryOptions, setSelectedCategoryOptions] = useState([]);
+    const [showAddCategory, setShowAddCategory] = useState(false);
 
     const divRef = useRef(null);
     const searchRef = useRef(null);
 
 
-
-
-    const handleHeaderClick = (column) => {
-        if (sortedColumn === column) {
-            setSortDirection(-sortDirection);
-        } else {
-            setSortedColumn(column);
-            setSortDirection(1);
-        }
-    };
-
-    const sortedData = [...data].sort((a, b) => {
-        const aValue = a[sortedColumn];
-        const bValue = b[sortedColumn];
-
-        if (typeof aValue === 'string') {
-            return sortDirection * aValue.localeCompare(bValue);
-        }
-
-        return sortDirection * (aValue - bValue);
-    });
 
     //for search bar and logo 
 
@@ -92,6 +89,65 @@ const Items = () => {
 
     const handleViewInputButton = (selectedView) => {
         setViewInputs(selectedView);
+    };
+
+
+    const addRawMaterialFunc = () => {
+        setAddRawMaterial([...addRawMaterial, { name: '', quantity: '', price: '', tax: '', amount: '' }]);
+    };
+    const removeRawMaterial = (index) => {
+        const newItems = [...addRawMaterial];
+        newItems.splice(index, 1);
+        setAddRawMaterial(newItems);
+    };
+
+    const handleRawMaterialChange = (index, key, newValue) => {
+        const newItems = [...addRawMaterial];
+        newItems[index][key] = newValue;
+        setAddRawMaterial(newItems);
+    };
+
+
+
+    const addAditionalCostFunc = () => {
+        setAddAdditionalCost([...addAdditionalCost, { name: '', quantity: '', price: '', tax: '', amount: '' }]);
+    };
+    const removeAdditionalCost = (index) => {
+        const newItems = [...addAdditionalCost];
+        newItems.splice(index, 1);
+        setAddAdditionalCost(newItems);
+    };
+
+    const handleAdditionalCostChange = (index, key, newValue) => {
+        const newItems = [...addAdditionalCost];
+        newItems[index][key] = newValue;
+        setAddAdditionalCost(newItems);
+    };
+
+
+
+
+    const categoryOptions = [
+        { id: 1, label: 'Option 1' },
+        { id: 2, label: 'Option 2' },
+        { id: 3, label: 'Option 3' },
+        { id: 4, label: 'Option 4' },
+        // Add more options as needed
+    ];
+
+    const toggleCategoryDropdown = () => {
+        setIsCategoryOpen(!isCategoryOpen);
+    };
+
+    const handleCategoryCheckboxChange = (option) => {
+        const isSelected = selectedCategoryOptions.includes(option.id);
+        console.log("vaibhav")
+        // console.log(option.id, isSelected)
+        if (isSelected) {
+            setSelectedCategoryOptions(selectedCategoryOptions.filter((id) => id !== option.id));
+        } else {
+            setSelectedCategoryOptions([...selectedCategoryOptions, option.id]);
+        }
     };
 
 
@@ -231,43 +287,8 @@ const Items = () => {
                             </div>
                         </div>
                         <div className='border shadow-lg m-1 p-2 '>
-                            <div className='flex justify-between my-2'>
-                                <h2>TRANSACTIONS</h2>
-                                <input type="text" className='border-2 p-1' placeholder='Search' />
-                            </div>
                             <div>
-                                <table className="min-w-full bg-white border border-gray-300">
-                                    <thead className='border'>
-                                        <tr>
-                                            <th onClick={() => handleHeaderClick('type')} className="cursor-pointer p-2 border"><div className='flex justify-between items-center'><h2>Type</h2>  <svg class="w-4 h-4 text-gray-800 dark:text-red-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 18">
-                                                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m2.133 2.6 5.856 6.9L8 14l4 3 .011-7.5 5.856-6.9a1 1 0 0 0-.804-1.6H2.937a1 1 0 0 0-.804 1.6Z" />
-                                            </svg></div></th>
-                                            <th onClick={() => handleHeaderClick('number')} className="cursor-pointer p-2 border"><div className='flex justify-between items-center'><h2>Number</h2>  <svg class="w-4 h-4 text-gray-800 dark:text-red-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 18">
-                                                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m2.133 2.6 5.856 6.9L8 14l4 3 .011-7.5 5.856-6.9a1 1 0 0 0-.804-1.6H2.937a1 1 0 0 0-.804 1.6Z" />
-                                            </svg></div></th>
-                                            <th onClick={() => handleHeaderClick('date')} className="cursor-pointer p-2 border"><div className='flex justify-between items-center'><h2>Date</h2>  <svg class="w-4 h-4 text-gray-800 dark:text-red-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 18">
-                                                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m2.133 2.6 5.856 6.9L8 14l4 3 .011-7.5 5.856-6.9a1 1 0 0 0-.804-1.6H2.937a1 1 0 0 0-.804 1.6Z" />
-                                            </svg></div></th>
-                                            <th onClick={() => handleHeaderClick('total')} className="cursor-pointer p-2 border"><div className='flex justify-between items-center'><h2>Total</h2>  <svg class="w-4 h-4 text-gray-800 dark:text-red-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 18">
-                                                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m2.133 2.6 5.856 6.9L8 14l4 3 .011-7.5 5.856-6.9a1 1 0 0 0-.804-1.6H2.937a1 1 0 0 0-.804 1.6Z" />
-                                            </svg></div></th>
-                                            <th onClick={() => handleHeaderClick('balance')} className="cursor-pointer p-2 border"><div className='flex justify-between items-center'><h2>Balance</h2>  <svg class="w-4 h-4 text-gray-800 dark:text-red-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 18">
-                                                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m2.133 2.6 5.856 6.9L8 14l4 3 .011-7.5 5.856-6.9a1 1 0 0 0-.804-1.6H2.937a1 1 0 0 0-.804 1.6Z" />
-                                            </svg></div></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {sortedData.map((row, index) => (
-                                            <tr className='' key={index}>
-                                                <td>{row.type}</td>
-                                                <td>{row.number}</td>
-                                                <td>{row.date}</td>
-                                                <td>{row.total}</td>
-                                                <td>{row.balance}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                                <Table columnDefs={columnDefs} rowData={rowData} />
                             </div>
                         </div>
                     </div>
@@ -409,7 +430,42 @@ const Items = () => {
                                                 </div>
                                                 <div class="input_container mx-2 ">
                                                     <label class="input_label">Category :</label>
-                                                    <input class="input_field" type="text" name="input-name" title="Input title" />
+                                                    {/* <input class="input_field" type="text" name="input-name" title="Input title" /> */}
+                                                    <div className="relative inline-block text-left">
+                                                        <div>
+                                                            <span className="">
+                                                                <button
+                                                                    type="button"
+                                                                    className="input_field text-left"
+                                                                    id="options-menu"
+                                                                    aria-haspopup="true"
+                                                                    aria-expanded="true"
+                                                                    onClick={toggleCategoryDropdown}
+                                                                >
+                                                                    Category
+                                                                </button>
+                                                            </span>
+                                                        </div>
+
+                                                        {isCategoryOpen && (
+                                                            <div className="z-50  absolute  mt-2 w-full rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                                                                <button className='text-blue-500 w-full' onClick={() => setShowAddCategory(!showAddCategory)}>+ Add New Category</button>
+                                                                <div className="p-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                                                                    {categoryOptions.map((option) => (
+                                                                        <label key={option.id} className="flex items-center py-2 px-4 cursor-pointer">
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                className="form-checkbox h-5 w-5 text-indigo-600"
+                                                                                checked={selectedCategoryOptions.includes(option.id)}
+                                                                                onChange={() => handleCategoryCheckboxChange(option)}
+                                                                            />
+                                                                            <span className="ml-2  text-gray-700">{option.label}</span>
+                                                                        </label>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                 </div>
 
                                                 <div class="input_container mx-2 ">
@@ -632,6 +688,110 @@ const Items = () => {
                                                     </div>
                                                 </div>
                                             )}
+                                            {viewInputs === 'manufacturing' && (
+                                                <div>
+                                                    <div className='my-3'>
+                                                        <table className="min-w-full bg-white border border-gray-300">
+                                                            <thead className='border'>
+                                                                <tr>
+                                                                    <th className=" p-2 border"><div className='flex justify-between items-center text-xs'><h2>Raw Material</h2></div></th>
+                                                                    <th className=" p-2 border"><div className='flex justify-between items-center text-xs'><h2>Quantity</h2></div></th>
+                                                                    <th className=" p-2 border"><div className='flex justify-between items-center text-xs'><h2>Price/unit</h2></div></th>
+                                                                    <th className=" p-2 border"><div className='flex justify-between items-center text-xs'><h2>Estimated Cost</h2></div></th>
+                                                                    <th className=" p-2 border"><div className='flex justify-between items-center text-xs'><h2>Action</h2></div></th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {addRawMaterial.map((item, index) => (
+
+                                                                    <tr className=''>
+                                                                        <td>
+                                                                            <input className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none " style={{ width: "100%" }} type="text" name="input-name" title="Input title" placeholder="Item Name" value={item.name} onChange={(e) => handleRawMaterialChange(index, 'name', e.target.value)} />
+                                                                        </td>
+
+                                                                        <td>
+                                                                            <input className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none " style={{ width: "100%" }} type="text" name="input-name" title="Input title" placeholder="Quantity" value={item.quantity} onChange={(e) => handleRawMaterialChange(index, 'quantity', e.target.value)} />
+
+                                                                        </td>
+                                                                        <td>
+                                                                            <input className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none " style={{ width: "100%" }} type="text" name="input-name" title="Input title" placeholder="Price" value={item.price} onChange={(e) => handleRawMaterialChange(index, 'price', e.target.value)} />
+                                                                        </td>
+                                                                        <td>
+                                                                            <input className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none " style={{ width: "100%" }} type="text" name="input-name" title="Input title" placeholder="Estimated Cost" value={item.estimatedCost} onChange={(e) => handleRawMaterialChange(index, 'estimatedCost', e.target.value)} />
+
+                                                                        </td>
+                                                                        <td>
+                                                                            <button className='text-white bg-gray-600 p-2 m-2 rounded' onClick={() => removeRawMaterial(index)}>
+                                                                                <svg class="w-4 h-4 font-semibold text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
+                                                                                </svg>
+                                                                            </button>
+                                                                        </td>
+                                                                    </tr>
+                                                                ))}
+
+                                                            </tbody>
+                                                        </table>
+                                                        <div className='flex justify-between items-center'>
+                                                            <button className='text-blue-500 px-2 py-1 rounded m-2' onClick={addRawMaterialFunc}>+ Add Row</button>
+                                                            <input className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none " type="text" name="input-name" title="Input title" placeholder="Total" />
+                                                        </div>
+
+                                                    </div>
+
+                                                    <button className='bg-blue-500 text-white px-2 py-1 rounded ' onClick={() => setAdditionalCostBtn(!additionalCostBtn)} >Additional Costs</button>
+
+                                                    {additionalCostBtn &&
+
+                                                        <div className='my-3'>
+                                                            <table className="min-w-full bg-white border border-gray-300">
+                                                                <thead className='border'>
+                                                                    <tr>
+                                                                        <th className=" p-2 border"><div className='flex justify-between items-center text-xs'><h2>Charges</h2></div></th>
+                                                                        <th className=" p-2 border"><div className='flex justify-between items-center text-xs'><h2>Estimated Cost</h2></div></th>
+                                                                        <th className=" p-2 border"><div className='flex justify-between items-center text-xs'><h2>Acton</h2></div></th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {addAdditionalCost.map((item, index) => (
+
+                                                                        <tr className=''>
+                                                                            <td>
+                                                                                <select className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none " style={{ width: "100%" }} value={item.tax} onChange={(e) => handleAdditionalCostChange(index, 'tax', e.target.value)}>
+                                                                                    <option value=''>None</option>
+                                                                                    <option value='Labour Cost'>Labour Cost</option>
+                                                                                    <option value='Electricity Cost'>Electricity Cost</option>
+                                                                                    <option value='Packaging Cost'>Packaging Cost</option>
+                                                                                    <option value='Logistics Cost'>Logistics Cost</option>
+                                                                                    <option value='Other Charges'>Other Charges</option>
+                                                                                </select>
+                                                                            </td>
+                                                                            <td>
+                                                                                <input className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none " style={{ width: "100%" }} type="text" name="input-name" title="Input title" placeholder="Item Name" value={item.name} onChange={(e) => handleAdditionalCostChange(index, 'name', e.target.value)} />
+                                                                            </td>
+                                                                            <td>
+                                                                                <button className='text-white bg-gray-600 p-2 m-2 rounded' onClick={() => removeAdditionalCost(index)}>
+                                                                                    <svg class="w-4 h-4 font-semibold text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
+                                                                                    </svg>
+                                                                                </button>
+                                                                            </td>
+                                                                        </tr>
+                                                                    ))}
+
+                                                                </tbody>
+                                                            </table>
+                                                            <div className='flex justify-between items-center'>
+                                                                <button className='text-blue-500 px-2 py-1 rounded m-2' onClick={addAditionalCostFunc}>+ Add Row</button>
+                                                            </div>
+                                                        </div>
+
+                                                    }
+
+
+                                                </div>
+                                            )}
+
 
 
                                         </div>
@@ -650,7 +810,42 @@ const Items = () => {
                                                 </div>
                                                 <div class="input_container mx-2 ">
                                                     <label class="input_label">Category :</label>
-                                                    <input class="input_field" type="text" name="input-name" title="Input title" />
+                                                    {/* <input class="input_field" type="text" name="input-name" title="Input title" /> */}
+                                                    <div className="relative inline-block text-left">
+                                                        <div>
+                                                            <span className="">
+                                                                <button
+                                                                    type="button"
+                                                                    className="input_field text-left"
+                                                                    id="options-menu"
+                                                                    aria-haspopup="true"
+                                                                    aria-expanded="true"
+                                                                    onClick={toggleCategoryDropdown}
+                                                                >
+                                                                    Category
+                                                                </button>
+                                                            </span>
+                                                        </div>
+
+                                                        {isCategoryOpen && (
+                                                            <div className="z-50  absolute  mt-2 w-full rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                                                                <button className='text-blue-500 w-full' onClick={() => setShowAddCategory(!showAddCategory)}>+ Add New Category</button>
+                                                                <div className="p-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                                                                    {categoryOptions.map((option) => (
+                                                                        <label key={option.id} className="flex items-center py-2 px-4 cursor-pointer">
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                className="form-checkbox h-5 w-5 text-indigo-600"
+                                                                                checked={selectedCategoryOptions.includes(option.id)}
+                                                                                onChange={() => handleCategoryCheckboxChange(option)}
+                                                                            />
+                                                                            <span className="ml-2  text-gray-700">{option.label}</span>
+                                                                        </label>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                 </div>
 
                                                 <div class="input_container mx-2 ">
@@ -715,7 +910,7 @@ const Items = () => {
                                                         </div>
                                                     </div>
                                                     <div className='border my-8 bg-gray-100'>
-                                                        
+
                                                         <div className='p-6'>
                                                             <h2 className=' text-lg font-semibold'>Sale Price</h2>
                                                             <div className='flex'>
@@ -907,6 +1102,56 @@ const Items = () => {
                                         className="bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                                         type="button"
                                         onClick={() => setShowEditUnitModal(false)}
+                                    >
+                                        Save Changes
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
+                </>
+            ) : null}
+
+            {showAddCategory ? (
+                <>
+                    <div
+                        className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none"
+                    >
+                        <div className="relative w-auto my-6 mx-auto">
+                            {/*content*/}
+                            <div className="p-3 border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                                {/*header*/}
+                                <div className="flex items-start justify-between p-5 border-blueGray-200 rounded-t">
+                                    <div className='flex'>
+                                        <h3 className="text-xl font-semibold mx-2">
+                                            Edit Unit
+                                        </h3>
+
+                                    </div>
+                                    <button
+                                        className="p-1 ml-auto  border-0 text-black  float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
+                                        onClick={() => setShowAddCategory(false)}
+                                    >
+                                        <span className=" text-black  h-6 w-6 text-2xl block outline-none focus:outline-none">
+                                            ×
+                                        </span>
+                                    </button>
+                                </div>
+                                
+                                <div>
+                                <input className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none " type="text" name="input-name" title="Input title" placeholder="Add Category" />
+
+                                </div>
+
+
+
+                                {/*footer*/}
+                                <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
+                                    <button
+                                        className="bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                                        type="button"
+                                        onClick={() => setShowAddCategory(false)}
                                     >
                                         Save Changes
                                     </button>

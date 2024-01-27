@@ -3,8 +3,11 @@ import React, { useState } from 'react';
 // import 'ag-grid-community/styles/ag-grid.css';
 // import 'ag-grid-community/styles/ag-theme-alpine.css';
 import Table from '../Table';
-
-const PaymentIn = () => {
+import { isDisabled } from '@testing-library/user-event/dist/utils';
+import { type } from '@testing-library/user-event/dist/type';
+const PaymentOut = () => {
+    const [gridApi, setGridApi] = useState(null);
+    const [searchText, setSearchText] = useState('');
     const [showAddPaymentIn, setShowAddPaymentIn] = useState(false);
     const [addPaymentType, setAddPaymentType] = useState([{ paymentType: '', referenceNo: '', amount: '' }]);
     const [showAddBankAcModal, setShowAddBankAcModal] = useState(false);
@@ -64,7 +67,7 @@ const PaymentIn = () => {
     return (
         <>
             <div>
-                <div className='m-4 py-3 flex justify-between shadow'>
+                <div className='m-6 flex justify-between'>
                     <div className='flex items-center '>
                         <select className='text-2xl font-semibold outline-none duration-150 active:bg-gray-100 mx-3'>
                             <option className='text-lg' value="This Month">This Month</option>
@@ -100,7 +103,7 @@ const PaymentIn = () => {
                         </div>
                     </div>
                 </div>
-                <div className='m-4 border shadow p-2'>
+                <div className='p-6'>
                     <div className='flex justify-end my-2'>
                         <div className='flex items-center justify-center rounded-lg bg-blue-500 text-white font-bold text-sm px-2 py-1 cursor-pointer duration-150 hover:bg-blue-600' onClick={() => setShowAddPaymentIn(!showAddPaymentIn)}>
                             {/* <span className='text-blue-500 bg-white rounded-full text-lg p-0'>+</span> */}
@@ -119,12 +122,12 @@ const PaymentIn = () => {
                     >
                         <div className="relative w-auto my-6 mx-auto">
                             {/*content*/}
-                            <div className="p-3 border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                            <div className="p-6 border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                                 {/*header*/}
                                 <div className="flex items-start justify-between p-5 border-blueGray-200 rounded-t">
                                     <div className='flex'>
                                         <h3 className="text-xl font-semibold mx-2">
-                                            Payment-In
+                                            Payment-Out
                                         </h3>
 
                                     </div>
@@ -141,30 +144,30 @@ const PaymentIn = () => {
                                     <div>
                                         <div className='input_container '>
                                             <label className='input_label'>Party</label>
-                                            <select className='input_field ' style={{ width: "150px" }} >
+                                            <select className='border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none ' style={{ width: "150px" }} >
                                                 <option value="">none</option>
                                                 <option value="party1">party1</option>
                                             </select>
                                         </div>
                                     </div>
                                     <div>
-                                        <div className='input_container'>
+                                        <div className='flex justify-between my-2'>
                                             <label className='input_label'>Receipt No</label>
-                                            <input type="number" className='input_field' />
+                                            <input type="number" className='border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none mx-2' />
                                         </div>
-                                        <div className='input_container'>
+                                        <div className='flex justify-between  my-2'>
                                             <label className='input_label'>Date</label>
-                                            <input type="date" className='input_field' />
+                                            <input type="date" className='border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none mx-2' />
                                         </div>
                                     </div>
                                 </div>
-                                <div className='flex justify-between '>
-                                    <div className='mr-24 border rounded-lg p-4'>
+                                <div className='flex justify-between my-3'>
+                                    <div className='mr-64 border rounded-lg p-4'>
                                         {addPaymentType.map((field, index) => (
                                             <div className='flex justify-center items-center' key={index}>
                                                 <div className="input_container mx-2 ">
                                                     <label className="input_label">Payment Type</label>
-                                                    <select className="input_field w-full" type="text" name="input-name" placeholder="Payment Type" value={field.paymentType} onChange={(e) => handlePaymentTypeChange(index, 'paymentType', e.target.value)} >
+                                                    <select className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none mx-2" type="text" name="input-name" placeholder="Payment Type" value={field.paymentType} onChange={(e) => handlePaymentTypeChange(index, 'paymentType', e.target.value)} >
                                                         <option value=""></option>
                                                         <option value="Cash">Cash</option>
                                                         <option value="Cheque">Cheque</option>
@@ -173,12 +176,12 @@ const PaymentIn = () => {
                                                 {field.paymentType === 'Cheque' &&
                                                     <div className="input_container mx-2 ">
                                                         <label className="input_label">Reference No</label>
-                                                        <input className="input_field w-full" type="text" name="input-name" placeholder="Amount" value={field.referenceNo} onChange={(e) => handlePaymentTypeChange(index, 'referenceNo', e.target.value)} />
+                                                        <input className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none mx-2" type="text" name="input-name" placeholder="Amount" value={field.referenceNo} onChange={(e) => handlePaymentTypeChange(index, 'referenceNo', e.target.value)} />
                                                     </div>
                                                 }
                                                 <div className="input_container mx-2 ">
                                                     <label className="input_label">Amount</label>
-                                                    <input className="input_field w-full" type="text" name="input-name" placeholder="Amount" value={field.amount} onChange={(e) => handlePaymentTypeChange(index, 'amount', e.target.value)} />
+                                                    <input className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none mx-2" type="text" name="input-name" placeholder="Amount" value={field.amount} onChange={(e) => handlePaymentTypeChange(index, 'amount', e.target.value)} />
                                                 </div>
                                                 <button className='text-white bg-red-600 px-2 py-1 rounded' onClick={() => removePaymentFunc(index)}>
                                                 <svg class="w-4 h-4 font-semibold text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -188,25 +191,20 @@ const PaymentIn = () => {
 
                                             </div>
                                         ))}
-                                        <button className='text-blue-500 font-bold text-sm px-3 py-2' onClick={addPaymentFunc}>Add Field</button>
+                                        <button className='text-blue-500 font-bold text-sm px-3 py-2 ' onClick={addPaymentFunc}>Add Field</button>
                                     </div>
 
 
-                                    <div>
-                                        <div className="input_container mx-2 ">
-                                            <label className="input_label">Received</label>
-                                            <input className="input_field w-full" type="number" placeholder="Amount" />
-                                        </div>
-                                    </div>
+                                    
                                 </div>
 
                                 <div className="relative p-6 flex">
                                     <button
-                                        className="text-blue-500 font-bold text-sm px-3 py-2 "
+                                        className="bg-gray-500 text-white active:bg-gray-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                                         type="button"
                                         onClick={() => setShowAddBankAcModal(!showAddBankAcModal)}
                                     >
-                                        Add Bank A/C
+                                        Edit Unit
                                     </button>
                                 </div>
                                 <div className='flex my-3'>
@@ -348,4 +346,4 @@ const PaymentIn = () => {
         </>
     );
 };
-export default PaymentIn
+export default PaymentOut
