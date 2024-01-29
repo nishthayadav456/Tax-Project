@@ -1,39 +1,46 @@
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import axios from "axios";
-import Table from './Table';
 // import OnClickOutside from 'react-onclickoutside';
+import axios from "axios";
+
+import Table from "./Table";
+
+// Sample data array
 const rowData = [
-  { date: '2022-01-01', categoryName: 'Category 1', type: 'Income', total: 1000, Number: '001', balance: 0 },
-  { date: '2022-01-02', categoryName: 'Category 2', type: 'Expense', total: 500, Number: '002', balance: 500 },
+  {
+    date: "2022-01-01",
+    categoryName: "Category 1",
+    type: "Income",
+    total: 1000,
+    Number: "001",
+    balance: 0,
+  },
+  {
+    date: "2022-01-02",
+    categoryName: "Category 2",
+    type: "Expense",
+    total: 500,
+    Number: "002",
+    balance: 500,
+  },
   // Add more sample data as needed
 ];
 
 // Column definitions
 const columnDefs = [
-  { headerName: 'Type', field: 'type' },
-  { headerName: 'Number', field: 'Number' },
-  { headerName: 'Date', field: 'date' },
-  { headerName: 'Total', field: 'total' },
-  { headerName: 'Balance', field: 'balance' },
-  { headerName: 'Category Name', field: 'categoryName' },
+  { headerName: "Type", field: "type" },
+  { headerName: "Number", field: "Number" },
+  { headerName: "Date", field: "date" },
+  { headerName: "Total", field: "total" },
+  { headerName: "Balance", field: "balance" },
 ];
+
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-const data = [
-  { type: "c", number: 23, date: "2024-01-20", total: 1000, balance: 500 },
-  { type: "A", number: 123, date: "2024-01-20", total: 1000, balance: 500 },
-  { type: "d", number: 4123, date: "2024-01-20", total: 1000, balance: 500 },
-  { type: "b", number: 223, date: "2024-01-20", total: 1000, balance: 500 },
-  // Add more data entries as needed
-];
-
 const Parties = () => {
-  const [sortedColumn, setSortedColumn] = useState(null);
-  const [sortDirection, setSortDirection] = useState(1);
   const [isDivClicked, setDivClicked] = useState(false);
   const [showAddPartyModal, setshowAddPartyModal] = useState(false);
   const [showAddGroupModal, setshowAddGroupModal] = useState(false);
@@ -41,9 +48,12 @@ const Parties = () => {
   const [shippingAddress, setShippingAddress] = useState(false);
   const [creditLimit, setCreditLimit] = useState(false);
   const [fields, setFields] = useState([{ name: "", value: "" }]);
-  const divRef = useRef(null);
-  const searchRef = useRef(null);
-  
+
+  const [partydata, setPartyData] = useState([]);
+  const [selectedPartyData, setSelectedPartyData] = useState([]);
+
+  const [partyGroups, setPartyGroups] = useState([]);
+
   const [data1, setData1] = useState({
     partyName: "",
     gstNo: "",
@@ -55,26 +65,26 @@ const Parties = () => {
     shippingAddress: "",
     openingBalance: "",
     email: "",
-    creditLimit:"",
     asOfDate: "",
     additionalField: [{}],
   });
 
+  const divRef = useRef(null);
+  const searchRef = useRef(null);
+
   const changeHandle = (event) => {
     setData1({ ...data1, [event.target.name]: event.target.value });
   };
- 
 
-
-  
   const handleClick = async () => {
     try {
       const token = localStorage.getItem("token");
       console.log("Token:", token);
-  
+
       const requestData = {
         partyName: data1.partyName,
         gstNo: data1.gstNo,
+        gstinNumber: data1.gstinNumber,
         phoneNumber: data1.phoneNumber,
         partyGroup: data1.partyGroup,
         gstType: data1.gstType,
@@ -84,51 +94,28 @@ const Parties = () => {
         openingBalance: data1.openingBalance,
         email: data1.email,
         asOfDate: data1.asOfDate,
-        creditLimit:data1.creditLimit,
         additionalField: data1.additionalField,
       };
-      console.log("token",token);
-      
+      console.log("token", token);
+
       const headers = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       };
-  
+
       const response = await axios.post(
         "https://ca-backend-api.onrender.com/65b0d66ab97a739aba4e508f/party",
         requestData,
-        {headers}
-        
+        { headers }
       );
-  
-      console.log(response.data.result);
-      setData1(response.data.result);
+
+      console.log("post", requestData, response.data);
+      setData1(response.data.party);
       localStorage.setItem("token", response.data.result.token);
-    } 
-    catch (error) {
+    } catch (error) {
       console.error(error.message);
     }
   };
-
-  const handleHeaderClick = (column) => {
-    if (sortedColumn === column) {
-      setSortDirection(-sortDirection);
-    } else {
-      setSortedColumn(column);
-      setSortDirection(1);
-    }
-  };
-
-  const sortedData = [...data].sort((a, b) => {
-    const aValue = a[sortedColumn];
-    const bValue = b[sortedColumn];
-
-    if (typeof aValue === "string") {
-      return sortDirection * aValue.localeCompare(bValue);
-    }
-
-    return sortDirection * (aValue - bValue);
-  });
 
   const handleClickOutside = (event) => {
     if (
@@ -167,27 +154,37 @@ const Parties = () => {
     const newFields = [...fields];
     newFields[index][key] = newValue;
     setFields(newFields);
-  
-
   };
- 
- 
-  
-  const [partydata,setPartyData] = useState();
-  useEffect(()=>{
-    const token = localStorage.getItem("token");
-    console.log("Token:", token);
-    const headers = {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    };
-      axios.get("https://ca-backend-api.onrender.com/65b0d66ab97a739aba4e508f/party/getAll",{headers})
-      .then((res)=>setPartyData(res.data.data[res.data.data.length-1]))
-      .catch((err)=>console.log(err))
-  },[])
-  // console.log(partydata)
-  
-  const [partyGroups, setPartyGroups] = useState([]);
+
+  const fetchData = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      console.log("Token:", token);
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      };
+      const getDataResponse = await axios.get(
+        "https://ca-backend-api.onrender.com/65b0d66ab97a739aba4e508f/party/getAll",
+        { headers }
+      );
+
+      setPartyData(getDataResponse.data.data);
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    console.log("partyData", partydata);
+  }, [partydata, setPartyData]);
+
+
+  //Enter party group
   useEffect(() => {
     const token = localStorage.getItem("token");
     const firmId = "65b0d66ab97a739aba4e508f"; // Replace with your actual firmId
@@ -198,15 +195,18 @@ const Parties = () => {
 
     // Fetch party groups
     axios
-      .get(`https://ca-backend-api.onrender.com/${firmId}/party/allPartyGroup`, {
-        headers,
-      })
+      .get(
+        `https://ca-backend-api.onrender.com/${firmId}/party/allPartyGroup`,
+        {
+          headers,
+        }
+      )
       .then((res) => setPartyGroups(res.data.result))
-      .catch((err) => console.log(err));
+      .catch((err) => console.log("error in get groups ", err));
+    console.log("partyGroups", partyGroups);
   }, []);
 
-
-  const handleClick1 = () => {
+  const handlePartyGroup = () => {
     const token = localStorage.getItem("token");
     const firmId = "65b0d66ab97a739aba4e508f"; // Replace with your actual firmId
     const headers = {
@@ -215,23 +215,27 @@ const Parties = () => {
     };
 
     axios
-    .post(
-      `https://ca-backend-api.onrender.com/${firmId}/insertPartyGroup`,
-      { partyGroup: data1.partyGroup },
-      { headers }
-    )
-    .then((res) => {
-      console.log("Response from server:", res);
-      // After saving changes, update the party groups state
-      // setPartyGroups([...partyGroups, data1.partyGroup]);
-      setPartyGroups((prevPartyGroups) => [...prevPartyGroups, data1.partyGroup]);
-      // Reset the input field value
-      setData1({ ...data1, partyGroup: "" });
-    })
-    .catch((error) => {
-      console.error(error.message);
-    });
-};
+      .post(
+        `https://ca-backend-api.onrender.com/${firmId}/insertPartyGroup`,
+        { partyGroup: data1.partyGroup },
+        { headers }
+      )
+      .then((res) => {
+        console.log("Response from server:", res);
+        // After saving changes, update the party groups state
+        // setPartyGroups([...partyGroups, data1.partyGroup]);
+        setPartyGroups((prevPartyGroups) => [
+          ...prevPartyGroups,
+          data1.partyGroup,
+        ]);
+        // Reset the input field value
+        setData1({ ...data1, partyGroup: "" });
+      })
+      .catch((error) => {
+        console.log("error in Post");
+        console.error(error.message);
+      });
+  };
 
   return (
     <>
@@ -240,7 +244,7 @@ const Parties = () => {
           <h2 className="text-xl">Name</h2>
         </div>
         <div className="flex h-full">
-          <div className="w-1/4 border shadow-lg m-1">
+          <div className="w-1/4 border shadow-lg m-1 overflow-auto">
             <div className="flex items-center justify-around shadow m-2 p-2">
               <div className="p-2 rounded-full bg-red-300">
                 <svg
@@ -322,7 +326,7 @@ const Parties = () => {
 
               <div
                 className="flex text-white"
-                style={{ display: isDivClicked ? "none" : "flex" }}y
+                style={{ display: isDivClicked ? "none" : "flex" }}
               >
                 <div
                   onClick={() => setshowAddPartyModal(!showAddPartyModal)}
@@ -424,54 +428,69 @@ const Parties = () => {
                 </svg>
               </div>
               <div className="p-2 hover:bg-gray-300 w-full text-end">
-                .Amount 
+                .Amount
               </div>
             </div>
+
             <div>
               <div>
-                <div className="flex p-2 justify-between text-gray-500 hover:bg-gray-200 duration-150">
-                  <div>{partydata?.partyName}</div>
-                  <div>{partydata?.openingBalance}</div>
-                </div>
+                {partydata?.map((e) => (
+                  <div
+                    className="flex p-2 justify-between text-gray-500 hover:bg-gray-200 duration-150"
+                    onClick={() => setSelectedPartyData(e)}
+                  >
+                    <div>{e.partyName}</div>
+                    <div>{e.openingBalance}</div>
+                  </div>
+                ))}
               </div>
-            </div>
+              </div>
+
           </div>
           <div className="w-3/4 ">
             <div className="border shadow-lg m-1 p-2">
               <div>
-                <div>{partydata?.partyName}</div>
+                <div>{selectedPartyData?.partyName}</div>
               </div>
               <div className="text-sm">
                 <div className="flex justify-between my-2">
                   <h2>
-                    Phone: <span>{partydata?.phoneNumber}</span>
+                    Phone: <span>{selectedPartyData?.phoneNumber}</span>
                   </h2>
                   <h2>
-                    Address :<span className="text-blue-500">{partydata?.billingAddress}</span>
+                    Address:{" "}
+                    <span className="text-blue-500">
+                      {selectedPartyData?.billingAddress}
+                    </span>
                   </h2>
                 </div>
                 <div className="flex justify-between my-2">
                   <h2>
-                    Email: <span className="text-blue-500">{partydata?.email}</span>
+                    Email:{" "}
+                    <span className="text-blue-500">
+                      {selectedPartyData?.email}
+                    </span>
                   </h2>
                   <h2>
-                    GSTIN :<span className="text-blue-500">{partydata?.gstNo}</span>
+                    GSTIN:{" "}
+                    <span className="text-blue-500">
+                      {selectedPartyData?.gstNo}
+                    </span>
                   </h2>
                 </div>
                 <div className="flex justify-between my-2">
                   <h2>
                     No Credit card Limit Set:{" "}
-                    <span className="text-blue-500">Set Credit card</span>
+                    <span className="text-blue-500">Set Creadit card</span>
                   </h2>
                 </div>
               </div>
             </div>
-            <div className='border shadow-lg m-1 p-2 '>
-                            <div>
-                                <Table columnDefs={columnDefs} rowData={rowData} />
-                            </div>
-                        </div>
-           
+            <div className="border shadow-lg m-1 p-2 ">
+              <div>
+                <Table columnDefs={columnDefs} rowData={rowData} />
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -515,7 +534,7 @@ const Parties = () => {
                       <label class="input_label">GSTIN</label>
                       <input
                         class="input_field w-full"
-                        type="text"
+                        type="number"
                         name="gstNo"
                         title="Inpit title"
                         placeholder="GSTIN"
@@ -545,12 +564,9 @@ const Parties = () => {
                         name="partyGroup"
                         id=""
                         value={data1.partyGroup}
-                      //  onChange={changeHandle}
+                        onChange={changeHandle}
                       >
                         <option value="General">General</option>
-                        <option value="Mobile">Mobile</option>
-                        {data1.partyGroup && <option value={data1.partyGroup}>{data1.partyGroup}</option>}
-                       
                       </select>
                     </div>
                     <a
@@ -598,14 +614,17 @@ const Parties = () => {
                       <div className="p-6 flex">
                         <div class="input_container mx-2 ">
                           <label class="input_label">GST Type</label>
-                          <select class="input_field"name="gstType"
+                          <select
+                            class="input_field"
+                            name="gstType"
                             value={data1.gstType}
-                            onChange={changeHandle} >
-                            <option value="Unregistered/Consumer">Unregistered/Consumer</option>
-                            <option value=" Registered Business - Regular">
+                            onChange={changeHandle}
+                          >
+                            <option value="">Unregistered/Consumer</option>
+                            <option value="">
                               Registered Business - Regular
                             </option>
-                            <option value="Registered Business - Composition">
+                            <option value="">
                               Registered Business - Composition
                             </option>
                           </select>
@@ -760,7 +779,7 @@ const Parties = () => {
                             name="asOfDate"
                             title="Input title"
                             placeholder="As Of Date :"
-                            value={data1.asOfDate}
+                            value={data1.asOfDater}
                             onChange={changeHandle}
                           />
                         </div>
@@ -827,9 +846,12 @@ const Parties = () => {
                               title={`Input title ${index}`}
                               placeholder="Field Name"
                               value={field.name || ""}
-                              onChange={(e) =>{
-                               
-                                handleFieldChange(index, "name", e.target.value)
+                              onChange={(e) => {
+                                handleFieldChange(
+                                  index,
+                                  "name",
+                                  e.target.value
+                                );
                               }}
                             />
                           </div>
@@ -842,13 +864,12 @@ const Parties = () => {
                               title={`Input title ${index}`}
                               placeholder="Field Value"
                               value={field.value || ""}
-                              onChange={(e) =>{
-                                
+                              onChange={(e) => {
                                 handleFieldChange(
                                   index,
                                   "value",
                                   e.target.value
-                                )
+                                );
                               }}
                             />
                           </div>
@@ -917,7 +938,8 @@ const Parties = () => {
                     type="text"
                     name="partyGroup"
                     title="Input title"
-                    placeholder="Enter Party Group Name"  value={data1.partyGroup}
+                    placeholder="Enter Party Group Name"
+                    value={data1.partyGroup}
                     onChange={changeHandle}
                   />
                 </div>
@@ -927,8 +949,9 @@ const Parties = () => {
                     className="bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                     type="button"
                     onClick={() => {
-                      handleClick1()
-                      setshowAddGroupModal(false)}}
+                      handlePartyGroup();
+                      setshowAddGroupModal(false);
+                    }}
                   >
                     Save Changes
                   </button>

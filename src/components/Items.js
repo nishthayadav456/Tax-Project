@@ -63,6 +63,9 @@ const Items = () => {
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [selectedCategoryOptions, setSelectedCategoryOptions] = useState([]);
   const [showAddCategory, setShowAddCategory] = useState(false);
+  const [itemdata, setitemData] = useState([]);
+  const [selectedPartyData, setSelectedPartyData] = useState([]);
+
   const [data1, setData1] = useState({
   category: "",
   itemName: "",
@@ -129,8 +132,8 @@ const Items = () => {
         },
         wholessalePrice: {
           wholesalePriceWithoutTax: data1.wholessalePrice[0].wholesalePriceWithoutTax,
-          wholesalePriceWithTax: data1.wholessalePrice[0].wholesalePriceWithTax,
-          minimumWholesaleQty: data1.wholessalePrice[0].minimumWholesaleQty,
+          wholesalePriceWithTax: data1. wholessalePrice[0].wholesalePriceWithTax,
+          minimumWholesaleQty: data1. wholessalePrice[0].minimumWholesaleQty,
         },
         purchasePrice: {
           purchasePriceWithTax: data1.purchasePrice[0].purchasePriceWithTax,
@@ -159,8 +162,8 @@ const Items = () => {
         { headers }
       );
 
-      console.log(response.data.result);
-      setData1(...response.data.result);
+      console.log("post", requestData, response.data);
+      setData1(response.data.result);
       localStorage.setItem("token", response.data.result.token);
     } catch (error) {
       console.error(error.message);
@@ -236,19 +239,33 @@ const Items = () => {
     setAddAdditionalCost(newItems);
   };
 
-  const [itemdata, setitemData] = useState({});
-  useEffect(()=>{
-    const token = localStorage.getItem("token");
-    console.log("Token:", token);
-    const headers = {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    };
-      axios.get("https://ca-backend-api.onrender.com/65b6812c2f4f0b676b773a86/item/allItem",{headers})
-      .then((res)=>setitemData(res.data.data[res.data.data.length-1]))
-      .catch((err)=>console.log(err))
-  },[])
-  // console.log(itemdata)
+ 
+   const fetchData = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      console.log("Token:", token);
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      };
+      const getDataResponse = await axios.get(
+        "https://ca-backend-api.onrender.com/65b76ea37c61605c538a82c5/item/allItem",
+        { headers }
+      );
+
+      setitemData(getDataResponse.data.data);
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    console.log("itemdata", itemdata);
+  }, [itemdata, setitemData]);
 
   const categoryOptions = [
     { id: 1, label: "Option 1" },
@@ -431,19 +448,29 @@ const Items = () => {
                 .Amount
               </div>
             </div>
+
+
             <div>
               <div>
-                <div className="flex p-2 justify-between text-gray-500 hover:bg-gray-200 duration-150">
-                  <div>{itemdata?.itemName}</div>
-                  <div>0.00</div>
-                </div>
+                {itemdata?.map((e) => (
+                  <div
+                    className="flex p-2 justify-between text-gray-500 hover:bg-gray-200 duration-150"
+                    onClick={() => setSelectedPartyData(e)}
+                  >
+                    <div>{e.itemName}</div>
+                    <div>{e.mrp}</div>
+                  </div>
+                ))}
               </div>
-            </div>
+              </div>
+
+
           </div>
+
           <div className="w-3/4 ">
             <div className="border shadow-lg m-1 p-2">
               <div className="flex justify-between my-2">
-                <div>{itemdata?.itemName}</div>
+                <div>{selectedPartyData?.itemName}</div>
                 <div
                   className="flex items-center rounded-lg bg-blue-500 text-white font-bold text-sm px-2 py-1 cursor-pointer duration-150 hover:bg-blue-600"
                   onClick={handleAdjustModelButtonClick}
@@ -473,14 +500,14 @@ const Items = () => {
                   <h2>
                     SALE PRICE:{" "}
                     <span className="text-green-500">
-                      {itemdata?.salePrice}{" "}
+                      {selectedPartyData?.salePrice}{" "}
                     </span>
                     (excl)
                   </h2>
                   <h2>
                     STOCK QUANTITY{" "}
                     <span className="text-blue-500">
-                      {itemdata?.openingQuantity}
+                      {itemdata?.selectedPartyData}
                     </span>
                   </h2>
                 </div>
@@ -489,7 +516,7 @@ const Items = () => {
                     PURCHASE PRICE:{" "}
                     <span className="text-green-500">
                       {" "}
-                      {itemdata?.purchasePrice}{" "}
+                      {itemdata?.selectedPartyData}{" "}
                     </span>
                     (excl)
                   </h2>
