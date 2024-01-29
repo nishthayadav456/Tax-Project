@@ -1,7 +1,7 @@
 import React, { useState} from "react";
 import axios from "axios";
 
-const MyCompany = ({ showModal, setShowModal }) => {
+const MyCompany = ({ showModal, setShowModal ,save, setIssave}) => {
   const [data, setData] = useState({
     companyLogo: null,
     companyName: "",
@@ -59,13 +59,13 @@ const MyCompany = ({ showModal, setShowModal }) => {
         formData,
         { headers }
       );
-  if(response) alert("Company registered sucessfully")
+  if(response) alert("Company Registered sucessfully!!")
   
   
- 
+      setIssave(true)
       setShowModal(false);
       setData(response.data.result);
-      localStorage.setItem("token", response.data.result.token);
+      // localStorage.setItem("token", response.data.result.token);
     } catch (error) {
       console.error(error.message);
     }
@@ -284,10 +284,20 @@ const MyCompany = ({ showModal, setShowModal }) => {
                           value={data.businessCategory}
                           onChange={changeHandle}
                         >
-                          <option value="">None</option>
-                          <option value="Phone">Phone</option>
-                          <option value="Laptop">Laptop</option>
-                          <option value="PC">PC</option>
+                          <option value="Renting & Leasing">Renting & Leasing</option>
+                          <option value="Accounting & CA">Accounting & CA</option>
+                          <option value="Interior Designer">Interior Designer</option>
+                          <option value="Automobiles/ Auto parts">Automobiles/ Auto parts</option>
+                          <option value="Salon & Spa">Salon & Spa</option>
+                          <option value="Liquor Store">Liquor Store</option>
+                          <option value="Book / Stationary store">Book / Stationary store</option>
+                          <option value="Construction Materials & Equipment">Construction Materials & Equipment</option>
+                          <option value="Repairing/ Plumbing/ Electrician">Repairing/ Plumbing/ Electrician</option>
+                          <option value="Chemicals & Fertilizers">Chemicals & Fertilizers</option>
+                          <option value="Computer Equipments & Softwares">Computer Equipments & Softwares</option>
+                          <option value="Electrical & Electronics Equipments">Electrical & Electronics Equipments</option>
+                          <option value="Fashion Accessory/ Cosmetics">Fashion Accessory/ Cosmetics</option>
+                          <option value="Tailoring/ Boutique">Tailoring/ Boutique</option>
                         </select>
                       </div>
                       <div className="input_container">

@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
 
-const Estimate = () => {
+const SalesOrder = () => {
     const [isSelectPartyOpen, setIsSelectPartyOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [showAddSerialNoModal, setShowAddSerialNoModal] = useState(false);
     const [addItems, setAddItems] = useState([{ name: '', quantity: '', price: '', tax: '', amount: '' }]);
     const [inputSerialNumber, setInputSerialNumber] = useState('');
     const [serialNumbers, setSerialNumbers] = useState([]);
+    const [addPaymentType, setAddPaymentType] = useState([{ paymentType: '', referenceNo: '', amount: '' }]);
 
     const toggleSelectPartyDropdown = () => {
         setIsSelectPartyOpen(!isSelectPartyOpen);
@@ -24,7 +25,7 @@ const Estimate = () => {
 
 
     const addItemFunc = () => {
-        setAddItems([...addItems, { name: '', quantity: '', price: '', tax: '', amount: '' }]);
+        setAddItems([...addItems, { name: '', Description:'', BatchNo:'',ModelNo:'', EXPDate:'', MFGDate:'',MRP:'',Size:'', quantity: '', price: '', tax: '', amount: '' }]);
     };
     const removeItem = (index) => {
         const newItems = [...addItems];
@@ -36,6 +37,8 @@ const Estimate = () => {
         const newItems = [...addItems];
         newItems[index][key] = newValue;
         setAddItems(newItems);
+        console.log(addItems)
+
     };
     const handleSerialNumberChange = (event) => {
         setInputSerialNumber(event.target.value);
@@ -55,12 +58,34 @@ const Estimate = () => {
         setSerialNumbers(updatedNumbers);
     };
 
+
+
+    const addPaymentFunc = () => {
+        if (addPaymentType.length < 4) {
+            setAddPaymentType([...addPaymentType, { paymentType: '', referenceNo: '', amount: '' }]);
+        }
+    };
+    const removePaymentFunc = (index) => {
+        const newPayment = [...addPaymentType];
+        newPayment.splice(index, 1);
+        setAddPaymentType(newPayment);
+    };
+
+    const handlePaymentTypeChange = (index, key, newValue) => {
+        const newPayment = [...addPaymentType];
+        newPayment[index][key] = newValue;
+        setAddPaymentType(newPayment);
+        console.log(newPayment)
+    };
+
+
+
     return (
         <>
-            <h2 className='text-xl font-bold my-3 mx-6'>Estimate/Quotation</h2>
+            <h2 className='text-xl font-bold my-3 mx-6'>Sale Order</h2>
             <div className='p-6'>
                 <div className='flex justify-between'>
-                    <div class="input_container mx-2 ">
+                    <div className="mx-2 flex justify-center items-start" >
                         <div className="relative group" style={{ width: "15rem" }}>
                             <button
                                 id="dropdown-button"
@@ -97,16 +122,22 @@ const Estimate = () => {
                                 ))}
                             </div>
                         </div>
+                        <input className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none mx-2" type="text" name="input-name" title="Input title" placeholder="Phone Number" />
+
                     </div>
                     <div className=''>
                         <div class="input_container">
-                            <label class="input_label">Ref No</label>
-                            <input class="input_field" type="number" name="input-name" placeholder="Ref no" />
+                            <label class="input_label">Order No</label>
+                            <input class="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none mx-2" type="number" name="input-name" placeholder="Ref no" />
 
                         </div>
-                        <div class="input_container ">
-                            <label class="input_label">Invoice Date</label>
-                            <input class="input_field" type="date" name="input-name" placeholder="Invoice Date" />
+                        <div class="flex justify-between items-center my-2">
+                            <label class="input_label">Order Date</label>
+                            <input class="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none mx-2" type="date" name="input-name" placeholder="Invoice Date" />
+                        </div>
+                        <div class="flex justify-between items-center my-2">
+                            <label class="input_label">Due Date</label>
+                            <input class="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none mx-2" type="date" name="input-name" placeholder="Invoice Date" />
                         </div>
                     </div>
                 </div>
@@ -126,6 +157,7 @@ const Estimate = () => {
                                     <th className=" p-2 border"><div className='flex justify-between items-center text-xs'><h2>Model No.</h2></div></th>
                                     <th className=" p-2 border"><div className='flex justify-between items-center text-xs'><h2>EXP. Date</h2></div></th>
                                     <th className=" p-2 border"><div className='flex justify-between items-center text-xs'><h2>MFG. Date</h2></div></th>
+                                    <th className=" p-2 border"><div className='flex justify-between items-center text-xs'><h2>MRP</h2></div></th>
                                     <th className=" p-2 border"><div className='flex justify-between items-center text-xs'><h2>Size</h2></div></th>
                                     <th className=" p-2 border"><div className='flex justify-between items-center text-xs'><h2>Quantity</h2></div></th>
                                     <th className=" p-2 border"><div className='flex justify-between items-center text-xs'><h2>Price/unit</h2></div></th>
@@ -152,19 +184,22 @@ const Estimate = () => {
                                             <input className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none " style={{ width: "100%" }} type="text" name="input-name" title="Input title" placeholder="Description" value={item.Description} onChange={(e) => handleItemChange(index, 'name', e.target.value)} />
                                         </td>
                                         <td>
-                                            <input className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none " style={{ width: "100%" }} type="text" name="input-name" title="Input title" placeholder="Batch No." value={item.BatchNo} onChange={(e) => handleItemChange(index, 'name', e.target.value)} />
+                                            <input className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none " style={{ width: "100%" }} type="text" name="input-name" title="Input title" placeholder="Batch No." value={item.BatchNo} onChange={(e) => handleItemChange(index, 'BatchNo', e.target.value)} />
                                         </td>
                                         <td>
-                                            <input className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none " style={{ width: "100%" }} type="text" name="input-name" title="Input title" placeholder="Model No." value={item.ModelNo} onChange={(e) => handleItemChange(index, 'name', e.target.value)} />
+                                            <input className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none " style={{ width: "100%" }} type="text" name="input-name" title="Input title" placeholder="Model No." value={item.ModelNo} onChange={(e) => handleItemChange(index, 'ModelNo', e.target.value)} />
                                         </td>
                                         <td>
-                                            <input className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none " style={{ width: "100%" }} type="text" name="input-name" title="Input title" placeholder="EXP. Date" value={item.EXPDate} onChange={(e) => handleItemChange(index, 'name', e.target.value)} />
+                                            <input className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none " style={{ width: "100%" }} type="text" name="input-name" title="Input title" placeholder="EXP. Date" value={item.EXPDate} onChange={(e) => handleItemChange(index, 'EXPDate', e.target.value)} />
                                         </td>
                                         <td>
-                                            <input className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none " style={{ width: "100%" }} type="text" name="input-name" title="Input title" placeholder="MFG. Date" value={item.MFGDate} onChange={(e) => handleItemChange(index, 'name', e.target.value)} />
+                                            <input className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none " style={{ width: "100%" }} type="text" name="input-name" title="Input title" placeholder="MFG. Date" value={item.MFGDate} onChange={(e) => handleItemChange(index, 'MFGDate', e.target.value)} />
                                         </td>
                                         <td>
-                                            <input className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none " style={{ width: "100%" }} type="text" name="input-name" title="Input title" placeholder="Size" value={item.Size} onChange={(e) => handleItemChange(index, 'name', e.target.value)} />
+                                            <input className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none " style={{ width: "100%" }} type="text" name="input-name" title="Input title" placeholder="MRP" value={item.MRP} onChange={(e) => handleItemChange(index, 'MRP', e.target.value)} />
+                                        </td>
+                                        <td>
+                                            <input className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none " style={{ width: "100%" }} type="text" name="input-name" title="Input title" placeholder="Size" value={item.Size} onChange={(e) => handleItemChange(index, 'Size', e.target.value)} />
                                         </td>
                                         <td>
                                             <input className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none " style={{ width: "100%" }} type="text" name="input-name" title="Input title" placeholder="Quantity" value={item.quantity} onChange={(e) => handleItemChange(index, 'quantity', e.target.value)} />
@@ -210,13 +245,44 @@ const Estimate = () => {
                             </tbody>
                         </table>
                         <div className='flex justify-between items-center'>
-                            <button className='text-blue-500 font-bold text-sm px-3 py-2 ' onClick={addItemFunc}>Add Field</button>
+                            <button className='text-white bg-green-600 px-2 py-1 rounded m-2' onClick={addItemFunc}>Add Item</button>
                             <input className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none " type="text" name="input-name" title="Input title" placeholder="Total" />
                         </div>
 
                     </div>
 
 
+                </div>
+                <div className='w-3/6 border rounded-lg p-4 my-2'>
+                    {addPaymentType.map((field, index) => (
+                        <div className='flex justify-center items-center' key={index}>
+                            <div className="input_container mx-2 ">
+                                <label className="input_label">Payment Type</label>
+                                <select className="input_field w-full" type="text" name="input-name" placeholder="Payment Type" value={field.paymentType} onChange={(e) => handlePaymentTypeChange(index, 'paymentType', e.target.value)} >
+                                    <option value=""></option>
+                                    <option value="Cash">Cash</option>
+                                    <option value="Cheque">Cheque</option>
+                                </select>
+                            </div>
+                            {field.paymentType === 'Cheque' &&
+                                <div className="input_container mx-2 ">
+                                    <label className="input_label">Reference No</label>
+                                    <input className="input_field w-full" type="text" name="input-name" placeholder="Amount" value={field.referenceNo} onChange={(e) => handlePaymentTypeChange(index, 'referenceNo', e.target.value)} />
+                                </div>
+                            }
+                            <div className="input_container mx-2 ">
+                                <label className="input_label">Amount</label>
+                                <input className="input_field w-full" type="text" name="input-name" placeholder="Amount" value={field.amount} onChange={(e) => handlePaymentTypeChange(index, 'amount', e.target.value)} />
+                            </div>
+                            <button className='text-white bg-gray-600 p-2 m-2 rounded' onClick={() => removePaymentFunc(index)}>
+                                <svg class="w-4 h-4 font-semibold text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
+                                </svg>
+                            </button>
+
+                        </div>
+                    ))}
+                    <button className='text-white bg-blue-400 px-2 py-1 rounded m-2' onClick={addPaymentFunc}> + Add Payment Type</button>
                 </div>
 
                 <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
@@ -299,4 +365,4 @@ const Estimate = () => {
     )
 }
 
-export default Estimate
+export default SalesOrder

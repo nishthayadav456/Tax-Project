@@ -20,6 +20,7 @@ const Signup = () => {
         axios.post("https://ca-backend-api.onrender.com/companyRegister/auth/signup",data)
         .then((res)=>{
             localStorage.setItem("token",res.data.token)
+            alert("Registered successfully!");
    })
           .catch((err)=>{
           console.log(err)      

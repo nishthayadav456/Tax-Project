@@ -180,7 +180,7 @@ const SalesInvoice = () => {
 
                                         </div>
                                     ))}
-                                    <button className='text-white bg-green-600 px-2 py-1 rounded m-2' onClick={addItemFunc}>Add Field</button>
+                                    <button className='text-blue-500 font-bold text-sm px-3 py-2 ' onClick={addItemFunc}>Add Field</button>
                                 </div>
 
 
