@@ -1,7 +1,7 @@
 import { Fragment } from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-// import OnClickOutside from 'react-onclickoutside';
+import axios from "axios";
 import Table from './Table';
 
 function classNames(...classes) {
@@ -49,10 +49,164 @@ const Items = () => {
     const [selectedCategoryOptions, setSelectedCategoryOptions] = useState([]);
     const [showAddCategory, setShowAddCategory] = useState(false);
 
+    const [itemdata, setitemData] = useState([]);
+    const [selectedPartyData, setSelectedPartyData] = useState([]);
+
+    const [salesWithTax, setSalesWithTax] = useState(true);
+    const [disOnSalePercentage, setDisOnSalePercentage] = useState(true)
+    const [wholesalesWithTax, setWholealesWithTax] = useState(true);
+    const [purchaseWithTax, setPurchaseWithTax] = useState(true);
+
+    const [firmId, setFirmId] = useState("65b6812c2f4f0b676b773a86")
+
     const divRef = useRef(null);
     const searchRef = useRef(null);
 
 
+    const [data1, setData1] = useState({
+        category: "",
+        itemName: "",
+        itemHsn: "",
+        description: "",
+        itemCode: "",
+        seleteUnit: [{ baseUnit: "", secondaryUnit: "" }],
+        batchTracking: "",
+        serialTracking: "",
+        mrp: [{ mrp: "", disOnMrpForSale: "", disOnMrpForWholesale: "" }],
+        salePrice: [{
+            salePriceWithTax: "",
+            salePriceWithoutTax: "",
+            disOnSalePriceAmount: "",
+            disOnSalePricePerceantage: "",
+        }],
+        wholessalePrice: [{
+            wholesalePriceWithoutTax: "",
+            wholesalePriceWithTax: "",
+            minimumWholesaleQty: "",
+        }],
+        purchasePrice: [{ purchasePriceWithTax: "", purchasePriceWitouthTax: "" }],
+        taxRate: "",
+        stock: [{
+            openingQuantity: "",
+            atPrice: "",
+            asOfDate: "",
+            minStockToMaintain: "",
+            location: "",
+        }],
+
+    });
+    const changeHandle = (event) => {
+
+        // setData1({ ...data1, [event.target.name]: event.target.value });
+
+
+        if (event.target.name === "mrp" || event.target.name === "disOnMrpForSale" || event.target.name === "disOnMrpForWholesale") {
+            console.log("MRP", event.target.name, event.target.value)
+            setData1({ ...data1, mrp: [{ ...data1.mrp[0], [event.target.name]: event.target.value }], });
+            // setData1({...data1,salePrice: [{...data1.mrp[0], [event.target.name]: event.target.value}],});
+        }
+        else if (event.target.name === 'salePriceWithTax') {
+            setData1({ ...data1, salePrice: [{ ...data1.salePrice[0], salePriceWithTax: event.target.value, salePriceWithoutTax: "", }], });
+        }
+        else if (event.target.name === 'salePriceWithoutTax') {
+            setData1({ ...data1, salePrice: [{ ...data1.salePrice[0], salePriceWithoutTax: event.target.value, salePriceWithTax: "", }], });
+        }
+        else if (event.target.name === 'disOnSalePricePerceantage') {
+            setData1({ ...data1, salePrice: [{ ...data1.salePrice[0], disOnSalePricePerceantage: event.target.value, disOnSalePriceAmount: "", }], });
+        }
+        else if (event.target.name === 'disOnSalePriceAmount') {
+            setData1({ ...data1, salePrice: [{ ...data1.salePrice[0], disOnSalePriceAmount: event.target.value, disOnSalePricePerceantage: "", }], });
+        }
+        else if (event.target.name === 'wholesalePriceWithTax') {
+            setData1({ ...data1, wholessalePrice: [{ ...data1.wholessalePrice[0], wholesalePriceWithTax: event.target.value, wholesalePriceWithoutTax: "", }], });
+        }
+        else if (event.target.name === 'wholesalePriceWithoutTax') {
+            setData1({ ...data1, wholessalePrice: [{ ...data1.wholessalePrice[0], wholesalePriceWithoutTax: event.target.value, wholesalePriceWithTax: "", }], });
+        }
+        else if (event.target.name === 'minimumWholesaleQty') {
+            setData1({ ...data1, wholessalePrice: [{ ...data1.wholessalePrice[0], minimumWholesaleQty: event.target.value,}], });
+        }
+        else if (event.target.name === 'purchasePriceWithTax') {
+            setData1({ ...data1, purchasePrice: [{ ...data1.purchasePrice[0], purchasePriceWithTax: event.target.value, purchasePriceWitouthTax: "", }], });
+        }
+        else if (event.target.name === 'purchasePriceWitouthTax') {
+            setData1({ ...data1, purchasePrice: [{ ...data1.purchasePrice[0], purchasePriceWitouthTax: event.target.value, purchasePriceWithTax: "", }], });
+        }
+
+        else {
+            setData1({ ...data1, [event.target.name]: event.target.value });
+        }
+        console.log("data1", data1);
+    };
+
+    const handleClick = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            console.log("Token:", token);
+
+            const requestData = {
+                category: data1.category,
+                itemName: data1.itemName,
+                itemHsn: data1.itemHsn,
+                description: data1.description,
+                itemCode: data1.itemCode,
+                seleteUnit: {
+                    baseUnit: data1.seleteUnit[0].baseUnit,
+                    secondaryUnit: data1.seleteUnit[0].secondaryUnit,
+                },
+                batchTracking: data1.batchTracking,
+                serialTracking: data1.serialTracking,
+                mrp: {
+                    mrp: data1.mrp[0].mrp,
+                    disOnMrpForSale: data1.mrp[0].disOnMrpForSale,
+                    disOnMrpForWholesale: data1.mrp[0].disOnMrpForWholesale,
+                },
+                salePrice: {
+                    salePriceWithTax: data1.salePrice[0].salePriceWithTax,
+                    salePriceWithoutTax: data1.salePrice[0].salePriceWithoutTax,
+                    disOnSalePriceAmount: data1.salePrice[0].disOnSalePriceAmount,
+                    disOnSalePricePerceantage: data1.salePrice[0].disOnSalePricePerceantage,
+                },
+                wholessalePrice: {
+                    wholesalePriceWithoutTax: data1.wholessalePrice[0].wholesalePriceWithoutTax,
+                    wholesalePriceWithTax: data1.wholessalePrice[0].wholesalePriceWithTax,
+                    minimumWholesaleQty: data1.wholessalePrice[0].minimumWholesaleQty,
+                },
+                purchasePrice: {
+                    purchasePriceWithTax: data1.purchasePrice[0].purchasePriceWithTax,
+                    purchasePriceWitouthTax: data1.purchasePrice[0].purchasePriceWitouthTax,
+                },
+                taxRate: data1.taxRate,
+                stock: {
+                    openingQuantity: data1.stock[0].openingQuantity,
+                    atPrice: data1.stock[0].atPrice,
+                    asOfDate: data1.stock[0].asOfDate,
+                    minStockToMaintain: data1.stock[0].minStockToMaintain,
+                    location: data1.stock[0].location,
+                },
+            };
+
+            console.log("requestData", requestData);
+
+            const headers = {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            };
+
+
+            const response = await axios.post(
+                `https://ca-backend-api.onrender.com/${firmId}/insertItem`,
+                requestData,
+                { headers }
+            );
+
+            console.log("post", requestData, response.data);
+            setData1(response.data.result);
+            localStorage.setItem("token", response.data.result.token);
+        } catch (error) {
+            console.error(error.message);
+        }
+    };
 
     //for search bar and logo 
 
@@ -151,6 +305,35 @@ const Items = () => {
     };
 
 
+
+    const fetchData = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            console.log("Token:", token);
+            const headers = {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            };
+            const getDataResponse = await axios.get(
+                `https://ca-backend-api.onrender.com/${firmId}/item/allItem`,
+                { headers }
+            );
+
+            setitemData(getDataResponse.data.data);
+        } catch (error) {
+            console.error(error.message);
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    useEffect(() => {
+        console.log("itemdata", itemdata);
+    }, [itemdata, setitemData]);
+
+
     return (
         <>
             <div className='' style={{ height: "90vh" }}>
@@ -158,7 +341,7 @@ const Items = () => {
                     <h2 className='text-xl'>Name</h2>
                 </div>
                 <div className='flex h-full'>
-                    <div className='w-1/4 border shadow-lg m-1'>
+                    <div className='w-1/4 border shadow-lg m-1 overflow-auto'>
 
 
                         <div className='flex items-center justify-between m-2 my-6' >
@@ -252,46 +435,93 @@ const Items = () => {
                             <div className='p-2 hover:bg-gray-300 w-full text-end'>.Amount</div>
                         </div>
                         <div>
-                            <div>
-                                <div className='flex p-2 justify-between text-gray-500 hover:bg-gray-200 duration-150'>
-                                    <div>party1</div>
-                                    <div>0.00</div>
-                                </div>
+                            <div className=''>
+                                {itemdata?.map((e) => (
+                                    <div
+                                        className="flex p-2 justify-between text-gray-500 hover:bg-gray-200 duration-150 overflow-auto"
+                                        
+                                    >
+                                        <div>{e.itemName}</div>
+                                        <div>{e.mrp[0]?.mrp}</div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
 
                     </div>
-                    <div className='w-3/4 '>
-                        <div className='border shadow-lg m-1 p-2'>
-                            <div className='flex justify-between my-2'>
-                                <div>Party1</div>
-                                <div className='flex items-center rounded-lg bg-blue-500 text-white font-bold text-sm px-2 py-1 cursor-pointer duration-150 hover:bg-blue-600' onClick={handleAdjustModelButtonClick}>
-                                    <div className='rounded-full p-1 '>
-                                        <svg class="w-4 h-4 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12.25V1m0 11.25a2.25 2.25 0 0 0 0 4.5m0-4.5a2.25 2.25 0 0 1 0 4.5M4 19v-2.25m6-13.5V1m0 2.25a2.25 2.25 0 0 0 0 4.5m0-4.5a2.25 2.25 0 0 1 0 4.5M10 19V7.75m6 4.5V1m0 11.25a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5ZM16 19v-2" />
+
+
+                    <div className="w-3/4 ">
+                        <div className="border shadow-lg m-1 p-2">
+                            <div className="flex justify-between my-2">
+                                <div>{selectedPartyData?.itemName}</div>
+                                <div
+                                    className="flex items-center rounded-lg bg-blue-500 text-white font-bold text-sm px-2 py-1 cursor-pointer duration-150 hover:bg-blue-600"
+                                    onClick={handleAdjustModelButtonClick}
+                                >
+                                    <div className="rounded-full p-1 ">
+                                        <svg
+                                            class="w-4 h-4 text-gray-800 dark:text-white"
+                                            aria-hidden="true"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 20 20"
+                                        >
+                                            <path
+                                                stroke="currentColor"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M4 12.25V1m0 11.25a2.25 2.25 0 0 0 0 4.5m0-4.5a2.25 2.25 0 0 1 0 4.5M4 19v-2.25m6-13.5V1m0 2.25a2.25 2.25 0 0 0 0 4.5m0-4.5a2.25 2.25 0 0 1 0 4.5M10 19V7.75m6 4.5V1m0 11.25a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5ZM16 19v-2"
+                                            />
                                         </svg>
                                     </div>
                                     <h2>ADJUST ITEM</h2>
                                 </div>
                             </div>
-                            <div className='text-xs'>
-                                <div className='flex justify-between my-2'>
-                                    <h2>SALE PRICE: <span className='text-green-500'> ₹ 0.00 </span>(excl)</h2>
-                                    <h2>STOCK QUANTITY <span className='text-blue-500'>0</span></h2>
+                            <div className="text-xs">
+                                <div className="flex justify-between my-2">
+                                    <h2>
+                                        SALE PRICE:{" "}
+                                        <span className="text-green-500">
+                                            {selectedPartyData?.salePrice}{" "}
+                                        </span>
+                                        (excl)
+                                    </h2>
+                                    <h2>
+                                        STOCK QUANTITY{" "}
+                                        <span className="text-blue-500">
+                                            {itemdata?.selectedPartyData}
+                                        </span>
+                                    </h2>
                                 </div>
-                                <div className='flex justify-between my-2'>
-                                    <h2>PURCHASE PRICE: <span className='text-green-500'> ₹ 0.00 </span>(excl)</h2>
-                                    <h2>STOCK VALUE: <span className='text-green-500'> ₹ 0.00 </span>(excl)</h2>
-
+                                <div className="flex justify-between my-2">
+                                    <h2>
+                                        PURCHASE PRICE:{" "}
+                                        <span className="text-green-500">
+                                            {" "}
+                                            {itemdata?.selectedPartyData}{" "}
+                                        </span>
+                                        (excl)
+                                    </h2>
+                                    <h2>
+                                        STOCK VALUE:{" "}
+                                        <span className="text-green-500">
+                                            {" "}
+                                            {itemdata?.atPrice}{" "}
+                                        </span>
+                                        (excl)
+                                    </h2>
                                 </div>
                             </div>
                         </div>
-                        <div className='border shadow-lg m-1 p-2 '>
+                        <div className="border shadow-lg m-1 p-2 ">
                             <div>
                                 <Table columnDefs={columnDefs} rowData={rowData} />
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
 
@@ -383,34 +613,47 @@ const Items = () => {
             ) : null}
 
 
+
+
             {showAddItemModal ? (
                 <>
-                    <div
-                        className="justify-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none"
-                    >
+                    <div className="justify-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
                         <div className="relative w-auto my-6 mx-auto">
                             {/*content*/}
                             <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                                 {/*header*/}
                                 <div className="flex items-start justify-between p-5 border-blueGray-200 rounded-t">
-                                    <div className='flex'>
-                                        <h3 className="text-xl font-semibold mx-2">
-                                            Add Item
-                                        </h3>
-                                        <div className='flex mx-2 '>
-                                            <p className={` font-semibold ${toggle ? "text-gray-400" : "text-blue-500"} `}>Product</p>
-                                            <div className='mx-2'>
-
+                                    <div className="flex">
+                                        <h3 className="text-xl font-semibold mx-2">Add Item</h3>
+                                        <div className="flex mx-2 ">
+                                            <p
+                                                className={` font-semibold ${toggle ? "text-gray-400" : "text-blue-500"
+                                                    } `}
+                                            >
+                                                Product
+                                            </p>
+                                            <div className="mx-2">
                                                 <label class="relative inline-flex items-center cursor-pointer">
-                                                    <input type="checkbox" value="" class="sr-only peer" checked={toggle} onChange={() => setToggle(!toggle)} />
+                                                    <input
+                                                        type="checkbox"
+                                                        value=""
+                                                        class="sr-only peer"
+                                                        checked={toggle}
+                                                        onChange={() => setToggle(!toggle)}
+                                                    />
                                                     <div class="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-blue-600 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                                                 </label>
                                             </div>
-                                            <p className={` font-semibold ${toggle ? "text-blue-500" : "text-gray-400"} `}>Service</p>
+                                            <p
+                                                className={` font-semibold ${toggle ? "text-blue-500" : "text-gray-400"
+                                                    } `}
+                                            >
+                                                Service
+                                            </p>
                                         </div>
                                     </div>
                                     <button
-                                        className="p-1 ml-auto  border-0 text-black  float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
+                                        className="p-1 ml-auto border text-black float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
                                         onClick={() => setshowAddItemModal(false)}
                                     >
                                         <span className=" text-black  h-6 w-6 text-2xl block outline-none focus:outline-none">
@@ -419,14 +662,21 @@ const Items = () => {
                                     </button>
                                 </div>
 
-                                {!toggle ?
-
+                                {!toggle ? (
                                     <div>
                                         <div className="relative p-6">
-                                            <div className='flex'>
+                                            <div className="flex">
                                                 <div class="input_container mx-2 ">
                                                     <label class="input_label">Item Name :</label>
-                                                    <input class="input_field" type="number" name="input-name" title="Input title" placeholder="" />
+                                                    <input
+                                                        class="input_field"
+                                                        type="text"
+                                                        name="itemName"
+                                                        title="Input title"
+                                                        placeholder=""
+                                                        value={data1.itemName}
+                                                        onChange={changeHandle}
+                                                    />
                                                 </div>
                                                 <div class="input_container mx-2 ">
                                                     <label class="input_label">Category :</label>
@@ -449,17 +699,38 @@ const Items = () => {
 
                                                         {isCategoryOpen && (
                                                             <div className="z-50  absolute  mt-2 w-full rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-                                                                <button className='text-blue-500 w-full' onClick={() => setShowAddCategory(!showAddCategory)}>+ Add New Category</button>
-                                                                <div className="p-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                                                                <button
+                                                                    className="text-blue-500 w-full"
+                                                                    onClick={() =>
+                                                                        setShowAddCategory(!showAddCategory)
+                                                                    }
+                                                                >
+                                                                    + Add New Category
+                                                                </button>
+                                                                <div
+                                                                    className="p-1"
+                                                                    role="menu"
+                                                                    aria-orientation="vertical"
+                                                                    aria-labelledby="options-menu"
+                                                                >
                                                                     {categoryOptions.map((option) => (
-                                                                        <label key={option.id} className="flex items-center py-2 px-4 cursor-pointer">
+                                                                        <label
+                                                                            key={option.id}
+                                                                            className="flex items-center py-2 px-4 cursor-pointer"
+                                                                        >
                                                                             <input
                                                                                 type="checkbox"
                                                                                 className="form-checkbox h-5 w-5 text-indigo-600"
-                                                                                checked={selectedCategoryOptions.includes(option.id)}
-                                                                                onChange={() => handleCategoryCheckboxChange(option)}
+                                                                                checked={selectedCategoryOptions.includes(
+                                                                                    option.id
+                                                                                )}
+                                                                                onChange={() =>
+                                                                                    handleCategoryCheckboxChange(option)
+                                                                                }
                                                                             />
-                                                                            <span className="ml-2  text-gray-700">{option.label}</span>
+                                                                            <span className="ml-2  text-gray-700">
+                                                                                {option.label}
+                                                                            </span>
                                                                         </label>
                                                                     ))}
                                                                 </div>
@@ -470,30 +741,62 @@ const Items = () => {
 
                                                 <div class="input_container mx-2 ">
                                                     <label class="input_label">ItemHsn :</label>
-                                                    <input class="input_field" type="number" name="input-name" title="Input title" placeholder="" />
+                                                    <input
+                                                        class="input_field"
+                                                        type="number"
+                                                        name="itemHsn"
+                                                        title="Input title"
+                                                        placeholder=""
+                                                        value={data1.itemHsn}
+                                                        onChange={changeHandle}
+                                                    />
                                                 </div>
                                                 <div class="input_container mx-2 ">
                                                     <label class="input_label">Item Code</label>
-                                                    <div className='flex'>
-                                                        <input class="input_field" type="number" name="input-name" title="Input title" placeholder="" />
-                                                        <a href="" className='border text-xs text-white bg-blue-500 font-semibold whitespace-nowrap flex items-center px-2 rounded-xl'>Assign Code</a>
+                                                    <div className="flex">
+                                                        <input
+                                                            class="input_field"
+                                                            type="text"
+                                                            name="itemCode"
+                                                            title="Input title"
+                                                            placeholder=""
+                                                            value={data1.itemCode}
+                                                            onChange={changeHandle}
+                                                        />
+                                                        <a
+                                                            href=""
+                                                            className="border text-xs text-white bg-blue-500 font-semibold whitespace-nowrap flex items-center px-2 rounded-xl"
+                                                        >
+                                                            Assign Code
+                                                        </a>
                                                     </div>
                                                 </div>
-
                                             </div>
-                                            <div className='flex'>
-
+                                            <div className="flex">
                                                 <div class="input_container mx-2">
                                                     <label class="input_label">Descriptions</label>
-                                                    <textarea className='input_field' id="" cols="30" rows="10"></textarea>
+                                                    <textarea
+                                                        className="input_field"
+                                                        id=""
+                                                        cols="30"
+                                                        rows="10"
+                                                        name="description"
+                                                        value={data1.description}
+                                                        onChange={changeHandle}
+                                                    ></textarea>
                                                 </div>
-                                                <div class="input_container mx-2">
-                                                    <label class="input_label">Add Image</label>
-                                                    <input class="input_field" type="file" name="input-name" title="Input title" placeholder="" />
-                                                </div>
+                                                {/* <div class="input_container mx-2">
+                          <label class="input_label">Add Image</label>
+                          <input
+                            class="input_field"
+                            type="file"
+                            name="input-name"
+                            title="Input title"
+                            placeholder=""
+                          />
+                        </div> */}
                                             </div>
                                         </div>
-
 
                                         <div className="relative p-6 flex">
                                             <button
@@ -509,21 +812,29 @@ const Items = () => {
                                             <input
                                                 type="radio"
                                                 id="option1"
-                                                name="options"
-                                                value="option1"
-                                                checked={tracking === 'option1'}
-                                                onChange={() => setTracking('option1')}
+                                                name="batchTracking"
+                                                value="batchTracking"
+                                                checked={tracking === "batchTracking"}
+                                                onChange={(e) => {
+                                                    changeHandle(e);
+                                                    setTracking(e.target.value);
+                                                }}
                                                 className="mr-2 h-4 w-4"
                                             />
-                                            <label htmlFor="option1" className="mr-4">Batch Tracking</label>
+                                            <label htmlFor="option1" className="mr-4">
+                                                Batch Tracking
+                                            </label>
 
                                             <input
                                                 type="radio"
                                                 id="option2"
-                                                name="options"
-                                                value="option2"
-                                                checked={tracking === 'option2'}
-                                                onChange={() => setTracking('option2')}
+                                                name="serialTracking"
+                                                value="serialTracking"
+                                                checked={tracking === "serialTracking"}
+                                                onChange={(e) => {
+                                                    changeHandle(e);
+                                                    setTracking(e.target.value);
+                                                }}
                                                 className="mr-2 h-4 w-4"
                                             />
                                             <label htmlFor="option2">Serial No. Tracking</label>
@@ -535,473 +846,884 @@ const Items = () => {
                                             </button>
                                         </div>
 
-
-                                        <div className='p-6'>
-                                            <div className='border-b-2'>
-                                                <button className={`px-3 py-2 text-xl active:bg-gray-200 ${viewInputs === 'pricing' && "border-b-2 border-blue-500 text-blue-500"} `} onClick={() => handleViewInputButton('pricing')}>Pricing</button>
-                                                <button className={`px-3 py-2 text-xl active:bg-gray-200 ${viewInputs === 'stock' && "border-b-2 border-blue-500 text-blue-500"} `} onClick={() => handleViewInputButton('stock')}>Stock</button>
-                                                <button className={`px-3 py-2 text-xl active:bg-gray-200 ${viewInputs === 'manufacturing' && "border-b-2 border-blue-500 text-blue-500"} `} onClick={() => handleViewInputButton('manufacturing')}>Manufacturing</button>
+                                        <div className="p-6">
+                                            <div className="border-b-2">
+                                                <button
+                                                    className={`px-3 py-2 text-xl active:bg-gray-200 ${viewInputs === "pricing" &&
+                                                        "border-b-2 border-blue-500 text-blue-500"
+                                                        } `}
+                                                    onClick={() => handleViewInputButton("pricing")}
+                                                >
+                                                    Pricing
+                                                </button>
+                                                <button
+                                                    className={`px-3 py-2 text-xl active:bg-gray-200 ${viewInputs === "stock" &&
+                                                        "border-b-2 border-blue-500 text-blue-500"
+                                                        } `}
+                                                    onClick={() => handleViewInputButton("stock")}
+                                                >
+                                                    Stock
+                                                </button>
+                                                <button
+                                                    className={`px-3 py-2 text-xl active:bg-gray-200 ${viewInputs === "manufacturing" &&
+                                                        "border-b-2 border-blue-500 text-blue-500"
+                                                        } `}
+                                                    onClick={() => handleViewInputButton("manufacturing")}
+                                                >
+                                                    Manufacturing
+                                                </button>
                                             </div>
 
-                                            {viewInputs === 'pricing' && (
-
+                                            {viewInputs === "pricing" && (
                                                 <div>
-                                                    <div className='border my-8 bg-gray-100 p-6'>
-                                                        <h2 className=' text-lg font-semibold'>MRP</h2>
-                                                        <div className='flex'>
-
-                                                            <div className='p-2 input_container'>
-                                                                <input type="text" placeholder='MRP' className='border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none' />
+                                                    <div className="border my-8 bg-gray-100 p-6">
+                                                        <h2 className=" text-lg font-semibold">MRP</h2>
+                                                        <div className="flex">
+                                                            <div className="p-2 input_container">
+                                                                <input
+                                                                    type="text"
+                                                                    placeholder="MRP"
+                                                                    className="border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none"
+                                                                    name="mrp"
+                                                                    value={data1.mrp[0].mrp}
+                                                                    onChange={changeHandle}
+                                                                />
                                                             </div>
-                                                            <div className='p-2 input_container'>
-                                                                <input type="text" placeholder='Disc. On MRP For Sale(%)' className='border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none' />
+                                                            <div className="p-2 input_container">
+                                                                <input
+                                                                    type="text"
+                                                                    placeholder="Disc. On MRP For Sale(%)"
+                                                                    className="border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none"
+                                                                    name="disOnMrpForSale"
+                                                                    value={data1.mrp[0].disOnMrpForSale}
+                                                                    onChange={changeHandle}
+                                                                />
                                                             </div>
-                                                            <div className='p-2 input_container'>
-                                                                <input type="text" placeholder='Disc. On MRP For Wholesale(%)' className='border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none' />
-
+                                                            <div className="p-2 input_container">
+                                                                <input
+                                                                    type="text"
+                                                                    placeholder="Disc. On MRP For Wholesale(%)"
+                                                                    className="border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none"
+                                                                    name="disOnMrpForWholesale"
+                                                                    value={data1.mrp[0].disOnMrpForWholesale}
+                                                                    onChange={changeHandle}
+                                                                />
                                                             </div>
                                                         </div>
                                                     </div>
 
+                                                    <div className="border my-8 bg-gray-100">
+                                                        <div className="p-6">
+                                                            <h2 className=" text-lg font-semibold">
+                                                                Sale Price
+                                                            </h2>
+                                                            <div className="flex">
+                                                                <div className="p-2">
 
+                                                                    {salesWithTax ?
+                                                                        <input
+                                                                            type="text"
+                                                                            placeholder="salePriceWithTax"
+                                                                            className="border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none"
+                                                                            name="salePriceWithTax"
+                                                                            value={data1.salePrice[0].salePriceWithTax}
+                                                                            onChange={changeHandle}
+                                                                        />
+                                                                        :
+                                                                        <input
+                                                                            type="text"
+                                                                            placeholder="salePriceWithoutTax"
+                                                                            className="border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none"
+                                                                            name="salePriceWithoutTax"
+                                                                            value={data1.salePrice[0].salePriceWithoutTax}
+                                                                            onChange={changeHandle}
+                                                                        />
 
-                                                    <div className='border my-8 bg-gray-100'>
-                                                        <div className='p-6'>
-                                                            <h2 className=' text-lg font-semibold'>Sale Price</h2>
-                                                            <div className='flex'>
+                                                                    }
 
-                                                                <div className='p-2'>
-                                                                    <input type="text" placeholder='Sale Price' className='border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none' />
-                                                                    <select name="" id="" className='border-2 rounded-r hover:border-black focus:border-blue-500 px-2 py-1'>
+                                                                    <select
+                                                                        id=""
+                                                                        className="border-2 rounded-r hover:border-black focus:border-blue-500 px-2 py-1"
+                                                                        name="disOnMrpForWholesale"
+
+                                                                        onChange={() => setSalesWithTax(!salesWithTax)}
+                                                                    >
                                                                         <option value="With Tax">With Tax</option>
-                                                                        <option value="Without Tax">Without Tax</option>
+                                                                        <option value="Without Tax">
+                                                                            Without Tax
+                                                                        </option>
                                                                     </select>
                                                                 </div>
-                                                                <div className='p-2'>
-                                                                    <input type="text" placeholder='Disc. on Sales Price' className='border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none' />
-                                                                    <select name="" id="" className='border-2 rounded-r hover:border-black focus:border-blue-500 px-2 py-1'>
-                                                                        <option value="Percentage">Percentage</option>
+                                                                <div className="p-2">
+                                                                    {disOnSalePercentage ?
+                                                                        <input
+                                                                            type="text"
+                                                                            placeholder="Disc. on Sales Price Perceantage"
+                                                                            className="border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none"
+                                                                            name="disOnSalePricePerceantage"
+                                                                            value={data1.salePrice[0].disOnSalePricePerceantage}
+                                                                            onChange={changeHandle}
+                                                                        />
+
+                                                                        :
+
+                                                                        <input
+                                                                            type="text"
+                                                                            placeholder="Disc. on Sales Price Amount"
+                                                                            className="border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none"
+                                                                            name="disOnSalePriceAmount"
+                                                                            value={data1.salePrice[0].disOnSalePriceAmount}
+                                                                            onChange={changeHandle}
+                                                                        />
+                                                                    }
+
+                                                                    <select
+                                                                        id=""
+                                                                        className="border-2 rounded-r hover:border-black focus:border-blue-500 px-2 py-1"
+                                                                        name="disOnSalePricePerceantage"
+
+                                                                        onChange={() => setDisOnSalePercentage(!disOnSalePercentage)}
+                                                                    >
+                                                                        <option value="Percentage">
+                                                                            Percentage
+                                                                        </option>
                                                                         <option value="Amount">Amount</option>
                                                                     </select>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div className='p-6'>
-                                                            <h2 className='py-6 text-lg font-semibold'>Wholesale Price</h2>
-                                                            <div className='flex'>
+                                                        <div className="p-6">
+                                                            <h2 className="py-6 text-lg font-semibold">
+                                                                Wholesale Price
+                                                            </h2>
+                                                            <div className="flex">
+                                                                <div className="p-2">
+                                                                    {wholesalesWithTax ?
+                                                                        <input
+                                                                            type="text"
+                                                                            placeholder="wholesalePriceWithTax"
+                                                                            name="wholesalePriceWithTax"
+                                                                            className="border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none"
+                                                                            value={data1.wholessalePrice[0].wholesalePriceWithTax}
+                                                                            onChange={changeHandle}
+                                                                        />
+                                                                        :
+                                                                        <input
+                                                                            type="text"
+                                                                            placeholder="wholesalePriceWithoutTax"
+                                                                            name="wholesalePriceWithoutTax"
+                                                                            className="border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none"
+                                                                            value={data1.wholessalePrice[0].wholesalePriceWithoutTax}
+                                                                            onChange={changeHandle}
+                                                                        />
+                                                                    }
 
-                                                                <div className='p-2'>
-                                                                    <input type="text" placeholder='Wholesale Price' className='border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none' />
-                                                                    <select name="" id="" className='border-2 rounded-r hover:border-black focus:border-blue-500 px-2 py-1'>
+                                                                    <select
+                                                                        name=""
+                                                                        id=""
+                                                                        className="border-2 rounded-r hover:border-black focus:border-blue-500 px-2 py-1"
+                                                                        onChange={() => setWholealesWithTax(!wholesalesWithTax)}
+                                                                    >
                                                                         <option value="With Tax">With Tax</option>
-                                                                        <option value="Without Tax">Without Tax</option>
+                                                                        <option value="Without Tax">
+                                                                            Without Tax
+                                                                        </option>
                                                                     </select>
                                                                 </div>
-                                                                <div className='p-2'>
-                                                                    <input type="text" placeholder='Minimum Wholesale Qty' className='border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none' />
+                                                                <div className="p-2">
+                                                                    <input
+                                                                        type="text"
+                                                                        placeholder="Minimum Wholesale Qty"
+                                                                        className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none"
+                                                                        name="minimumWholesaleQty"
+                                                                        value={data1.minimumWholesaleQty}
+                                                                        onChange={changeHandle}
+                                                                    />
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div className='flex gap-8 w-full'>
-                                                        <div className='border my-8 bg-gray-100 w-6/12'>
-                                                            <div className='p-6'>
-                                                                <h2 className=' text-lg font-semibold'>Purchase Price</h2>
-                                                                <div className='flex'>
-
-                                                                    <div className='p-2'>
-                                                                        <input type="text" placeholder='Purchase Price' className='border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none' />
-                                                                        <select name="" id="" className='border-2 rounded-r hover:border-black focus:border-blue-500 px-2 py-1'>
+                                                    <div className="flex gap-8 w-full">
+                                                        <div className="border my-8 bg-gray-100 w-6/12">
+                                                            <div className="p-6">
+                                                                <h2 className=" text-lg font-semibold">
+                                                                    Purchase Price
+                                                                </h2>
+                                                                <div className="flex">
+                                                                    <div className="p-2">
+                                                                        {purchaseWithTax ?
+                                                                        <input
+                                                                        type="text"
+                                                                        placeholder="purchasePriceWithTax"
+                                                                        className="border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none"
+                                                                        name="purchasePriceWithTax"
+                                                                        value={data1.purchasePrice[0].purchasePriceWithTax}
+                                                                        onChange={changeHandle}
+                                                                    />
+                                                                    :
+                                                                    <input
+                                                                            type="text"
+                                                                            placeholder="purchasePriceWitouthTax"
+                                                                            className="border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none"
+                                                                            name="purchasePriceWitouthTax"
+                                                                            value={data1.purchasePrice[0].purchasePriceWitouthTax}
+                                                                            onChange={changeHandle}
+                                                                        />
+                                                                    }
+                                                                        
+                                                                        <select
+                                                                            name=""
+                                                                            id=""
+                                                                            className="border-2 rounded-r hover:border-black focus:border-blue-500 px-2 py-1"
+                                                                            onChange={() => setPurchaseWithTax(!purchaseWithTax)}
+                                                                        >
                                                                             <option value="With Tax">With Tax</option>
-                                                                            <option value="Without Tax">Without Tax</option>
+                                                                            <option value="Without Tax">
+                                                                                Without Tax
+                                                                            </option>
                                                                         </select>
                                                                     </div>
                                                                 </div>
                                                             </div>
-
                                                         </div>
-                                                        <div className='border my-8 bg-gray-100 w-6/12'>
-                                                            <div className='p-6'>
-                                                                <h2 className=' text-lg font-semibold'>Taxes</h2>
-                                                                <div className='flex'>
-
-                                                                    <div className='p-2 flex flex-col input_container'>
+                                                        <div className="border my-8 bg-gray-100 w-6/12">
+                                                            <div className="p-6">
+                                                                <h2 className=" text-lg font-semibold">
+                                                                    Taxes
+                                                                </h2>
+                                                                <div className="flex">
+                                                                    <div className="p-2 flex flex-col input_container">
                                                                         {/* <label className='input_label'>Tax rate</label> */}
-                                                                        <select name="" id="" className='border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1'>
-                                                                            <option value=''>None</option>
-                                                                            <option value='0'>GST@0</option>
-                                                                            <option value='0'>IGST@0</option>
-                                                                            <option value='0.25'>IGST@0.25%</option>
-                                                                            <option value='0.25'>GST@0.25%</option>
-                                                                            <option value='3'>IGST@3%</option>
-                                                                            <option value='3'>GST@3%</option>
-                                                                            <option value='5'>IGST@5%</option>
-                                                                            <option value='5'>GST@5%</option>
-                                                                            <option value='12'>IGST@12%</option>
-                                                                            <option value='12'>GST@12%</option>
-                                                                            <option value='18'>IGST@18%</option>
-                                                                            <option value='18'>GST@18%</option>
-                                                                            <option value='28'>IGST@28%</option>
-                                                                            <option value='28'>GST@28%</option>
-                                                                            <option value='exmpt'>exmpt</option>
+                                                                        <select
+                                                                            id="taxRate"
+                                                                            className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1"
+                                                                            name="taxRate"
+                                                                            value={data1.taxRate}
+                                                                            onChange={changeHandle}
+                                                                        >
+                                                                            <option value="">None</option>
+                                                                            <option value="0">GST@0</option>
+                                                                            <option value="0">IGST@0</option>
+                                                                            <option value="0.25">IGST@0.25%</option>
+                                                                            <option value="0.25">GST@0.25%</option>
+                                                                            <option value="3">IGST@3%</option>
+                                                                            <option value="3">GST@3%</option>
+                                                                            <option value="5">IGST@5%</option>
+                                                                            <option value="5">GST@5%</option>
+                                                                            <option value="12">IGST@12%</option>
+                                                                            <option value="12">GST@12%</option>
+                                                                            <option value="18">IGST@18%</option>
+                                                                            <option value="18">GST@18%</option>
+                                                                            <option value="28">IGST@28%</option>
+                                                                            <option value="28">GST@28%</option>
+                                                                            <option value="exmpt">exmpt</option>
                                                                         </select>
                                                                     </div>
                                                                 </div>
                                                             </div>
-
                                                         </div>
                                                     </div>
-
-
-
                                                 </div>
                                             )}
 
-                                            {viewInputs === 'stock' && (
+                                            {viewInputs === "stock" && (
                                                 <div>
                                                     <div className="p-6 flex">
-
                                                         <div class="input_container mx-2 ">
                                                             <label class="input_label">Opening Qty:</label>
-                                                            <input class="input_field w-full" type="text" name="input-name" title="Input title" placeholder="Opening Qty" />
+                                                            <input
+                                                                class="input_field w-full"
+                                                                type="text"
+                                                                name="openingQuantity"
+                                                                title="Input title"
+                                                                placeholder="Opening Qty"
+                                                                value={data1.openingQuantity}
+                                                                onChange={changeHandle}
+                                                            />
                                                         </div>
                                                         <div class="input_container mx-2 ">
                                                             <label class="input_label">At Price :</label>
-                                                            <input class="input_field w-full" type="number" name="input-name" title="Input title" placeholder="At Price" />
+                                                            <input
+                                                                class="input_field w-full"
+                                                                type="number"
+                                                                name="atPrice"
+                                                                title="Input title"
+                                                                placeholder="At Price"
+                                                                value={data1.atPrice}
+                                                                onChange={changeHandle}
+                                                            />
                                                         </div>
                                                         <div class="input_container mx-2 ">
                                                             <label class="input_label">As Of Date :</label>
-                                                            <input class="input_field w-full" type="date" name="input-name" title="Input title" placeholder="As Of Date :" />
+                                                            <input
+                                                                class="input_field w-full"
+                                                                type="date"
+                                                                name="asOfDate"
+                                                                title="Input title"
+                                                                placeholder="As Of Date :"
+                                                                value={data1.asOfDate}
+                                                                onChange={changeHandle}
+                                                            />
                                                         </div>
                                                     </div>
                                                     <div className="p-6 flex">
-
                                                         <div class="input_container mx-2 ">
-                                                            <label class="input_label">Min.StockMaintain:</label>
-                                                            <input class="input_field w-full" type="text" name="input-name" title="Input title" placeholder="Min.StockMaintain" />
+                                                            <label class="input_label">
+                                                                Min.StockMaintain:
+                                                            </label>
+                                                            <input
+                                                                class="input_field w-full"
+                                                                type="text"
+                                                                name="minStockToMaintain"
+                                                                title="Input title"
+                                                                placeholder="Min.StockMaintain"
+                                                                value={data1.minStockToMaintain}
+                                                                onChange={changeHandle}
+                                                            />
                                                         </div>
                                                         <div class="input_container mx-2 ">
                                                             <label class="input_label">Location :</label>
-                                                            <input class="input_field w-full" type="number" name="input-name" title="Input title" placeholder="Location" />
+                                                            <input
+                                                                class="input_field w-full"
+                                                                type="text"
+                                                                name="location"
+                                                                title="Input title"
+                                                                placeholder="Location"
+                                                                value={data1.location}
+                                                                onChange={changeHandle}
+                                                            />
                                                         </div>
-
                                                     </div>
                                                 </div>
                                             )}
-                                            {viewInputs === 'manufacturing' && (
+
+                                            {viewInputs === "manufacturing" && (
                                                 <div>
-                                                    <div className='my-3'>
+                                                    <div className="my-3">
                                                         <table className="min-w-full bg-white border border-gray-300">
-                                                            <thead className='border'>
+                                                            <thead className="border">
                                                                 <tr>
-                                                                    <th className=" p-2 border"><div className='flex justify-between items-center text-xs'><h2>Raw Material</h2></div></th>
-                                                                    <th className=" p-2 border"><div className='flex justify-between items-center text-xs'><h2>Quantity</h2></div></th>
-                                                                    <th className=" p-2 border"><div className='flex justify-between items-center text-xs'><h2>Price/unit</h2></div></th>
-                                                                    <th className=" p-2 border"><div className='flex justify-between items-center text-xs'><h2>Estimated Cost</h2></div></th>
-                                                                    <th className=" p-2 border"><div className='flex justify-between items-center text-xs'><h2>Action</h2></div></th>
+                                                                    <th className=" p-2 border">
+                                                                        <div className="flex justify-between items-center text-xs">
+                                                                            <h2>Raw Material</h2>
+                                                                        </div>
+                                                                    </th>
+                                                                    <th className=" p-2 border">
+                                                                        <div className="flex justify-between items-center text-xs">
+                                                                            <h2>Quantity</h2>
+                                                                        </div>
+                                                                    </th>
+                                                                    <th className=" p-2 border">
+                                                                        <div className="flex justify-between items-center text-xs">
+                                                                            <h2>Price/unit</h2>
+                                                                        </div>
+                                                                    </th>
+                                                                    <th className=" p-2 border">
+                                                                        <div className="flex justify-between items-center text-xs">
+                                                                            <h2>Estimated Cost</h2>
+                                                                        </div>
+                                                                    </th>
+                                                                    <th className=" p-2 border">
+                                                                        <div className="flex justify-between items-center text-xs">
+                                                                            <h2>Action</h2>
+                                                                        </div>
+                                                                    </th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
                                                                 {addRawMaterial.map((item, index) => (
-
-                                                                    <tr className=''>
+                                                                    <tr className="">
                                                                         <td>
-                                                                            <input className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none " style={{ width: "100%" }} type="text" name="input-name" title="Input title" placeholder="Item Name" value={item.name} onChange={(e) => handleRawMaterialChange(index, 'name', e.target.value)} />
+                                                                            <input
+                                                                                className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none "
+                                                                                style={{ width: "100%" }}
+                                                                                type="text"
+                                                                                name="input-name"
+                                                                                title="Input title"
+                                                                                placeholder="Item Name"
+                                                                                value={item.name}
+                                                                                onChange={(e) =>
+                                                                                    handleRawMaterialChange(
+                                                                                        index,
+                                                                                        "name",
+                                                                                        e.target.value
+                                                                                    )
+                                                                                }
+                                                                            />
                                                                         </td>
 
                                                                         <td>
-                                                                            <input className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none " style={{ width: "100%" }} type="text" name="input-name" title="Input title" placeholder="Quantity" value={item.quantity} onChange={(e) => handleRawMaterialChange(index, 'quantity', e.target.value)} />
-
+                                                                            <input
+                                                                                className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none "
+                                                                                style={{ width: "100%" }}
+                                                                                type="text"
+                                                                                name="input-name"
+                                                                                title="Input title"
+                                                                                placeholder="Quantity"
+                                                                                value={item.quantity}
+                                                                                onChange={(e) =>
+                                                                                    handleRawMaterialChange(
+                                                                                        index,
+                                                                                        "quantity",
+                                                                                        e.target.value
+                                                                                    )
+                                                                                }
+                                                                            />
                                                                         </td>
                                                                         <td>
-                                                                            <input className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none " style={{ width: "100%" }} type="text" name="input-name" title="Input title" placeholder="Price" value={item.price} onChange={(e) => handleRawMaterialChange(index, 'price', e.target.value)} />
+                                                                            <input
+                                                                                className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none "
+                                                                                style={{ width: "100%" }}
+                                                                                type="text"
+                                                                                name="input-name"
+                                                                                title="Input title"
+                                                                                placeholder="Price"
+                                                                                value={item.price}
+                                                                                onChange={(e) =>
+                                                                                    handleRawMaterialChange(
+                                                                                        index,
+                                                                                        "price",
+                                                                                        e.target.value
+                                                                                    )
+                                                                                }
+                                                                            />
                                                                         </td>
                                                                         <td>
-                                                                            <input className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none " style={{ width: "100%" }} type="text" name="input-name" title="Input title" placeholder="Estimated Cost" value={item.estimatedCost} onChange={(e) => handleRawMaterialChange(index, 'estimatedCost', e.target.value)} />
-
+                                                                            <input
+                                                                                className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none "
+                                                                                style={{ width: "100%" }}
+                                                                                type="text"
+                                                                                name="input-name"
+                                                                                title="Input title"
+                                                                                placeholder="Estimated Cost"
+                                                                                value={item.estimatedCost}
+                                                                                onChange={(e) =>
+                                                                                    handleRawMaterialChange(
+                                                                                        index,
+                                                                                        "estimatedCost",
+                                                                                        e.target.value
+                                                                                    )
+                                                                                }
+                                                                            />
                                                                         </td>
                                                                         <td>
-                                                                            <button className='text-white bg-gray-600 p-2 m-2 rounded' onClick={() => removeRawMaterial(index)}>
-                                                                                <svg class="w-4 h-4 font-semibold text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
+                                                                            <button
+                                                                                className="text-white bg-gray-600 p-2 m-2 rounded"
+                                                                                onClick={() => removeRawMaterial(index)}
+                                                                            >
+                                                                                <svg
+                                                                                    class="w-4 h-4 font-semibold text-gray-800 dark:text-white"
+                                                                                    aria-hidden="true"
+                                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                                    fill="none"
+                                                                                    viewBox="0 0 24 24"
+                                                                                >
+                                                                                    <path
+                                                                                        stroke="currentColor"
+                                                                                        stroke-linecap="round"
+                                                                                        stroke-linejoin="round"
+                                                                                        stroke-width="2"
+                                                                                        d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z"
+                                                                                    />
                                                                                 </svg>
                                                                             </button>
                                                                         </td>
                                                                     </tr>
                                                                 ))}
-
                                                             </tbody>
                                                         </table>
-                                                        <div className='flex justify-between items-center'>
-                                                            <button className='text-blue-500 px-2 py-1 rounded m-2' onClick={addRawMaterialFunc}>+ Add Row</button>
-                                                            <input className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none " type="text" name="input-name" title="Input title" placeholder="Total" />
+                                                        <div className="flex justify-between items-center">
+                                                            <button
+                                                                className="text-blue-500 px-2 py-1 rounded m-2"
+                                                                onClick={addRawMaterialFunc}
+                                                            >
+                                                                + Add Row
+                                                            </button>
+                                                            <input
+                                                                className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none "
+                                                                type="text"
+                                                                name="input-name"
+                                                                title="Input title"
+                                                                placeholder="Total"
+                                                            />
                                                         </div>
-
                                                     </div>
 
-                                                    <button className='bg-blue-500 text-white px-2 py-1 rounded ' onClick={() => setAdditionalCostBtn(!additionalCostBtn)} >Additional Costs</button>
+                                                    <button
+                                                        className="bg-blue-500 text-white px-2 py-1 rounded "
+                                                        onClick={() =>
+                                                            setAdditionalCostBtn(!additionalCostBtn)
+                                                        }
+                                                    >
+                                                        Additional Costs
+                                                    </button>
 
-                                                    {additionalCostBtn &&
-
-                                                        <div className='my-3'>
+                                                    {additionalCostBtn && (
+                                                        <div className="my-3">
                                                             <table className="min-w-full bg-white border border-gray-300">
-                                                                <thead className='border'>
+                                                                <thead className="border">
                                                                     <tr>
-                                                                        <th className=" p-2 border"><div className='flex justify-between items-center text-xs'><h2>Charges</h2></div></th>
-                                                                        <th className=" p-2 border"><div className='flex justify-between items-center text-xs'><h2>Estimated Cost</h2></div></th>
-                                                                        <th className=" p-2 border"><div className='flex justify-between items-center text-xs'><h2>Acton</h2></div></th>
+                                                                        <th className=" p-2 border">
+                                                                            <div className="flex justify-between items-center text-xs">
+                                                                                <h2>Charges</h2>
+                                                                            </div>
+                                                                        </th>
+                                                                        <th className=" p-2 border">
+                                                                            <div className="flex justify-between items-center text-xs">
+                                                                                <h2>Estimated Cost</h2>
+                                                                            </div>
+                                                                        </th>
+                                                                        <th className=" p-2 border">
+                                                                            <div className="flex justify-between items-center text-xs">
+                                                                                <h2>Acton</h2>
+                                                                            </div>
+                                                                        </th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
                                                                     {addAdditionalCost.map((item, index) => (
-
-                                                                        <tr className=''>
+                                                                        <tr className="">
                                                                             <td>
-                                                                                <select className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none " style={{ width: "100%" }} value={item.tax} onChange={(e) => handleAdditionalCostChange(index, 'tax', e.target.value)}>
-                                                                                    <option value=''>None</option>
-                                                                                    <option value='Labour Cost'>Labour Cost</option>
-                                                                                    <option value='Electricity Cost'>Electricity Cost</option>
-                                                                                    <option value='Packaging Cost'>Packaging Cost</option>
-                                                                                    <option value='Logistics Cost'>Logistics Cost</option>
-                                                                                    <option value='Other Charges'>Other Charges</option>
+                                                                                <select
+                                                                                    className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none "
+                                                                                    style={{ width: "100%" }}
+                                                                                    value={item.tax}
+                                                                                    onChange={(e) =>
+                                                                                        handleAdditionalCostChange(
+                                                                                            index,
+                                                                                            "tax",
+                                                                                            e.target.value
+                                                                                        )
+                                                                                    }
+                                                                                >
+                                                                                    <option value="">None</option>
+                                                                                    <option value="Labour Cost">
+                                                                                        Labour Cost
+                                                                                    </option>
+                                                                                    <option value="Electricity Cost">
+                                                                                        Electricity Cost
+                                                                                    </option>
+                                                                                    <option value="Packaging Cost">
+                                                                                        Packaging Cost
+                                                                                    </option>
+                                                                                    <option value="Logistics Cost">
+                                                                                        Logistics Cost
+                                                                                    </option>
+                                                                                    <option value="Other Charges">
+                                                                                        Other Charges
+                                                                                    </option>
                                                                                 </select>
                                                                             </td>
                                                                             <td>
-                                                                                <input className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none " style={{ width: "100%" }} type="text" name="input-name" title="Input title" placeholder="Item Name" value={item.name} onChange={(e) => handleAdditionalCostChange(index, 'name', e.target.value)} />
+                                                                                <input
+                                                                                    className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none "
+                                                                                    style={{ width: "100%" }}
+                                                                                    type="text"
+                                                                                    name="input-name"
+                                                                                    title="Input title"
+                                                                                    placeholder="Item Name"
+                                                                                    value={item.name}
+                                                                                    onChange={(e) =>
+                                                                                        handleAdditionalCostChange(
+                                                                                            index,
+                                                                                            "name",
+                                                                                            e.target.value
+                                                                                        )
+                                                                                    }
+                                                                                />
                                                                             </td>
                                                                             <td>
-                                                                                <button className='text-white bg-gray-600 p-2 m-2 rounded' onClick={() => removeAdditionalCost(index)}>
-                                                                                    <svg class="w-4 h-4 font-semibold text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
+                                                                                <button
+                                                                                    className="text-white bg-gray-600 p-2 m-2 rounded"
+                                                                                    onClick={() =>
+                                                                                        removeAdditionalCost(index)
+                                                                                    }
+                                                                                >
+                                                                                    <svg
+                                                                                        class="w-4 h-4 font-semibold text-gray-800 dark:text-white"
+                                                                                        aria-hidden="true"
+                                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                                        fill="none"
+                                                                                        viewBox="0 0 24 24"
+                                                                                    >
+                                                                                        <path
+                                                                                            stroke="currentColor"
+                                                                                            stroke-linecap="round"
+                                                                                            stroke-linejoin="round"
+                                                                                            stroke-width="2"
+                                                                                            d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z"
+                                                                                        />
                                                                                     </svg>
                                                                                 </button>
                                                                             </td>
                                                                         </tr>
                                                                     ))}
-
                                                                 </tbody>
                                                             </table>
-                                                            <div className='flex justify-between items-center'>
-                                                                <button className='text-blue-500 px-2 py-1 rounded m-2' onClick={addAditionalCostFunc}>+ Add Row</button>
+                                                            <div className="flex justify-between items-center">
+                                                                <button
+                                                                    className="text-blue-500 px-2 py-1 rounded m-2"
+                                                                    onClick={addAditionalCostFunc}
+                                                                >
+                                                                    + Add Row
+                                                                </button>
                                                             </div>
                                                         </div>
-
-                                                    }
-
-
+                                                    )}
                                                 </div>
                                             )}
-
-
-
                                         </div>
-
-
-
-
                                     </div>
-                                    :
+                                ) : (
                                     <div>
                                         <div className="relative p-6">
-                                            <div className='flex'>
+                                            <div className="flex">
                                                 <div class="input_container mx-2 ">
                                                     <label class="input_label">Service Name :</label>
-                                                    <input class="input_field" type="number" name="input-name" title="Input title" placeholder="" />
+                                                    <input
+                                                        class="input_field"
+                                                        type="number"
+                                                        name="input-name"
+                                                        title="Input title"
+                                                        placeholder=""
+                                                    />
                                                 </div>
                                                 <div class="input_container mx-2 ">
                                                     <label class="input_label">Category :</label>
-                                                    {/* <input class="input_field" type="text" name="input-name" title="Input title" /> */}
-                                                    <div className="relative inline-block text-left">
-                                                        <div>
-                                                            <span className="">
-                                                                <button
-                                                                    type="button"
-                                                                    className="input_field text-left"
-                                                                    id="options-menu"
-                                                                    aria-haspopup="true"
-                                                                    aria-expanded="true"
-                                                                    onClick={toggleCategoryDropdown}
-                                                                >
-                                                                    Category
-                                                                </button>
-                                                            </span>
-                                                        </div>
-
-                                                        {isCategoryOpen && (
-                                                            <div className="z-50  absolute  mt-2 w-full rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-                                                                <button className='text-blue-500 w-full' onClick={() => setShowAddCategory(!showAddCategory)}>+ Add New Category</button>
-                                                                <div className="p-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-                                                                    {categoryOptions.map((option) => (
-                                                                        <label key={option.id} className="flex items-center py-2 px-4 cursor-pointer">
-                                                                            <input
-                                                                                type="checkbox"
-                                                                                className="form-checkbox h-5 w-5 text-indigo-600"
-                                                                                checked={selectedCategoryOptions.includes(option.id)}
-                                                                                onChange={() => handleCategoryCheckboxChange(option)}
-                                                                            />
-                                                                            <span className="ml-2  text-gray-700">{option.label}</span>
-                                                                        </label>
-                                                                    ))}
-                                                                </div>
-                                                            </div>
-                                                        )}
-                                                    </div>
+                                                    <input
+                                                        class="input_field"
+                                                        type="text"
+                                                        name="input-name"
+                                                        title="Input title"
+                                                    />
                                                 </div>
 
                                                 <div class="input_container mx-2 ">
                                                     <label class="input_label">Service Hsn :</label>
-                                                    <input class="input_field" type="number" name="input-name" title="Input title" placeholder="" />
+                                                    <input
+                                                        class="input_field"
+                                                        type="number"
+                                                        name="input-name"
+                                                        title="Input title"
+                                                        placeholder=""
+                                                    />
                                                 </div>
                                                 <div class="input_container mx-2 ">
                                                     <label class="input_label">Service Code</label>
-                                                    <div className='flex'>
-                                                        <input class="input_field" type="number" name="input-name" title="Input title" placeholder="" />
-                                                        <a href="" className='border text-xs text-white bg-blue-500 font-semibold whitespace-nowrap flex items-center px-2 rounded-xl'>Assign Code</a>
+                                                    <div className="flex">
+                                                        <input
+                                                            class="input_field"
+                                                            type="number"
+                                                            name="input-name"
+                                                            title="Input title"
+                                                            placeholder=""
+                                                        />
+                                                        <a
+                                                            href=""
+                                                            className="border text-xs text-white bg-blue-500 font-semibold whitespace-nowrap flex items-center px-2 rounded-xl"
+                                                        >
+                                                            Assign Code
+                                                        </a>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className='flex'>
-
+                                            <div className="flex">
                                                 <div class="input_container mx-2">
                                                     <label class="input_label">Descriptions</label>
-                                                    <textarea className='input_field' id="" cols="30" rows="10"></textarea>
+                                                    <textarea
+                                                        className="input_field"
+                                                        id=""
+                                                        cols="30"
+                                                        rows="10"
+                                                    ></textarea>
                                                 </div>
                                                 <div class="input_container mx-2">
                                                     <label class="input_label">Add Image</label>
-                                                    <input class="input_field" type="file" name="input-name" title="Input title" placeholder="" />
+                                                    <input
+                                                        class="input_field"
+                                                        type="file"
+                                                        name="input-name"
+                                                        title="Input title"
+                                                        placeholder=""
+                                                    />
                                                 </div>
                                             </div>
-
                                         </div>
-
 
                                         <div className="relative p-6 flex">
                                             <button
                                                 className="bg-gray-500 text-white active:bg-gray-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                                                 type="button"
-                                                onClick={() => setShowEditUnitModal(!showEditUnitModal)}
+                                                onClick={() => {
+                                                    handleClick();
+                                                    setShowEditUnitModal(!showEditUnitModal);
+                                                }}
                                             >
                                                 Edit Unit
                                             </button>
                                         </div>
 
-                                        <div className='p-6'>
-                                            <div className='border-b-2'>
-                                                <button className={`px-3 py-2 text-xl active:bg-gray-200 ${viewInputs === 'pricing' && "border-b-2 border-blue-500 text-blue-500"} `} onClick={() => handleViewInputButton('pricing')}>Pricing</button>
+                                        <div className="p-6">
+                                            <div className="border-b-2">
+                                                <button
+                                                    className={`px-3 py-2 text-xl active:bg-gray-200 ${viewInputs === "pricing" &&
+                                                        "border-b-2 border-blue-500 text-blue-500"
+                                                        } `}
+                                                    onClick={() => handleViewInputButton("pricing")}
+                                                >
+                                                    Pricing
+                                                </button>
                                             </div>
 
-                                            {viewInputs === 'pricing' && (
-
+                                            {viewInputs === "pricing" && (
                                                 <div>
-                                                    <div className='border my-8 bg-gray-100 p-6'>
-                                                        <h2 className=' text-lg font-semibold'>MRP</h2>
-                                                        <div className='flex'>
-
-                                                            <div className='p-2 input_container'>
-                                                                <input type="text" placeholder='MRP' className='border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none' />
+                                                    <div className="border my-8 bg-gray-100 p-6">
+                                                        <h2 className=" text-lg font-semibold">MRP</h2>
+                                                        <div className="flex">
+                                                            <div className="p-2 input_container">
+                                                                <input
+                                                                    type="text"
+                                                                    placeholder="MRP"
+                                                                    className="border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none"
+                                                                />
                                                             </div>
-                                                            <div className='p-2 input_container'>
-                                                                <input type="text" placeholder='Disc. On MRP For Sale(%)' className='border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none' />
+                                                            <div className="p-2 input_container">
+                                                                <input
+                                                                    type="text"
+                                                                    placeholder="Disc. On MRP For Sale(%)"
+                                                                    className="border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none"
+                                                                />
                                                             </div>
-                                                            <div className='p-2 input_container'>
-                                                                <input type="text" placeholder='Disc. On MRP For Wholesale(%)' className='border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none' />
-
+                                                            <div className="p-2 input_container">
+                                                                <input
+                                                                    type="text"
+                                                                    placeholder="Disc. On MRP For Wholesale(%)"
+                                                                    className="border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none"
+                                                                />
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div className='border my-8 bg-gray-100'>
-
-                                                        <div className='p-6'>
-                                                            <h2 className=' text-lg font-semibold'>Sale Price</h2>
-                                                            <div className='flex'>
-
-                                                                <div className='p-2'>
-                                                                    <input type="text" placeholder='Sale Price' className='border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none' />
-                                                                    <select name="" id="" className='border-2 rounded-r hover:border-black focus:border-blue-500 px-2 py-1'>
+                                                    <div className="border my-8 bg-gray-100">
+                                                        <div className="p-6">
+                                                            <h2 className=" text-lg font-semibold">
+                                                                Sale Price
+                                                            </h2>
+                                                            <div className="flex">
+                                                                <div className="p-2">
+                                                                    <input
+                                                                        type="text"
+                                                                        placeholder="Sale Price"
+                                                                        className="border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none"
+                                                                    />
+                                                                    <select
+                                                                        name=""
+                                                                        id=""
+                                                                        className="border-2 rounded-r hover:border-black focus:border-blue-500 px-2 py-1"
+                                                                    >
                                                                         <option value="With Tax">With Tax</option>
-                                                                        <option value="Without Tax">Without Tax</option>
+                                                                        <option value="Without Tax">
+                                                                            Without Tax
+                                                                        </option>
                                                                     </select>
                                                                 </div>
-                                                                <div className='p-2'>
-                                                                    <input type="text" placeholder='Disc. on Sales Price' className='border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none' />
-                                                                    <select name="" id="" className='border-2 rounded-r hover:border-black focus:border-blue-500 px-2 py-1'>
-                                                                        <option value="Percentage">Percentage</option>
+                                                                <div className="p-2">
+                                                                    <input
+                                                                        type="text"
+                                                                        placeholder="Disc. on Sales Price"
+                                                                        className="border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none"
+                                                                    />
+                                                                    <select
+                                                                        name=""
+                                                                        id=""
+                                                                        className="border-2 rounded-r hover:border-black focus:border-blue-500 px-2 py-1"
+                                                                    >
+                                                                        <option value="Percentage">
+                                                                            Percentage
+                                                                        </option>
                                                                         <option value="Amount">Amount</option>
                                                                     </select>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div className='p-6'>
-                                                            <h2 className='py-6 text-lg font-semibold'>Wholesale Price</h2>
-                                                            <div className='flex'>
-
-                                                                <div className='p-2'>
-                                                                    <input type="text" placeholder='Wholesale Price' className='border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none' />
-                                                                    <select name="" id="" className='border-2 rounded-r hover:border-black focus:border-blue-500 px-2 py-1'>
+                                                        <div className="p-6">
+                                                            <h2 className="py-6 text-lg font-semibold">
+                                                                Wholesale Price
+                                                            </h2>
+                                                            <div className="flex">
+                                                                <div className="p-2">
+                                                                    <input
+                                                                        type="text"
+                                                                        placeholder="Wholesale Price"
+                                                                        className="border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none"
+                                                                    />
+                                                                    <select
+                                                                        name=""
+                                                                        id=""
+                                                                        className="border-2 rounded-r hover:border-black focus:border-blue-500 px-2 py-1"
+                                                                    >
                                                                         <option value="With Tax">With Tax</option>
-                                                                        <option value="Without Tax">Without Tax</option>
+                                                                        <option value="Without Tax">
+                                                                            Without Tax
+                                                                        </option>
                                                                     </select>
                                                                 </div>
-                                                                <div className='p-2'>
-                                                                    <input type="text" placeholder='Minimum Wholesale Qty' className='border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none' />
+                                                                <div className="p-2">
+                                                                    <input
+                                                                        type="text"
+                                                                        placeholder="Minimum Wholesale Qty"
+                                                                        className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none"
+                                                                    />
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
 
-                                                    <div className='border my-8 bg-gray-100'>
-                                                        <div className='p-6'>
-                                                            <h2 className=' text-lg font-semibold'>Taxes</h2>
-                                                            <div className='flex'>
-
-                                                                <div className='p-2 flex flex-col input_container'>
+                                                    <div className="border my-8 bg-gray-100">
+                                                        <div className="p-6">
+                                                            <h2 className=" text-lg font-semibold">Taxes</h2>
+                                                            <div className="flex">
+                                                                <div className="p-2 flex flex-col input_container">
                                                                     {/* <label className='input_label'>Tax rate</label> */}
-                                                                    <select name="" id="" className='w-1/3 border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1'>
-                                                                        <option value=''>None</option>
-                                                                        <option value='0'>GST@0</option>
-                                                                        <option value='0'>IGST@0</option>
-                                                                        <option value='0.25'>IGST@0.25%</option>
-                                                                        <option value='0.25'>GST@0.25%</option>
-                                                                        <option value='3'>IGST@3%</option>
-                                                                        <option value='3'>GST@3%</option>
-                                                                        <option value='5'>IGST@5%</option>
-                                                                        <option value='5'>GST@5%</option>
-                                                                        <option value='12'>IGST@12%</option>
-                                                                        <option value='12'>GST@12%</option>
-                                                                        <option value='18'>IGST@18%</option>
-                                                                        <option value='18'>GST@18%</option>
-                                                                        <option value='28'>IGST@28%</option>
-                                                                        <option value='28'>GST@28%</option>
-                                                                        <option value='exmpt'>exmpt</option>
+                                                                    <select
+                                                                        name=""
+                                                                        id=""
+                                                                        className="w-1/3 border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1"
+                                                                    >
+                                                                        <option value="">None</option>
+                                                                        <option value="0">GST@0</option>
+                                                                        <option value="0">IGST@0</option>
+                                                                        <option value="0.25">IGST@0.25%</option>
+                                                                        <option value="0.25">GST@0.25%</option>
+                                                                        <option value="3">IGST@3%</option>
+                                                                        <option value="3">GST@3%</option>
+                                                                        <option value="5">IGST@5%</option>
+                                                                        <option value="5">GST@5%</option>
+                                                                        <option value="12">IGST@12%</option>
+                                                                        <option value="12">GST@12%</option>
+                                                                        <option value="18">IGST@18%</option>
+                                                                        <option value="18">GST@18%</option>
+                                                                        <option value="28">IGST@28%</option>
+                                                                        <option value="28">GST@28%</option>
+                                                                        <option value="exmpt">exmpt</option>
                                                                     </select>
                                                                 </div>
                                                             </div>
                                                         </div>
-
                                                     </div>
-
-
-
                                                 </div>
                                             )}
-
-
                                         </div>
-
-
-
-
                                     </div>
-
-                                }
-
-
+                                )}
 
                                 <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
                                     <button
                                         className="bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                                         type="button"
-                                        onClick={() => setshowAddItemModal(false)}
+                                        onClick={() => {
+                                            handleClick();
+                                            setshowAddItemModal(false);
+                                        }}
                                     >
                                         Save Changes
                                     </button>
@@ -1013,23 +1735,16 @@ const Items = () => {
                 </>
             ) : null}
 
-
-
             {showEditUnitModal ? (
                 <>
-                    <div
-                        className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none"
-                    >
+                    <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
                         <div className="relative w-auto my-6 mx-auto">
                             {/*content*/}
                             <div className="p-3 border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                                 {/*header*/}
                                 <div className="flex items-start justify-between p-5 border-blueGray-200 rounded-t">
-                                    <div className='flex'>
-                                        <h3 className="text-xl font-semibold mx-2">
-                                            Edit Unit
-                                        </h3>
-
+                                    <div className="flex">
+                                        <h3 className="text-xl font-semibold mx-2">Edit Unit</h3>
                                     </div>
                                     <button
                                         className="p-1 ml-auto  border-0 text-black  float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
@@ -1040,10 +1755,18 @@ const Items = () => {
                                         </span>
                                     </button>
                                 </div>
-                                <div className='flex'>
+                                <div className="flex">
                                     <div className=" px-3">
-                                        <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-900">Select Basic Unit</label>
-                                        <select id="countries" class=" border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        <label
+                                            for="countries"
+                                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-900"
+                                        >
+                                            Select Basic Unit
+                                        </label>
+                                        <select
+                                            id="countries"
+                                            class=" border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        >
                                             <option value="">None</option>
                                             <option value="bags">BAGS(Bag)</option>
                                             <option value="bottle">BOTTLE(Btl)</option>
@@ -1067,8 +1790,16 @@ const Items = () => {
                                         </select>
                                     </div>
                                     <div className="px-3">
-                                        <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-900">Select Secondary Unit:</label>
-                                        <select id="countries" class=" border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        <label
+                                            for="countries"
+                                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-900"
+                                        >
+                                            Select Secondary Unit:
+                                        </label>
+                                        <select
+                                            id="countries"
+                                            class=" border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        >
                                             <option value="">None</option>
                                             <option value="bags">BAGS(Bag)</option>
                                             <option value="bottle">BOTTLE(Btl)</option>
@@ -1093,15 +1824,15 @@ const Items = () => {
                                     </div>
                                 </div>
 
-
-
-
                                 {/*footer*/}
                                 <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
                                     <button
                                         className="bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                                         type="button"
-                                        onClick={() => setShowEditUnitModal(false)}
+                                        onClick={() => {
+                                            handleClick();
+                                            setShowEditUnitModal(false);
+                                        }}
                                     >
                                         Save Changes
                                     </button>
@@ -1112,7 +1843,6 @@ const Items = () => {
                     <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
                 </>
             ) : null}
-
             {showAddCategory ? (
                 <>
                     <div
@@ -1138,9 +1868,9 @@ const Items = () => {
                                         </span>
                                     </button>
                                 </div>
-                                
+
                                 <div>
-                                <input className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none " type="text" name="input-name" title="Input title" placeholder="Add Category" />
+                                    <input className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none " type="text" name="input-name" title="Input title" placeholder="Add Category" />
 
                                 </div>
 
@@ -1162,6 +1892,8 @@ const Items = () => {
                     <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
                 </>
             ) : null}
+
+
 
         </>
     )

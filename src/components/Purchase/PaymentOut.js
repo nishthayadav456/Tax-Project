@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import Table from '../Table';
 import { isDisabled } from '@testing-library/user-event/dist/utils';
 import { type } from '@testing-library/user-event/dist/type';
+import { Link } from 'react-router-dom';
 const PaymentOut = () => {
     const [gridApi, setGridApi] = useState(null);
     const [searchText, setSearchText] = useState('');
@@ -198,14 +199,11 @@ const PaymentOut = () => {
                                     
                                 </div>
 
-                                <div className="relative p-6 flex">
-                                    <button
-                                        className="bg-gray-500 text-white active:bg-gray-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                                        type="button"
-                                        onClick={() => setShowAddBankAcModal(!showAddBankAcModal)}
-                                    >
-                                        Edit Unit
-                                    </button>
+                                <div   className="relative p-6 flex">
+                                    <Link to="/add-bank-account" className="bg-gray-500 text-white active:bg-gray-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150">
+                                    Add Bank Account
+                                    </Link>
+                                    
                                 </div>
                                 <div className='flex my-3'>
                                     <div className="input_container mx-2 ">
@@ -343,6 +341,8 @@ const PaymentOut = () => {
                     <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
                 </>
             ) : null}
+
+
         </>
     );
 };

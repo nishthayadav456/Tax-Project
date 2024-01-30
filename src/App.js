@@ -19,7 +19,9 @@ import PaymentOut from './components/Purchase/PaymentOut';
 import PurchaseOrder from './components/Purchase/PurchaseOrder';
 import PurchaseReturn from './components/Purchase/PurchaseReturn';
 import DebitNote from './components/Purchase/DebitNote';
-import Expanse from './components/Expanse';
+import Expense from './components/Expense';
+import AddBankAc from './components/Cash,Bank,Assets/AddBankAc';
+import CashInHand from './components/Cash,Bank,Assets/CashInHand';
 // import ModalApp from './components/ModalApp';
 
 function App() {
@@ -47,7 +49,9 @@ function App() {
             <Route path="/purchase-order" exact element={<PurchaseOrder />} />
             <Route path="/purchase-return" exact element={<PurchaseReturn />} />
             <Route path="/debit-note" exact element={<DebitNote />} />
-            <Route path="/expanse" exact element={<Expanse />} />
+            <Route path="/expense" exact element={<Expense />} />
+            <Route path="/add-bank-account" exact element={<AddBankAc />} />
+            <Route path="/cash-in-hand" exact element={<CashInHand />} />
           </Routes>
         </div>
       </div>
