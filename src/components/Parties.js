@@ -26,6 +26,7 @@ const Parties = () => {
     const [selectedPartyData, setSelectedPartyData] = useState([])
 
     const [partyGroups, setPartyGroups] = useState([]);
+    const [firmId, setFirmId] = useState("65b6812c2f4f0b676b773a86")
 
     const [data1, setData1] = useState({
         partyName: "",
@@ -179,20 +180,8 @@ const Parties = () => {
         }
     };
 
-    useEffect(() => {
-        fetchData();
-    }, [])
-
-    useEffect(() => {
-        console.log("partyData", partydata);
-
-    }, [partydata, setPartyData])
-
-
-
-    useEffect(() => {
+    const fetchPartyGroups = () =>{
         const token = localStorage.getItem("token");
-        const firmId = "65b6812c2f4f0b676b773a86"; // Replace with your actual firmId
         const headers = {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -203,15 +192,22 @@ const Parties = () => {
             .get(`https://ca-backend-api.onrender.com/${firmId}/party/allPartyGroup`, {
                 headers,
             })
-            .then((res) => setPartyGroups(res.data.result))
+            .then((res) => setPartyGroups(res.data.data))
             .catch((err) => console.log("error in get groups ", err));
-        console.log("partyGroups", partyGroups)
-    }, []);
+
+    }
+
+
+    useEffect(() => {
+        fetchPartyGroups();
+        fetchData();
+    }, [])
+    
+
 
 
     const handlePartyGroup = () => {
         const token = localStorage.getItem("token");
-        const firmId = "65b0d66ab97a739aba4e508f"; // Replace with your actual firmId
         const headers = {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -220,7 +216,7 @@ const Parties = () => {
         axios
             .post(
                 `https://ca-backend-api.onrender.com/${firmId}/insertPartyGroup`,
-                { partyGroup: data1.partyGroup },
+                { partyGroupName: data1.partyGroup },
                 { headers }
             )
             .then((res) => {
@@ -228,10 +224,10 @@ const Parties = () => {
                 // After saving changes, update the party groups state
                 // setPartyGroups([...partyGroups, data1.partyGroup]);
 
-                setPartyGroups((prevPartyGroups) => [...prevPartyGroups, data1.partyGroup]);
+                // setPartyGroups((prevPartyGroups) => [...prevPartyGroups, data1.partyGroup]);
                 // Reset the input field value
 
-                setData1({ ...data1, partyGroup: "" });
+                // setData1({ ...data1, partyGroup: "" });
 
             })
             .catch((error) => {
@@ -451,6 +447,9 @@ const Parties = () => {
                                         <div class="flex flex-col mx-2 ">
                                             <label class="input_label">Party Group</label>
                                             <select className='input_field' name="partyGroup" id="" value={data1.partyGroup} onChange={changeHandle}>
+                                                {partyGroups?.map((e)=>
+                                                <option value="{e.partyGroupName}">{e.partyGroupName}</option>
+                                                )}
                                                 <option value="General">General</option>
                                             </select>
                                         </div>
