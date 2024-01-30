@@ -2,25 +2,10 @@ import { Fragment } from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 // import OnClickOutside from 'react-onclickoutside';
+import axios from "axios";
+
 import Table from './Table';
 
-
-// Sample data array
-const rowData = [
-    { date: '2022-01-01', categoryName: 'Category 1', type: 'Income', total: 1000, Number: '001', balance: 0 },
-    { date: '2022-01-02', categoryName: 'Category 2', type: 'Expense', total: 500, Number: '002', balance: 500 },
-    // Add more sample data as needed
-];
-
-// Column definitions
-const columnDefs = [
-    { headerName: 'Type', field: 'type' },
-    { headerName: 'Number', field: 'Number' },
-    { headerName: 'Date', field: 'date' },
-    { headerName: 'Total', field: 'total' },
-    { headerName: 'Balance', field: 'balance' },
-    { headerName: 'Category Name', field: 'categoryName' },
-];
 
 
 function classNames(...classes) {
@@ -28,8 +13,6 @@ function classNames(...classes) {
 }
 
 const Parties = () => {
-    const [sortedColumn, setSortedColumn] = useState(null);
-    const [sortDirection, setSortDirection] = useState(1);
     const [isDivClicked, setDivClicked] = useState(false);
     const [showAddPartyModal, setshowAddPartyModal] = useState(false);
     const [showAddGroupModal, setshowAddGroupModal] = useState(false);
@@ -38,10 +21,98 @@ const Parties = () => {
     const [creditLimit, setCreditLimit] = useState(false);
     const [fields, setFields] = useState([{ name: '', value: '' }]);
 
+
+    const [partydata, setPartyData] = useState([])
+    const [selectedPartyData, setSelectedPartyData] = useState([])
+
+    const [partyGroups, setPartyGroups] = useState([]);
+
+    const [data1, setData1] = useState({
+        partyName: "",
+        gstNo: "",
+        phoneNumber: "",
+        partyGroup: "",
+        gstType: "",
+        state: "",
+        billingAddress: "",
+        shippingAddress: "",
+        openingBalance: "",
+        email: "",
+        asOfDate: "",
+        additionalField: [{}],
+    });
+
+
+
     const divRef = useRef(null);
     const searchRef = useRef(null);
 
+    const changeHandle = (event) => {
+        setData1({ ...data1, [event.target.name]: event.target.value });
+    };
 
+
+    // Sample data array
+    const rowData = partydata?.map((e, index) => ({
+        date: e.asOfDate,
+        type: 'openingBalance',
+        total: e.openingBalance,
+        Number: index + 1,
+        balance: e.openingBalance
+    }));
+    // Column definitions
+    const columnDefs = [
+        { headerName: 'Type', field: 'type' },
+        { headerName: 'Number', field: 'Number' },
+        { headerName: 'Date', field: 'date' },
+        { headerName: 'Total', field: 'total' },
+        { headerName: 'Balance', field: 'balance' },
+    ];
+
+
+
+    const handleClick = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            console.log("Token:", token);
+
+            const requestData = {
+                partyName: data1.partyName,
+                gstNo: data1.gstNo,
+                gstinNumber: data1.gstinNumber,
+                phoneNumber: data1.phoneNumber,
+                partyGroup: data1.partyGroup,
+                gstType: data1.gstType,
+                state: data1.state,
+                billingAddress: data1.billingAddress,
+                shippingAddress: data1.shippingAddress,
+                openingBalance: data1.openingBalance,
+                email: data1.email,
+                asOfDate: data1.asOfDate,
+                additionalField: data1.additionalField,
+            };
+            console.log("token", token);
+
+            const headers = {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            };
+
+            const response = await axios.post(
+                "https://ca-backend-api.onrender.com/65b0d66ab97a739aba4e508f/party",
+                requestData,
+                { headers }
+
+            );
+
+            console.log("post", requestData, response.data);
+            setData1(response.data.party);
+            localStorage.setItem("token", response.data.result.token);
+        }
+        catch (error) {
+            console.error(error.message);
+        }
+    };
 
     const handleClickOutside = (event) => {
         if (
@@ -85,6 +156,92 @@ const Parties = () => {
         setFields(newFields);
     };
 
+
+
+    const fetchData = async () => {
+
+        try {
+            const token = localStorage.getItem("token");
+            console.log("Token:", token);
+            const headers = {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            };
+            const getDataResponse = await axios.get(
+                "https://ca-backend-api.onrender.com/65b0d66ab97a739aba4e508f/party/getAll", { headers }
+            );
+
+            setPartyData(getDataResponse.data.data);
+
+        } catch (error) {
+
+            console.error(error.message);
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, [])
+
+    useEffect(() => {
+        console.log("partyData", partydata);
+
+    }, [partydata, setPartyData])
+
+
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        const firmId = "65b6812c2f4f0b676b773a86"; // Replace with your actual firmId
+        const headers = {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        };
+
+        // Fetch party groups
+        axios
+            .get(`https://ca-backend-api.onrender.com/${firmId}/party/allPartyGroup`, {
+                headers,
+            })
+            .then((res) => setPartyGroups(res.data.result))
+            .catch((err) => console.log("error in get groups ", err));
+        console.log("partyGroups", partyGroups)
+    }, []);
+
+
+    const handlePartyGroup = () => {
+        const token = localStorage.getItem("token");
+        const firmId = "65b0d66ab97a739aba4e508f"; // Replace with your actual firmId
+        const headers = {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        };
+
+        axios
+            .post(
+                `https://ca-backend-api.onrender.com/${firmId}/insertPartyGroup`,
+                { partyGroup: data1.partyGroup },
+                { headers }
+            )
+            .then((res) => {
+                console.log("Response from server:", res);
+                // After saving changes, update the party groups state
+                // setPartyGroups([...partyGroups, data1.partyGroup]);
+
+                setPartyGroups((prevPartyGroups) => [...prevPartyGroups, data1.partyGroup]);
+                // Reset the input field value
+
+                setData1({ ...data1, partyGroup: "" });
+
+            })
+            .catch((error) => {
+                console.log("error in Post");
+                console.error(error.message);
+            });
+            console.log("partyGroups", partyGroups)
+    };
+
+
     return (
         <>
             <div className='' style={{ height: "90vh" }}>
@@ -92,7 +249,7 @@ const Parties = () => {
                     <h2 className='text-xl'>Name</h2>
                 </div>
                 <div className='flex h-full'>
-                    <div className='w-1/4 border shadow-lg m-1'>
+                    <div className='w-1/4 border shadow-lg m-1 overflow-auto'>
                         <div className='flex items-center justify-around shadow m-2 p-2'>
                             <div className='p-2 rounded-full bg-red-300'>
                                 <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 19 18">
@@ -202,10 +359,12 @@ const Parties = () => {
                         </div>
                         <div>
                             <div>
-                                <div className='flex p-2 justify-between text-gray-500 hover:bg-gray-200 duration-150'>
-                                    <div>party1</div>
-                                    <div>0.00</div>
-                                </div>
+                                {partydata?.map((e) => (
+                                    <div className='flex p-2 justify-between text-gray-500 hover:bg-gray-200 duration-150' onClick={() => setSelectedPartyData(e)} >
+                                        <div>{e.partyName}</div>
+                                        <div>{e.openingBalance}</div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
 
@@ -213,19 +372,19 @@ const Parties = () => {
                     <div className='w-3/4 '>
                         <div className='border shadow-lg m-1 p-2'>
                             <div>
-                                <div>Party1</div>
+                                <div>{selectedPartyData?.partyName}</div>
                             </div>
                             <div className='text-sm'>
                                 <div className='flex justify-between my-2'>
-                                    <h2>Phone: <span>9518549504</span></h2>
-                                    <h2>Address <span className='text-blue-500'>Add Address</span></h2>
+                                    <h2>Phone: <span>{selectedPartyData?.phoneNumber}</span></h2>
+                                    <h2>Address <span className='text-blue-500'>{selectedPartyData?.billingAddress}</span></h2>
                                 </div>
                                 <div className='flex justify-between my-2'>
-                                    <h2>Email: <span className='text-blue-500'>Add Email</span></h2>
-                                    <h2>GSTIN <span className='text-blue-500'>Add GSTIN</span></h2>
+                                    <h2>Email: <span className='text-blue-500'>{selectedPartyData?.email}</span></h2>
+                                    <h2>GSTIN <span className='text-blue-500'>{selectedPartyData?.gstNo}</span></h2>
                                 </div>
                                 <div className='flex justify-between my-2'>
-                                    <h2>No Creadit card Limit Set: <span className='text-blue-500'>Set Creadit card</span></h2>
+                                    <h2>No Credit card Limit Set:{" "} <span className='text-blue-500'>Set Creadit card</span></h2>
                                 </div>
                             </div>
                         </div>
@@ -275,23 +434,23 @@ const Parties = () => {
 
                                         <div class="input_container mx-2 ">
                                             <label class="input_label">Party Name</label>
-                                            <input class="input_field w-full" type="text" name="input-name" title="Inpit title" placeholder='Party Name' />
+                                            <input class="input_field w-full" type="text" name="partyName" title="Inpit title" placeholder='Party Name' value={data1.partyName} onChange={changeHandle} />
                                         </div>
                                         <div class="input_container mx-2 ">
                                             <label class="input_label">GSTIN</label>
-                                            <input class="input_field w-full" type="number" name="input-name" title="Inpit title" placeholder="GSTIN" />
+                                            <input class="input_field w-full" type="number" name="gstNo" title="Inpit title" placeholder="GSTIN" value={data1.gstNo} onChange={changeHandle} />
                                         </div>
 
                                         <div class="input_container mx-2 ">
                                             <label class="input_label">Phone Number</label>
-                                            <input class="input_field w-full" type="number" name="input-name" title="Inpit title" placeholder="Phone Number" />
+                                            <input class="input_field w-full" type="number" name="phoneNumber" title="Inpit title" placeholder="Phone Number" value={data1.phoneNumber} onChange={changeHandle} />
                                         </div>
                                     </div>
                                     <div className='py-3 flex justify-start items-center'>
 
                                         <div class="flex flex-col mx-2 ">
                                             <label class="input_label">Party Group</label>
-                                            <select className='input_field' name="" id="">
+                                            <select className='input_field' name="partyGroup" id="" value={data1.partyGroup} onChange={changeHandle}>
                                                 <option value="General">General</option>
                                             </select>
                                         </div>
@@ -313,7 +472,9 @@ const Parties = () => {
 
                                                 <div class="input_container mx-2 ">
                                                     <label class="input_label">GST Type</label>
-                                                    <select class="input_field">
+                                                    <select class="input_field" name="gstType"
+                                                        value={data1.gstType}
+                                                        onChange={changeHandle} >
                                                         <option value=''>Unregistered/Consumer</option>
                                                         <option value=''>Registered Business - Regular</option>
                                                         <option value=''>Registered Business - Composition</option>
@@ -323,7 +484,11 @@ const Parties = () => {
 
                                                 <div class="input_container mx-2">
                                                     <label class="input_label">State</label>
-                                                    <select id="countries" class="input_field">
+                                                    <select id="countries" class="input_field"
+                                                        name="state"
+                                                        value={data1.state}
+                                                        onChange={changeHandle}
+                                                    >
                                                         <option value=''>None</option>
                                                         <option value="Andhra Pradesh">Andhra Pradesh</option>
                                                         <option value="Arunachal Pradesh">Arunachal Pradesh</option>
@@ -364,14 +529,30 @@ const Parties = () => {
 
                                                 <div class="input_container mx-2 ">
                                                     <label class="input_label">Email</label>
-                                                    <input class="input_field w-full" type="email" name="input-name" title="Input title" placeholder="Email" />
+                                                    <input
+                                                        class="input_field w-full"
+                                                        type="email"
+                                                        name="email"
+                                                        title="Input title"
+                                                        placeholder="Email"
+                                                        value={data1.email}
+                                                        onChange={changeHandle}
+                                                    />
                                                 </div>
                                             </div>
 
                                             <div className="p-6 flex ">
                                                 <div class="input_container mx-2 ">
                                                     <label class="input_label">Billing Address</label>
-                                                    <textarea className='input_field' cols="30" rows="10" placeholder='Billing Address'></textarea>
+                                                    <textarea
+                                                        className="input_field"
+                                                        cols="30"
+                                                        rows="10"
+                                                        placeholder="Billing Address"
+                                                        name="billingAddress"
+                                                        value={data1.billingAddress}
+                                                        onChange={changeHandle}
+                                                    ></textarea>
                                                     {/* <input class="input_field w-full" type="email" name="input-name" title="Input title" placeholder="Email" /> */}
                                                 </div>
 
@@ -381,7 +562,15 @@ const Parties = () => {
                                                         <label class="input_label">Shipping Address</label>
                                                     )}
                                                     {shippingAddress && (
-                                                        <textarea className='input_field' cols="30" rows="10" placeholder='Shipping Address'></textarea>
+                                                        <textarea
+                                                            className="input_field"
+                                                            cols="30"
+                                                            rows="10"
+                                                            placeholder="Shipping Address"
+                                                            name="shippingAddress"
+                                                            value={data1.shippingAddress}
+                                                            onChange={changeHandle}
+                                                        ></textarea>
                                                     )}
 
                                                 </div>
@@ -402,14 +591,29 @@ const Parties = () => {
                                     {viewInputs === 'credit-&-balance' && (
                                         <div>
                                             <div className="p-6 flex">
-
                                                 <div class="input_container mx-2 ">
                                                     <label class="input_label">Opening Balance:</label>
-                                                    <input class="input_field w-full" type="text" name="input-name" title="Input title" placeholder="Opening Qty" />
+                                                    <input
+                                                        class="input_field w-full"
+                                                        type="text"
+                                                        name="openingBalance"
+                                                        title="Input title"
+                                                        placeholder="Opening Qty"
+                                                        value={data1.openingBalance}
+                                                        onChange={changeHandle}
+                                                    />
                                                 </div>
                                                 <div class="input_container mx-2 ">
                                                     <label class="input_label">As Of Date :</label>
-                                                    <input class="input_field w-full" type="date" name="input-name" title="Input title" placeholder="As Of Date :" />
+                                                    <input
+                                                        class="input_field w-full"
+                                                        type="date"
+                                                        name="asOfDate"
+                                                        title="Input title"
+                                                        placeholder="As Of Date :"
+                                                        value={data1.asOfDater}
+                                                        onChange={changeHandle}
+                                                    />
                                                 </div>
                                             </div>
 
@@ -436,27 +640,61 @@ const Parties = () => {
                                         </div>
                                     )}
 
-                                    {viewInputs === 'additional-fields' && (
+                                    {viewInputs === "additional-fields" && (
                                         <div>
                                             {fields.map((field, index) => (
-                                                <div className='flex justify-center items-center' key={index}>
+                                                <div
+                                                    className="flex justify-center items-center"
+                                                    key={index}
+                                                >
                                                     <div class="input_container mx-2 ">
                                                         <label class="input_label">Field Name</label>
-                                                        <input class="input_field w-full" type="text" name="input-name" title="Input title" placeholder="Field Name" value={field.name} onChange={(e) => handleFieldChange(index, 'name', e.target.value)} />
+                                                        <input
+                                                            class="input_field w-full"
+                                                            type="text"
+                                                            name={`input-name-${index}`}
+                                                            title={`Input title ${index}`}
+                                                            placeholder="Field Name"
+                                                            value={field.name || ""}
+                                                            onChange={(e) => {
+
+                                                                handleFieldChange(index, "name", e.target.value)
+                                                            }}
+                                                        />
                                                     </div>
                                                     <div class="input_container mx-2 ">
                                                         <label class="input_label">Field Value</label>
-                                                        <input class="input_field w-full" type="text" name="input-name" title="Input title" placeholder="Field Value" value={field.value} onChange={(e) => handleFieldChange(index, 'value', e.target.value)} />
-                                                    </div>
-                                                    <button className='text-white bg-red-600 px-2 py-1 rounded' onClick={() => removeField(index)}>
-                                                    <svg class="w-4 h-4 font-semibold text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
-                                                </svg>
-                                                    </button>
+                                                        <input
+                                                            class="input_field w-full"
+                                                            type="text"
+                                                            name={`input-value-${index}`}
+                                                            title={`Input title ${index}`}
+                                                            placeholder="Field Value"
+                                                            value={field.value || ""}
+                                                            onChange={(e) => {
 
+                                                                handleFieldChange(
+                                                                    index,
+                                                                    "value",
+                                                                    e.target.value
+                                                                )
+                                                            }}
+                                                        />
+                                                    </div>
+                                                    <button
+                                                        className="text-white bg-red-600 px-2 py-1 rounded"
+                                                        onClick={() => removeField(index)}
+                                                    >
+                                                        Remove
+                                                    </button>
                                                 </div>
                                             ))}
-                                            <button className='text-white bg-green-600 px-2 py-1 rounded m-2' onClick={addField}>Add Field</button>
+                                            <button
+                                                className="text-white bg-green-600 px-2 py-1 rounded m-2"
+                                                onClick={addField}
+                                            >
+                                                Add Field
+                                            </button>
                                         </div>
                                     )}
 
@@ -470,7 +708,10 @@ const Parties = () => {
                                     <button
                                         className="bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                                         type="button"
-                                        onClick={() => setshowAddPartyModal(false)}
+                                        onClick={() => {
+                                            setshowAddPartyModal(false);
+                                            handleClick();
+                                        }}
                                     >
                                         Save Changes
                                     </button>
@@ -483,22 +724,16 @@ const Parties = () => {
             ) : null}
 
 
-
             {showAddGroupModal ? (
                 <>
-                    <div
-                        className="justify-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none"
-                    >
+                    <div className="justify-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
                         <div className="relative w-auto my-6 mx-auto">
                             {/*content*/}
                             <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                                 {/*header*/}
                                 <div className="flex items-start justify-between p-5 border-blueGray-200 rounded-t">
-                                    <div className='flex'>
-                                        <h3 className="text-xl font-semibold mx-2">
-                                            Add Party
-                                        </h3>
-
+                                    <div className="flex">
+                                        <h3 className="text-xl font-semibold mx-2">Add Party</h3>
                                     </div>
                                     <button
                                         className="p-1 ml-auto  border-0 text-black  float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
@@ -512,14 +747,25 @@ const Parties = () => {
 
                                 <div class="input_container p-6">
                                     <label class="input_label">Enter Party Group Name</label>
-                                    <input class="input_field w-full" type="text" name="input-name" title="Input title" placeholder="Enter Party Group Name" />
+                                    <input
+                                        class="input_field w-full"
+                                        type="text"
+                                        name="partyGroup"
+                                        title="Input title"
+                                        placeholder="Enter Party Group Name"
+                                        value={data1.partyGroup}
+                                        onChange={changeHandle}
+                                    />
                                 </div>
 
                                 <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
                                     <button
                                         className="bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                                         type="button"
-                                        onClick={() => setshowAddGroupModal(false)}
+                                        onClick={() => {
+                                            handlePartyGroup()
+                                            setshowAddGroupModal(false)
+                                        }}
                                     >
                                         Save Changes
                                     </button>
@@ -530,6 +776,8 @@ const Parties = () => {
                     <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
                 </>
             ) : null}
+
+
         </>
     )
 }
