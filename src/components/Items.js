@@ -1,32 +1,14 @@
 import { Fragment } from "react";
-import axios from "axios";
 import { Menu, Transition } from "@headlessui/react";
 import React, { useState, useEffect, useRef, useCallback } from "react";
-// import OnClickOutside from 'react-onclickoutside';
+import axios from "axios";
 import Table from "./Table";
+
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
-// Sample data array
-const rowData = [
-  {
-    date: "2022-01-01",
-    categoryName: "Category 1",
-    type: "Income",
-    total: 1000,
-    Number: "001",
-    balance: 0,
-  },
-  {
-    date: "2022-01-02",
-    categoryName: "Category 2",
-    type: "Expense",
-    total: 500,
-    Number: "002",
-    balance: 500,
-  },
-  // Add more sample data as needed
-];
+
+
 
 // Column definitions
 const columnDefs = [
@@ -35,20 +17,19 @@ const columnDefs = [
   { headerName: "Date", field: "date" },
   { headerName: "Total", field: "total" },
   { headerName: "Balance", field: "balance" },
-  { headerName: "Category Name", field: "categoryName" },
+  
 ];
 
 const Items = () => {
-  const [additionalFields, setAdditionalFields] = useState(false);
-  const [sortedColumn, setSortedColumn] = useState(null);
-  const [sortDirection, setSortDirection] = useState(1);
   const [isDivClicked, setDivClicked] = useState(false);
   const [toggle, setToggle] = useState(false);
   const [stock, setStock] = useState(false);
   const [viewInputs, setViewInputs] = useState("pricing");
+
   const [showAdjustItemModal, setshowAdjustItemModal] = useState(false);
   const [showAddItemModal, setshowAddItemModal] = useState(false);
   const [showEditUnitModal, setShowEditUnitModal] = useState(false);
+
   const [tracking, setTracking] = useState(null);
   const [addRawMaterial, setAddRawMaterial] = useState([
     { name: "", quantity: "", price: "", tax: "", amount: "" },
@@ -58,49 +39,192 @@ const Items = () => {
   ]);
   const [additionalCostBtn, setAdditionalCostBtn] = useState(false);
 
-  const divRef = useRef(null);
-  const searchRef = useRef(null);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [selectedCategoryOptions, setSelectedCategoryOptions] = useState([]);
   const [showAddCategory, setShowAddCategory] = useState(false);
+
   const [itemdata, setitemData] = useState([]);
   const [selectedPartyData, setSelectedPartyData] = useState([]);
 
-  const [data1, setData1] = useState({
-  category: "",
-  itemName: "",
-  itemHsn: "",
-  description: "",
-  itemCode: "",
-  seleteUnit: [{ baseUnit: "", secondaryUnit: "" }],
-  batchTracking: "",
-  serialTracking: "",
-  mrp: [{ mrp:"", disOnMrpForSale: "", disOnMrpForWholesale: "" }],
-  salePrice: [{
-    salePriceWithTax: "",
-    salePriceWithoutTax:"" ,
-    disOnSalePriceAmount: "",
-    disOnSalePricePerceantage: "",
-  }],
-  wholessalePrice: [{
-    wholesalePriceWithoutTax:"",
-    wholesalePriceWithTax: "",
-    minimumWholesaleQty: "",
-  }],
-  purchasePrice: [{ purchasePriceWithTax: "", purchasePriceWitouthTax: "" }],
-  taxRate: "",
-  stock: [{
-    openingQuantity:"",
-    atPrice:"",
-    asOfDate: "",
-    minStockToMaintain: "",
-    location: "",
-  }],
+  const [salesWithTax, setSalesWithTax] = useState(true);
+  const [disOnSalePercentage, setDisOnSalePercentage] = useState(true);
+  const [wholesalesWithTax, setWholealesWithTax] = useState(true);
+  const [purchaseWithTax, setPurchaseWithTax] = useState(true);
 
+  const [firmId, setFirmId] = useState("65b6812c2f4f0b676b773a86");
+
+  const divRef = useRef(null);
+  const searchRef = useRef(null);
+
+  const [data1, setData1] = useState({
+    category: "",
+    itemName: "",
+    itemHsn: "",
+    description: "",
+    itemCode: "",
+    seleteUnit: [{ baseUnit: "", secondaryUnit: "" }],
+    batchTracking: "",
+    serialTracking: "",
+    mrp: [{ mrp: "", disOnMrpForSale: "", disOnMrpForWholesale: "" }],
+    salePrice: [
+      {
+        salePriceWithTax: "",
+        salePriceWithoutTax: "",
+        disOnSalePriceAmount: "",
+        disOnSalePricePerceantage: "",
+      },
+    ],
+    wholessalePrice: [
+      {
+        wholesalePriceWithoutTax: "",
+        wholesalePriceWithTax: "",
+        minimumWholesaleQty: "",
+      },
+    ],
+    purchasePrice: [{ purchasePriceWithTax: "", purchasePriceWitouthTax: "" }],
+    taxRate: "",
+    stock: [
+      {
+        openingQuantity: "",
+        atPrice: "",
+        asOfDate: "",
+        minStockToMaintain: "",
+        location: "",
+      },
+    ],
   });
   const changeHandle = (event) => {
-    setData1({ ...data1, [event.target.name]: event.target.value });
+    // setData1({ ...data1, [event.target.name]: event.target.value });
+
+    if (
+      event.target.name === "mrp" ||
+      event.target.name === "disOnMrpForSale" ||
+      event.target.name === "disOnMrpForWholesale"
+    ) {
+      console.log("MRP", event.target.name, event.target.value);
+      setData1({
+        ...data1,
+        mrp: [{ ...data1.mrp[0], [event.target.name]: event.target.value }],
+      });
+      // setData1({...data1,salePrice: [{...data1.mrp[0], [event.target.name]: event.target.value}],});
+    } else if (event.target.name === "salePriceWithTax") {
+      setData1({
+        ...data1,
+        salePrice: [
+          {
+            ...data1.salePrice[0],
+            salePriceWithTax: event.target.value,
+            salePriceWithoutTax: "",
+          },
+        ],
+      });
+    } else if (event.target.name === "salePriceWithoutTax") {
+      setData1({
+        ...data1,
+        salePrice: [
+          {
+            ...data1.salePrice[0],
+            salePriceWithoutTax: event.target.value,
+            salePriceWithTax: "",
+          },
+        ],
+      });
+    } else if (event.target.name === "disOnSalePricePerceantage") {
+      setData1({
+        ...data1,
+        salePrice: [
+          {
+            ...data1.salePrice[0],
+            disOnSalePricePerceantage: event.target.value,
+            disOnSalePriceAmount: "",
+          },
+        ],
+      });
+    } else if (event.target.name === "disOnSalePriceAmount") {
+      setData1({
+        ...data1,
+        salePrice: [
+          {
+            ...data1.salePrice[0],
+            disOnSalePriceAmount: event.target.value,
+            disOnSalePricePerceantage: "",
+          },
+        ],
+      });
+    } else if (event.target.name === "wholesalePriceWithTax") {
+      setData1({
+        ...data1,
+        wholessalePrice: [
+          {
+            ...data1.wholessalePrice[0],
+            wholesalePriceWithTax: event.target.value,
+            wholesalePriceWithoutTax: "",
+          },
+        ],
+      });
+    } else if (event.target.name === "wholesalePriceWithoutTax") {
+      setData1({
+        ...data1,
+        wholessalePrice: [
+          {
+            ...data1.wholessalePrice[0],
+            wholesalePriceWithoutTax: event.target.value,
+            wholesalePriceWithTax: "",
+          },
+        ],
+      });
+    } else if (event.target.name === "minimumWholesaleQty") {
+      setData1({
+        ...data1,
+        wholessalePrice: [
+          {
+            ...data1.wholessalePrice[0],
+            minimumWholesaleQty: event.target.value,
+          },
+        ],
+      });
+    } else if (event.target.name === "purchasePriceWithTax") {
+      setData1({
+        ...data1,
+        purchasePrice: [
+          {
+            ...data1.purchasePrice[0],
+            purchasePriceWithTax: event.target.value,
+            purchasePriceWitouthTax: "",
+          },
+        ],
+      });
+    } else if (event.target.name === "purchasePriceWitouthTax") {
+      setData1({
+        ...data1,
+        purchasePrice: [
+          {
+            ...data1.purchasePrice[0],
+            purchasePriceWitouthTax: event.target.value,
+            purchasePriceWithTax: "",
+          },
+        ],
+      });
+    } else {
+      setData1({ ...data1, [event.target.name]: event.target.value });
+    }
+    console.log("data1", data1);
   };
+
+
+  // Sample data array
+const rowData = itemdata?.map((e,index)=>({
+  date: e.stock[0]?.asOfDate,
+  type: "openingStock",
+  total: e.mrp[0]?.mrp,
+  Number: index+1,
+  balance: e.mrp[0]?.mrp,
+}))
+ 
+ useEffect(()=>{
+console.log("saleprice",selectedPartyData)
+ },[selectedPartyData,setSelectedPartyData])
+  // Add more sample data as needed
 
   const handleClick = async () => {
     try {
@@ -128,16 +252,19 @@ const Items = () => {
           salePriceWithTax: data1.salePrice[0].salePriceWithTax,
           salePriceWithoutTax: data1.salePrice[0].salePriceWithoutTax,
           disOnSalePriceAmount: data1.salePrice[0].disOnSalePriceAmount,
-          disOnSalePricePerceantage: data1.salePrice[0].disOnSalePricePerceantage,
+          disOnSalePricePerceantage:
+            data1.salePrice[0].disOnSalePricePerceantage,
         },
         wholessalePrice: {
-          wholesalePriceWithoutTax: data1.wholessalePrice[0].wholesalePriceWithoutTax,
-          wholesalePriceWithTax: data1. wholessalePrice[0].wholesalePriceWithTax,
-          minimumWholesaleQty: data1. wholessalePrice[0].minimumWholesaleQty,
+          wholesalePriceWithoutTax:
+            data1.wholessalePrice[0].wholesalePriceWithoutTax,
+          wholesalePriceWithTax: data1.wholessalePrice[0].wholesalePriceWithTax,
+          minimumWholesaleQty: data1.wholessalePrice[0].minimumWholesaleQty,
         },
         purchasePrice: {
           purchasePriceWithTax: data1.purchasePrice[0].purchasePriceWithTax,
-          purchasePriceWitouthTax: data1.purchasePrice[0].purchasePriceWitouthTax,
+          purchasePriceWitouthTax:
+            data1.purchasePrice[0].purchasePriceWitouthTax,
         },
         taxRate: data1.taxRate,
         stock: {
@@ -148,8 +275,8 @@ const Items = () => {
           location: data1.stock[0].location,
         },
       };
-      
-      console.log(requestData);
+
+      console.log("requestData", requestData);
 
       const headers = {
         "Content-Type": "application/json",
@@ -157,7 +284,7 @@ const Items = () => {
       };
 
       const response = await axios.post(
-        "https://ca-backend-api.onrender.com/65b6812c2f4f0b676b773a86/insertItem",
+        `https://ca-backend-api.onrender.com/${firmId}/insertItem`,
         requestData,
         { headers }
       );
@@ -203,6 +330,7 @@ const Items = () => {
   const handleViewInputButton = (selectedView) => {
     setViewInputs(selectedView);
   };
+
   const addRawMaterialFunc = () => {
     setAddRawMaterial([
       ...addRawMaterial,
@@ -239,34 +367,6 @@ const Items = () => {
     setAddAdditionalCost(newItems);
   };
 
- 
-   const fetchData = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      console.log("Token:", token);
-      const headers = {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      };
-      const getDataResponse = await axios.get(
-        "https://ca-backend-api.onrender.com/65b76ea37c61605c538a82c5/item/allItem",
-        { headers }
-      );
-
-      setitemData(getDataResponse.data.data);
-    } catch (error) {
-      console.error(error.message);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    console.log("itemdata", itemdata);
-  }, [itemdata, setitemData]);
-
   const categoryOptions = [
     { id: 1, label: "Option 1" },
     { id: 2, label: "Option 2" },
@@ -291,6 +391,34 @@ const Items = () => {
       setSelectedCategoryOptions([...selectedCategoryOptions, option.id]);
     }
   };
+
+  const fetchData = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      console.log("Token:", token);
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      };
+      const getDataResponse = await axios.get(
+        `https://ca-backend-api.onrender.com/${firmId}/item/allItem`,
+        { headers }
+      );
+
+      setitemData(getDataResponse.data.data);
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    console.log("itemdata", itemdata);
+  }, [itemdata, setitemData]);
+
   return (
     <>
       <div className="" style={{ height: "90vh" }}>
@@ -298,7 +426,7 @@ const Items = () => {
           <h2 className="text-xl">Name</h2>
         </div>
         <div className="flex h-full">
-          <div className="w-1/4 border shadow-lg m-1">
+          <div className="w-1/4 border shadow-lg m-1 overflow-auto">
             <div className="flex items-center justify-between m-2 my-6">
               <div>
                 <div
@@ -448,23 +576,16 @@ const Items = () => {
                 .Amount
               </div>
             </div>
-
-
             <div>
-              <div>
+              <div className="">
                 {itemdata?.map((e) => (
-                  <div
-                    className="flex p-2 justify-between text-gray-500 hover:bg-gray-200 duration-150"
-                    onClick={() => setSelectedPartyData(e)}
-                  >
+                  <div className="flex p-2 justify-between text-gray-500 hover:bg-gray-200 duration-150 overflow-auto" onClick={() => setSelectedPartyData(e)} >
                     <div>{e.itemName}</div>
-                    <div>{e.mrp}</div>
+                    <div>{e.mrp[0]?.mrp}</div>
                   </div>
                 ))}
               </div>
-              </div>
-
-
+            </div>
           </div>
 
           <div className="w-3/4 ">
@@ -498,16 +619,18 @@ const Items = () => {
               <div className="text-xs">
                 <div className="flex justify-between my-2">
                   <h2>
-                    SALE PRICE:{" "}
+                    SALE PRICE:
                     <span className="text-green-500">
-                      {selectedPartyData?.salePrice}{" "}
+                     {/* {selectedPartyData?.salePrice[0]?.salePriceWithTax} */}
+                  
+                     
                     </span>
                     (excl)
                   </h2>
                   <h2>
-                    STOCK QUANTITY{" "}
+                    STOCK QUANTITY:{" "}
                     <span className="text-blue-500">
-                      {itemdata?.selectedPartyData}
+                    {/* {selectedPartyData?.stock[0]?.openingQuantity} */}
                     </span>
                   </h2>
                 </div>
@@ -516,7 +639,7 @@ const Items = () => {
                     PURCHASE PRICE:{" "}
                     <span className="text-green-500">
                       {" "}
-                      {itemdata?.selectedPartyData}{" "}
+                      {/* {selectedPartyData?.purchasePrice[0]?.purchasePriceWithTax} */}
                     </span>
                     (excl)
                   </h2>
@@ -524,7 +647,7 @@ const Items = () => {
                     STOCK VALUE:{" "}
                     <span className="text-green-500">
                       {" "}
-                      {itemdata?.atPrice}{" "}
+                      {/* {selectedPartyData?.stock[0]?.openingQuantity} */}
                     </span>
                     (excl)
                   </h2>
@@ -642,10 +765,7 @@ const Items = () => {
                   <button
                     className="bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                     type="button"
-                    onClick={() => {
-                      handleClick();
-                      setshowAdjustItemModal(false);
-                    }}
+                    onClick={() => setshowAdjustItemModal(false)}
                   >
                     Save Changes
                   </button>
@@ -697,7 +817,7 @@ const Items = () => {
                     </div>
                   </div>
                   <button
-                    className="p-1 ml-auto  border-0 text-black  float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
+                    className="p-1 ml-auto border text-black float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
                     onClick={() => setshowAddItemModal(false)}
                   >
                     <span className=" text-black  h-6 w-6 text-2xl block outline-none focus:outline-none">
@@ -932,7 +1052,7 @@ const Items = () => {
                                   placeholder="MRP"
                                   className="border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none"
                                   name="mrp"
-                                  value={data1.mrp}
+                                  value={data1.mrp[0].mrp}
                                   onChange={changeHandle}
                                 />
                               </div>
@@ -942,7 +1062,7 @@ const Items = () => {
                                   placeholder="Disc. On MRP For Sale(%)"
                                   className="border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none"
                                   name="disOnMrpForSale"
-                                  value={data1.disOnMrpForSale}
+                                  value={data1.mrp[0].disOnMrpForSale}
                                   onChange={changeHandle}
                                 />
                               </div>
@@ -952,7 +1072,7 @@ const Items = () => {
                                   placeholder="Disc. On MRP For Wholesale(%)"
                                   className="border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none"
                                   name="disOnMrpForWholesale"
-                                  value={data1.disOnMrpForWholesale}
+                                  value={data1.mrp[0].disOnMrpForWholesale}
                                   onChange={changeHandle}
                                 />
                               </div>
@@ -966,20 +1086,37 @@ const Items = () => {
                               </h2>
                               <div className="flex">
                                 <div className="p-2">
-                                  <input
-                                    type="text"
-                                    placeholder="Sale Price"
-                                    className="border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none"
-                                    name="salePrice"
-                                    value={data1.salePrice}
-                                    onChange={changeHandle}
-                                  />
+                                  {salesWithTax ? (
+                                    <input
+                                      type="text"
+                                      placeholder="salePriceWithTax"
+                                      className="border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none"
+                                      name="salePriceWithTax"
+                                      value={
+                                        data1.salePrice[0].salePriceWithTax
+                                      }
+                                      onChange={changeHandle}
+                                    />
+                                  ) : (
+                                    <input
+                                      type="text"
+                                      placeholder="salePriceWithoutTax"
+                                      className="border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none"
+                                      name="salePriceWithoutTax"
+                                      value={
+                                        data1.salePrice[0].salePriceWithoutTax
+                                      }
+                                      onChange={changeHandle}
+                                    />
+                                  )}
+
                                   <select
                                     id=""
                                     className="border-2 rounded-r hover:border-black focus:border-blue-500 px-2 py-1"
                                     name="disOnMrpForWholesale"
-                                    value={data1.disOnMrpForWholesale}
-                                    onChange={changeHandle}
+                                    onChange={() =>
+                                      setSalesWithTax(!salesWithTax)
+                                    }
                                   >
                                     <option value="With Tax">With Tax</option>
                                     <option value="Without Tax">
@@ -988,20 +1125,40 @@ const Items = () => {
                                   </select>
                                 </div>
                                 <div className="p-2">
-                                  <input
-                                    type="text"
-                                    placeholder="Disc. on Sales Price"
-                                    className="border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none"
-                                    name="disOnSalePriceAmount"
-                                    value={data1.disOnSalePriceAmount}
-                                    onChange={changeHandle}
-                                  />
+                                  {disOnSalePercentage ? (
+                                    <input
+                                      type="text"
+                                      placeholder="Disc. on Sales Price Perceantage"
+                                      className="border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none"
+                                      name="disOnSalePricePerceantage"
+                                      value={
+                                        data1.salePrice[0]
+                                          .disOnSalePricePerceantage
+                                      }
+                                      onChange={changeHandle}
+                                    />
+                                  ) : (
+                                    <input
+                                      type="text"
+                                      placeholder="Disc. on Sales Price Amount"
+                                      className="border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none"
+                                      name="disOnSalePriceAmount"
+                                      value={
+                                        data1.salePrice[0].disOnSalePriceAmount
+                                      }
+                                      onChange={changeHandle}
+                                    />
+                                  )}
+
                                   <select
                                     id=""
                                     className="border-2 rounded-r hover:border-black focus:border-blue-500 px-2 py-1"
                                     name="disOnSalePricePerceantage"
-                                    value={data1.disOnSalePricePerceantage}
-                                    onChange={changeHandle}
+                                    onChange={() =>
+                                      setDisOnSalePercentage(
+                                        !disOnSalePercentage
+                                      )
+                                    }
                                   >
                                     <option value="Percentage">
                                       Percentage
@@ -1017,18 +1174,39 @@ const Items = () => {
                               </h2>
                               <div className="flex">
                                 <div className="p-2">
-                                  <input
-                                    type="text"
-                                    placeholder="Wholesale Price"
-                                    name="wholesalePrice"
-                                    className="border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none"
-                                    value={data1.wholesalePrice}
-                                    onChange={changeHandle}
-                                  />
+                                  {wholesalesWithTax ? (
+                                    <input
+                                      type="text"
+                                      placeholder="wholesalePriceWithTax"
+                                      name="wholesalePriceWithTax"
+                                      className="border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none"
+                                      value={
+                                        data1.wholessalePrice[0]
+                                          .wholesalePriceWithTax
+                                      }
+                                      onChange={changeHandle}
+                                    />
+                                  ) : (
+                                    <input
+                                      type="text"
+                                      placeholder="wholesalePriceWithoutTax"
+                                      name="wholesalePriceWithoutTax"
+                                      className="border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none"
+                                      value={
+                                        data1.wholessalePrice[0]
+                                          .wholesalePriceWithoutTax
+                                      }
+                                      onChange={changeHandle}
+                                    />
+                                  )}
+
                                   <select
                                     name=""
                                     id=""
                                     className="border-2 rounded-r hover:border-black focus:border-blue-500 px-2 py-1"
+                                    onChange={() =>
+                                      setWholealesWithTax(!wholesalesWithTax)
+                                    }
                                   >
                                     <option value="With Tax">With Tax</option>
                                     <option value="Without Tax">
@@ -1057,18 +1235,39 @@ const Items = () => {
                                 </h2>
                                 <div className="flex">
                                   <div className="p-2">
-                                    <input
-                                      type="text"
-                                      placeholder="Purchase Price"
-                                      className="border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none"
-                                      name="purchasePrice"
-                                      value={data1.purchasePrice}
-                                      onChange={changeHandle}
-                                    />
+                                    {purchaseWithTax ? (
+                                      <input
+                                        type="text"
+                                        placeholder="purchasePriceWithTax"
+                                        className="border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none"
+                                        name="purchasePriceWithTax"
+                                        value={
+                                          data1.purchasePrice[0]
+                                            .purchasePriceWithTax
+                                        }
+                                        onChange={changeHandle}
+                                      />
+                                    ) : (
+                                      <input
+                                        type="text"
+                                        placeholder="purchasePriceWitouthTax"
+                                        className="border-2 rounded-l hover:border-black focus:border-blue-500 px-2 py-1 outline-none"
+                                        name="purchasePriceWitouthTax"
+                                        value={
+                                          data1.purchasePrice[0]
+                                            .purchasePriceWitouthTax
+                                        }
+                                        onChange={changeHandle}
+                                      />
+                                    )}
+
                                     <select
                                       name=""
                                       id=""
                                       className="border-2 rounded-r hover:border-black focus:border-blue-500 px-2 py-1"
+                                      onChange={() =>
+                                        setPurchaseWithTax(!purchaseWithTax)
+                                      }
                                     >
                                       <option value="With Tax">With Tax</option>
                                       <option value="Without Tax">
@@ -1837,55 +2036,53 @@ const Items = () => {
           <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
         </>
       ) : null}
-       {showAddCategory ? (
-                <>
-                    <div
-                        className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none"
-                    >
-                        <div className="relative w-auto my-6 mx-auto">
-                            {/*content*/}
-                            <div className="p-3 border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
-                                {/*header*/}
-                                <div className="flex items-start justify-between p-5 border-blueGray-200 rounded-t">
-                                    <div className='flex'>
-                                        <h3 className="text-xl font-semibold mx-2">
-                                            Edit Unit
-                                        </h3>
+      {showAddCategory ? (
+        <>
+          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+            <div className="relative w-auto my-6 mx-auto">
+              {/*content*/}
+              <div className="p-3 border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                {/*header*/}
+                <div className="flex items-start justify-between p-5 border-blueGray-200 rounded-t">
+                  <div className="flex">
+                    <h3 className="text-xl font-semibold mx-2">Edit Unit</h3>
+                  </div>
+                  <button
+                    className="p-1 ml-auto  border-0 text-black  float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
+                    onClick={() => setShowAddCategory(false)}
+                  >
+                    <span className=" text-black  h-6 w-6 text-2xl block outline-none focus:outline-none">
+                      ×
+                    </span>
+                  </button>
+                </div>
 
-                                    </div>
-                                    <button
-                                        className="p-1 ml-auto  border-0 text-black  float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
-                                        onClick={() => setShowAddCategory(false)}
-                                    >
-                                        <span className=" text-black  h-6 w-6 text-2xl block outline-none focus:outline-none">
-                                            ×
-                                        </span>
-                                    </button>
-                                </div>
-                                
-                                <div>
-                                <input className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none " type="text" name="input-name" title="Input title" placeholder="Add Category" />
+                <div>
+                  <input
+                    className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none "
+                    type="text"
+                    name="input-name"
+                    title="Input title"
+                    placeholder="Add Category"
+                  />
+                </div>
 
-                                </div>
-
-
-
-                                {/*footer*/}
-                                <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
-                                    <button
-                                        className="bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                                        type="button"
-                                        onClick={() => setShowAddCategory(false)}
-                                    >
-                                        Save Changes
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
-                </>
-            ) : null}
+                {/*footer*/}
+                <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
+                  <button
+                    className="bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                    type="button"
+                    onClick={() => setShowAddCategory(false)}
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
+        </>
+      ) : null}
     </>
   );
 };

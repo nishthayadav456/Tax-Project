@@ -10,6 +10,7 @@ const [companyName,setCompanyName]=useState("")
   // const [showModal, setShowModal] = React.useState(false);
   // const [additionalFields, setAdditionalFields] = useState(false);
   const [salesExpanded, setSalesExpanded] = useState(false);
+  const [purchaseExpanded, setPurchaseExpanded] = useState(false);
 
 
   const handleButtonClick = () => {
@@ -19,7 +20,10 @@ const [companyName,setCompanyName]=useState("")
   const toggleSales = () => {
     setSalesExpanded(!salesExpanded);
   };
-
+  const togglePurchase = () => {
+    setPurchaseExpanded(!purchaseExpanded);
+    setSalesExpanded(false)
+  };
 useEffect(()=>{
   if(!save){
     return
@@ -96,52 +100,117 @@ const Nameurl=response.data.data[response.data.data.length-1].companyName
 
 
 
+            <div>
+              <div
+                className="py-2 px-2 cursor-pointer flex justify-between"
+                onClick={toggleSales}
+              >
+                <div className='flex'>
+                  <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M18 3h-5.7a2 2 0 0 0-1.4.6L3.6 11a2 2 0 0 0 0 2.8l6.6 6.6a2 2 0 0 0 2.8 0l7.4-7.5a2 2 0 0 0 .6-1.4V6a3 3 0 0 0-3-3Zm-2.4 6.4a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z" />
+                  </svg>
 
-            <div
-              className="py-2 px-2 cursor-pointer flex justify-between"
-              onClick={toggleSales}
-            >
-              <div className='flex'>
-                <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M18 3h-5.7a2 2 0 0 0-1.4.6L3.6 11a2 2 0 0 0 0 2.8l6.6 6.6a2 2 0 0 0 2.8 0l7.4-7.5a2 2 0 0 0 .6-1.4V6a3 3 0 0 0-3-3Zm-2.4 6.4a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z" />
-                </svg>
+                  <p className='px-2'>
+                    Sales
+                  </p>
+                </div>
+                {salesExpanded ?
+                  <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 15 7-7 7 7" />
+                  </svg>
 
-                <p className='px-2'>
-                  Sales
-                </p>
+                  :
+
+                  <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7" />
+                  </svg>
+                }
               </div>
-              {salesExpanded ?
-                <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 15 7-7 7 7" />
-                </svg>
 
-                :
+              <div
+                className={`overflow-hidden transition-all duration-300 mx-6 bg-gray-900 rounded ${salesExpanded ? 'max-h-screen' : 'max-h-0'
+                  }`}
+              >
+                <div className=" py-2">
+                  <Link to="/sales-invoice" className="block py-2 flex px-2">Sales Invoices</Link>
+                </div>
+                <div className=" py-2">
+                  <Link to="/estimate" className="block py-2 flex px-2">Estimate</Link>
+                </div>
+                <div className=" py-2">
+                  <Link to="/payment-in" className="block py-2 flex px-2">Payment In</Link>
+                </div>
+                <div className=" py-2">
+                  <Link to="/sale-order" className="block py-2 flex px-2">Sale Order</Link>
+                </div>
 
-                <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7" />
-                </svg>
-              }
+              </div>
             </div>
 
-            <div
-              className={`overflow-hidden transition-all duration-300 mx-6 bg-gray-900 rounded ${salesExpanded ? 'max-h-screen' : 'max-h-0'
-                }`}
-            >
-              <div className=" py-2">
-                <Link to="/sales-invoice" className="block py-2 flex px-2">Sales Invoices</Link>
-              </div>
-              <div className=" py-2">
-                <Link to="/estimate" className="block py-2 flex px-2">Estimate</Link>
-              </div>
-              <div className=" py-2">
-                <Link to="/payment-in" className="block py-2 flex px-2">Payment In</Link>
-              </div>
-              <div className=" py-2">
-                <Link to="/sale-order" className="block py-2 flex px-2">Sale Order</Link>
+
+
+
+            <div>
+              <div
+                className="py-2 px-2 cursor-pointer flex justify-between"
+                onClick={togglePurchase}
+              >
+                <div className='flex'>
+                  <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M18 3h-5.7a2 2 0 0 0-1.4.6L3.6 11a2 2 0 0 0 0 2.8l6.6 6.6a2 2 0 0 0 2.8 0l7.4-7.5a2 2 0 0 0 .6-1.4V6a3 3 0 0 0-3-3Zm-2.4 6.4a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z" />
+                  </svg>
+
+                  <p className='px-2'>
+                    Purchase
+                  </p>
+                </div>
+                {purchaseExpanded ?
+                  <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 15 7-7 7 7" />
+                  </svg>
+
+                  :
+
+                  <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7" />
+                  </svg>
+                }
               </div>
 
+              <div
+                className={`overflow-hidden transition-all duration-300 mx-6 bg-gray-900 rounded ${purchaseExpanded ? 'max-h-screen' : 'max-h-0'
+                  }`}
+              >
+                <div className=" py-2">
+                  <Link to="/purchase-bill" className="block py-2 flex px-2">Purchase Bills</Link>
+                </div>
+                <div className=" py-2">
+                  <Link to="/payment-out" className="block py-2 flex px-2">Payment Out</Link>
+                </div>
+                <div className=" py-2">
+                  <Link to="/purchase-order" className="block py-2 flex px-2">Purchase Order</Link>
+                </div>
+                <div className=" py-2">
+                  <Link to="/purchase-return" className="block py-2 flex px-2">Purchase Return</Link>
+                </div>
+
+              </div>
             </div>
 
+
+
+
+
+            <Link to="/expanse" className="block py-2 flex px-2">
+              <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                <path fill-rule="evenodd" d="M12 14a3 3 0 0 1 3-3h4a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-4a3 3 0 0 1-3-3Zm3-1a1 1 0 1 0 0 2h4v-2h-4Z" clip-rule="evenodd" />
+                <path fill-rule="evenodd" d="M12.3 3.3a1 1 0 0 1 1.4 0L16.4 6h-2.8l-1.3-1.3a1 1 0 0 1 0-1.4Zm.1 2.7L9.7 3.3a1 1 0 0 0-1.4 0L5.6 6h6.8ZM4.6 7A2 2 0 0 0 3 9v10c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2h-4a5 5 0 0 1 0-10h4a2 2 0 0 0-1.5-2h-13Z" clip-rule="evenodd" />
+              </svg>
+
+              <p className='px-2'>
+                Expanse
+              </p>
+            </Link>
             <Link to="/login" className="block py-2 flex px-2">
               <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-box-arrow-in-right" viewBox="0 0 16 16">
                 <path fill-rule="evenodd" d="M6 3.5a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 0-1 0v2A1.5 1.5 0 0 0 6.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-8A1.5 1.5 0 0 0 5 3.5v2a.5.5 0 0 0 1 0z" />
