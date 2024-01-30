@@ -40,9 +40,9 @@ const Sidebar = ({ showModal, setShowModal, isSidebarOpen, setIsSidebarOpen }) =
 
   return (
     <>
-      <div className={`bg-gray-800 text-white h-full w-1/4 sm:w-1/5 md:w-1/7 lg:w-1/7 xl:w-1/8 ${isSidebarOpen ? 'block' : 'hidden'}`}>
+      <div className={`bg-orange-400 text-white h-full w-1/4 sm:w-1/5 md:w-1/7 lg:w-1/7 xl:w-1/8 ${isSidebarOpen ? 'block' : 'hidden'}`}>
         <div className="lg:block">
-          <div className='flex items-center p-5 border border-black' onClick={handleButtonClick}>
+          <div className='flex items-center p-5 shadow border-black' onClick={handleButtonClick}>
             <div className='rounded-full bg-blue-400 p-1 mx-2'>
               <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-house-add-fill" viewBox="0 0 16 16">
                 <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 1 1-1 0v-1h-1a.5.5 0 1 1 0-1h1v-1a.5.5 0 0 1 1 0" />
@@ -111,7 +111,7 @@ const Sidebar = ({ showModal, setShowModal, isSidebarOpen, setIsSidebarOpen }) =
               </div>
 
               <div
-                className={`overflow-hidden transition-all duration-300 mx-6 bg-gray-900 rounded ${salesExpanded ? 'max-h-screen' : 'max-h-0'
+                className={`overflow-hidden transition-all duration-300 px-6 bg-orange-900 rounded ${salesExpanded ? 'max-h-screen' : 'max-h-0'
                   }`}
               >
                 <div className=" py-2">
@@ -161,7 +161,7 @@ const Sidebar = ({ showModal, setShowModal, isSidebarOpen, setIsSidebarOpen }) =
               </div>
 
               <div
-                className={`overflow-hidden transition-all duration-300 mx-6 bg-gray-900 rounded ${purchaseExpanded ? 'max-h-screen' : 'max-h-0'
+                className={`overflow-hidden transition-all duration-300 px-6 bg-orange-900 rounded ${purchaseExpanded ? 'max-h-screen' : 'max-h-0'
                   }`}
               >
                 <div className=" py-2">
@@ -212,7 +212,7 @@ const Sidebar = ({ showModal, setShowModal, isSidebarOpen, setIsSidebarOpen }) =
               </div>
 
               <div
-                className={`overflow-hidden transition-all duration-300 mx-6 bg-gray-900 rounded ${bankExpanded ? 'max-h-screen' : 'max-h-0'
+                className={`overflow-hidden transition-all duration-300 px-6 bg-orange-900 rounded ${bankExpanded ? 'max-h-screen' : 'max-h-0'
                   }`}
               >
                 <div className=" py-2">
@@ -222,7 +222,7 @@ const Sidebar = ({ showModal, setShowModal, isSidebarOpen, setIsSidebarOpen }) =
                   <Link to="/cash-in-hand" className="block py-2 flex px-2">Cash In Hand</Link>
                 </div>
                 <div className=" py-2">
-                  <Link to="/purchase-order" className="block py-2 flex px-2">Purchase Order</Link>
+                  <Link to="/cheques" className="block py-2 flex px-2">Cheques</Link>
                 </div>
                 <div className=" py-2">
                   <Link to="/purchase-return" className="block py-2 flex px-2">Purchase Return</Link>

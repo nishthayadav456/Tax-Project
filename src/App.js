@@ -22,6 +22,8 @@ import DebitNote from './components/Purchase/DebitNote';
 import Expense from './components/Expense';
 import AddBankAc from './components/Cash,Bank,Assets/AddBankAc';
 import CashInHand from './components/Cash,Bank,Assets/CashInHand';
+import Cheques from './components/Cash,Bank,Assets/Cheques';
+import Header from './components/Header';
 // import ModalApp from './components/ModalApp';
 
 function App() {
@@ -29,7 +31,9 @@ function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   return (
     <Router>
+      <Header />
       <div className='flex h-screen'>
+        
         <Sidebar showModal={showModal} setShowModal={setShowModal} isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
         <MyCompany showModal={showModal} setShowModal={setShowModal} />
         <div className='w-full h-full'>
@@ -52,6 +56,7 @@ function App() {
             <Route path="/expense" exact element={<Expense />} />
             <Route path="/add-bank-account" exact element={<AddBankAc />} />
             <Route path="/cash-in-hand" exact element={<CashInHand />} />
+            <Route path="/cheques" exact element={<Cheques />} />
           </Routes>
         </div>
       </div>
