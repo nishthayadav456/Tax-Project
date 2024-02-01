@@ -59,7 +59,7 @@ const Login = () => {
                 <label class="input_label">Password</label>
                 <input
                   class="input_field w-full"
-                  type="number"
+                  type="text"
                   name="password"
                   title="Inpit title"
                   placeholder="Enter Password"

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
+import axios from 'axios';
 // import { AgGridReact } from 'ag-grid-react';
 // import 'ag-grid-community/styles/ag-grid.css';
 // import 'ag-grid-community/styles/ag-theme-alpine.css';
@@ -13,6 +14,101 @@ const PaymentOut = () => {
     const [showAddBankAcModal, setShowAddBankAcModal] = useState(false);
     const [showAccountFields, setShowAccountFields] = useState(false);
     const [showUpiFields, setShowUpiFields] = useState(false);
+    const [purchaseOutData,setpurchaseOutData]=useState([])
+    const [data1,setData1]=useState({
+        partyName:"",
+        receiptNumber: "",
+        date:"",
+        time: "",
+        description: "",
+        paymentType: [
+          {
+            cash:"",
+            cheque: 
+            { refreanceNo:"", checkAmount:"" },
+            bankDetail: {
+              accountName: "",
+              openingBalance: "",
+              asOfDate:"",
+            },
+          },
+        ],
+    })
+    const changeHandle=(event)=>{
+        setData1({ ...data1, [event.target.name]: event.target.value });
+      }
+
+      const handleClick=async()=>{
+        const token = localStorage.getItem("token");
+        console.log("Token:", token);
+        try{
+    const requestData={
+        partyName:data1.partyName,
+        receiptNumber:data1.receiptNumber,
+        date:data1.date,
+        time:data1.time ,
+        description:data1.description ,
+        paymentType: 
+          {
+            cash:data1.paymentType[0].cash,
+            cheque: 
+            { refreanceNo:data1.paymentType[0].cheque.refreanceNo,
+             checkAmount:data1.paymentType[0].cheque.checkAmount
+             },
+            bankDetail: {
+              accountName:data1.paymentType[0].bankDetail.accountName,
+              openingBalance:data1.paymentType[0].bankDetail.openingBalance,
+              asOfDate:data1.paymentType[0].bankDetail.asOfDate,
+            },
+          },
+        
+    }
+    console.log("requestData",requestData)
+
+    const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      };
+      const response = await axios.post(
+        "https://ca-backend-api.onrender.com/:firmId/purchaseOut/create",
+        requestData,
+        { headers }
+      );
+
+      console.log("post", requestData, response.data);
+      setData1(response.data.result);
+      localStorage.setItem("token", response.data.result.token);
+  }
+        catch(error){
+            console.error(error.message)
+        }
+      }
+        //get API
+        useEffect(() => {
+            const fetchData = async () => {
+             try {
+               const token = localStorage.getItem("token");
+               console.log("Token:", token);
+               const headers = {
+                 "Content-Type": "application/json",
+                 Authorization: `Bearer ${token}`,
+               };
+               const getDataResponse = await axios.get(
+                 "https://ca-backend-api.onrender.com/:firmId/purchaseOut/getAll",
+                 { headers }
+               );
+       
+               setpurchaseOutData(getDataResponse.data.data);
+              
+             } catch (error) {
+               console.error(error.message);
+             }
+           };
+       
+           fetchData();
+         }, []);
+
+      
 
     const handleCheckboxChange = (checkboxType) => {
         if (checkboxType === 'account') {
@@ -332,7 +428,9 @@ const PaymentOut = () => {
                                     <button
                                         className="bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                                         type="button"
-                                        onClick={() => setShowAddBankAcModal(false)}
+                                        onClick={() => {
+                                            handleClick()
+                                            setShowAddBankAcModal(false)}}
                                     >
                                         Save Changes
                                     </button>

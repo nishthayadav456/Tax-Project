@@ -57,11 +57,11 @@ const Signup = () => {
                         </div>
                         <div class="input_container">
                             <label for="password_field" class="input_label">Password</label>
-                            <input id="password_field" class="input_field w-full" type="password" name="password" title="Inpit title" placeholder="Password"  value={data.password} onChange={changeHandle} />
+                            <input id="password_field" class="input_field w-full" type="text" name="password" title="Inpit title" placeholder="Password"  value={data.password} onChange={changeHandle} />
                         </div>
                         <div class="input_container">
                             <label for="password_field" class="input_label">Confirm Password</label>
-                            <input id="password_field" class="input_field w-full" type="password" name="confirmPassword" title="Inpit title" placeholder="Confirm Password"   value={data.confirmPassword} onChange={changeHandle} />
+                            <input id="password_field" class="input_field w-full" type="text" name="confirmPassword" title="Inpit title" placeholder="Confirm Password"   value={data.confirmPassword} onChange={changeHandle} />
                         </div>
 
                     </div>

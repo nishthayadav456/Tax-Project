@@ -1,9 +1,183 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
+import axios from 'axios';
 import Table from '../Table';
 import { Link } from 'react-router-dom';
 
 const PurchaseReturn = () => {
     const [showAddPaymentIn, setShowAddPaymentIn] = useState(false);
+const [purchaseReturnData, setpurchaseReturnData]=useState([])
+    const [data1,setData1]=useState({
+        partyName:"",
+        phoneNumber: "",
+        returnNumber: "",
+        billNumber: "",
+        billDate:"",
+        date: "",
+        time: "",
+        stateOfSupply:"",
+        purchaseOrder: [
+          {
+            category: "",
+            itemName: "",
+            itemCode: "",
+            hsnCode: "",
+            serialNo: "",
+            description: "",
+            batchNo:"",
+            modelNo: "",
+            expDate: "",
+            mfgDate: "",
+            customField: "",
+            size: "",
+            qty: "",
+            unit: "",
+            periceUnitWithTex:"",
+            periceUnitWithoutTex: "",
+            discountpersant: "",
+            discountAmount: "",
+            taxPersant: "",
+            taxAmount: "",
+            amount: "",
+          },
+        ],
+        paymentType: [
+          {
+            cash:"",
+            cheque: { 
+            refreanceNo:"", 
+            checkAmount:""
+         },
+            bankDetail: {
+              accountName: "",
+              openingBalance: "",
+              asOfDate:"",
+            },
+          },
+        ],
+        addDescription: "",
+        discount: [
+        { discountRatet: "", 
+            discountAmount: "" 
+        }],
+        tax: "",
+        roundOff: "",
+        total: "",
+        advanceAmount: "",
+    })
+    const changeHandle=(event)=>{
+        setData1({ ...data1, [event.target.name]: event.target.value });
+      }
+    
+   const handleClick=async()=>{
+    const token = localStorage.getItem("token");
+    console.log("Token:", token);
+    try{
+const requestData={
+    partyName:data1.partyName,
+    phoneNumber:data1.phoneNumber ,
+    returnNumber:data1.returnNumber ,
+    billNumber:data1.billNumber ,
+    billDate:data1.billDate,
+    date:data1.date,
+    time:data1.time ,
+    stateOfSupply:data1.stateOfSupply,
+    purchaseOrder: 
+      {
+        category:data1.purchaseOrder[0].category ,
+        itemName:data1.purchaseOrder[0].itemName ,
+        itemCode:data1.purchaseOrder[0].itemCode ,
+        hsnCode:data1.purchaseOrder[0].hsnCode ,
+        serialNo:data1.purchaseOrder[0].serialNo ,
+        description:data1.purchaseOrder[0].description ,
+        batchNo:data1.purchaseOrder[0].batchNo,
+        modelNo:data1.purchaseOrder[0].modelNo ,
+        expDate:data1.purchaseOrder[0].expDate ,
+        mfgDate:data1.purchaseOrder[0].mfgDate ,
+        customField:data1.purchaseOrder[0].customField ,
+        size:data1.purchaseOrder[0].size,
+        qty:data1.purchaseOrder[0].qty ,
+        unit: data1.purchaseOrder[0].unit,
+        periceUnitWithTex:data1.purchaseOrder[0].periceUnitWithTex,
+        periceUnitWithoutTex:data1.purchaseOrder[0].periceUnitWithoutTex ,
+        discountpersant:data1.purchaseOrder[0].discountpersant ,
+        discountAmount:data1.purchaseOrder[0].discountAmount ,
+        taxPersant:data1.purchaseOrder[0].taxPersant ,
+        taxAmount:data1.purchaseOrder[0].taxAmount ,
+        amount:data1.purchaseOrder[0].amount ,
+      },
+    
+    paymentType: 
+      {
+        cash:data1.paymentType[0].cash,
+        cheque: { 
+        refreanceNo:data1.paymentType[0].cheque.refreanceNo, 
+        checkAmount:data1.paymentType[0].cheque.checkAmount,
+     },
+        bankDetail: {
+          accountName: data1.paymentType[0].bankDetail.accountName,
+          openingBalance:data1.paymentType[0].bankDetail.openingBalance,
+          asOfDate:data1.paymentType[0].bankDetail.asOfDate,
+        },
+      },
+    
+    addDescription:data1.addDescription,
+    discount: 
+    { discountRatet:data1.discount[0].discountRatet, 
+        discountAmount:data1.discount[0].discountAmount 
+    },
+    tax: data1.tax,
+    roundOff:data1.roundOff,
+    total:data1.total,
+    advanceAmount:data1.advanceAmount,
+}
+console.log("requestData", requestData);
+
+const headers = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  };
+
+  const response = await axios.post(
+    "https://ca-backend-api.onrender.com/:firmId/purchaseReturn/create",
+    requestData,
+    { headers }
+  );
+
+  console.log("post", requestData, response.data);
+  setData1(response.data.result);
+  localStorage.setItem("token", response.data.result.token);
+
+    }
+    catch(error){
+        console.error(error.message)
+    }
+   }
+
+   
+    //get API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        console.log("Token:", token);
+        const headers = {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        };
+        const getDataResponse = await axios.get(
+          "https://ca-backend-api.onrender.com/:firmId/purchaseReturn/getAll",
+          { headers }
+        );
+
+        setpurchaseReturnData(getDataResponse.data.data);
+       
+      } catch (error) {
+        console.error(error.message);
+      }
+    };
+
+    fetchData();
+  }, []);
 
 
 

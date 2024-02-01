@@ -292,7 +292,8 @@ console.log("saleprice",selectedPartyData)
       console.log("post", requestData, response.data);
       setData1(response.data.result);
       localStorage.setItem("token", response.data.result.token);
-    } catch (error) {
+    } 
+    catch (error) {
       console.error(error.message);
     }
   };
@@ -392,32 +393,41 @@ console.log("saleprice",selectedPartyData)
     }
   };
 
-  const fetchData = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      console.log("Token:", token);
-      const headers = {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      };
-      const getDataResponse = await axios.get(
-        `https://ca-backend-api.onrender.com/${firmId}/item/allItem`,
-        { headers }
-      );
-
-      setitemData(getDataResponse.data.data);
-    } catch (error) {
-      console.error(error.message);
-    }
-  };
-
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        console.log("Token:", token);
+        const headers = {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        };
+        const getDataResponse = await axios.get(
+          `https://ca-backend-api.onrender.com/${firmId}/item/allItem`,
+          { headers }
+        );
+
+        setitemData(getDataResponse.data.data);
+       
+      } catch (error) {
+        console.error(error.message);
+      }
+    };
+
     fetchData();
   }, []);
 
-  useEffect(() => {
-    console.log("itemdata", itemdata);
-  }, [itemdata, setitemData]);
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
+
+  // useEffect(() => {
+  //   console.log("itemdata", itemdata);
+  // }, [itemdata, setitemData]);
+console.log("party group",selectedPartyData)
+console.log("render")
+
+
 
   return (
     <>
@@ -621,25 +631,26 @@ console.log("saleprice",selectedPartyData)
                   <h2>
                     SALE PRICE:
                     <span className="text-green-500">
-                     {/* {selectedPartyData?.salePrice[0]?.salePriceWithTax} */}
+                    {selectedPartyData?.salePrice && selectedPartyData.salePrice[0]?.salePriceWithTax}
+
                   
                      
                     </span>
                     (excl)
                   </h2>
                   <h2>
-                    STOCK QUANTITY:{" "}
+                    STOCK QUANTITY:
                     <span className="text-blue-500">
-                    {/* {selectedPartyData?.stock[0]?.openingQuantity} */}
+                    {selectedPartyData?.openingQuantity && selectedPartyData.openingQuantity[0]?.openingQuantity}
                     </span>
                   </h2>
                 </div>
                 <div className="flex justify-between my-2">
                   <h2>
-                    PURCHASE PRICE:{" "}
+                    PURCHASE PRICE:
                     <span className="text-green-500">
                       {" "}
-                      {/* {selectedPartyData?.purchasePrice[0]?.purchasePriceWithTax} */}
+                      {selectedPartyData?.purchasePrice && selectedPartyData.purchasePrice[0]?.purchasePriceWithTax}
                     </span>
                     (excl)
                   </h2>
@@ -647,7 +658,7 @@ console.log("saleprice",selectedPartyData)
                     STOCK VALUE:{" "}
                     <span className="text-green-500">
                       {" "}
-                      {/* {selectedPartyData?.stock[0]?.openingQuantity} */}
+                      {selectedPartyData?.stock && selectedPartyData.stock[0]?.stock}
                     </span>
                     (excl)
                   </h2>
