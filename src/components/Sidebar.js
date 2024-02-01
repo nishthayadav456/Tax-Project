@@ -40,7 +40,7 @@ const Sidebar = ({ showModal, setShowModal, isSidebarOpen, setIsSidebarOpen }) =
 
   return (
     <>
-      <div className={`bg-orange-400 text-white h-full w-1/4 sm:w-1/5 md:w-1/7 lg:w-1/7 xl:w-1/8 ${isSidebarOpen ? 'block' : 'hidden'}`}>
+      <div className={`bg-orange-400 text-white w-1/4 sm:w-1/5 md:w-1/7 lg:w-1/7 xl:w-1/8 ${isSidebarOpen ? 'block' : 'hidden'}`}>
         <div className="lg:block">
           <div className='flex items-center p-5 shadow border-black' onClick={handleButtonClick}>
             <div className='rounded-full bg-blue-400 p-1 mx-2'>

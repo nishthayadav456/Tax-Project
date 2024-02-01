@@ -24,6 +24,8 @@ import AddBankAc from './components/Cash,Bank,Assets/AddBankAc';
 import CashInHand from './components/Cash,Bank,Assets/CashInHand';
 import Cheques from './components/Cash,Bank,Assets/Cheques';
 import Header from './components/Header';
+import SalesInvoice2 from './components/Sales/SalesInvoice2';
+import AddSale from './components/Sales/AddSale';
 // import ModalApp from './components/ModalApp';
 
 function App() {
@@ -44,7 +46,9 @@ function App() {
             <Route path="/signup" exact element={<Signup />} />
             <Route path="/Parties" exact element={<Parties />} />
             <Route path="/items" exact element={<Items />} />
-            <Route path="/sales-invoice" exact element={<SalesInvoice />} />
+            <Route path="/sales-invoice-firstPage" exact element={<SalesInvoice />} />
+            <Route path="/sales-invoice" exact element={<SalesInvoice2 />} />
+            <Route path="/add-sale" exact element={<AddSale />} />
             <Route path="/estimate" exact element={<Estimate />} />
             <Route path="/payment-in" exact element={<PaymentIn />} />
             <Route path="/sale-order" exact element={<SalesOrder />} />

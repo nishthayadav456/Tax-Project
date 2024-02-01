@@ -17,7 +17,7 @@ const columnDefs = [
   { headerName: "Date", field: "date" },
   { headerName: "Total", field: "total" },
   { headerName: "Balance", field: "balance" },
-  
+
 ];
 
 const Items = () => {
@@ -213,14 +213,14 @@ const Items = () => {
 
 
   // Sample data array
-const rowData = itemdata?.map((e,index)=>({
-  date: e.stock[0]?.asOfDate,
-  type: "openingStock",
-  total: e.mrp[0]?.mrp,
-  Number: index+1,
-  balance: e.mrp[0]?.mrp,
-}))
- 
+  const rowData = itemdata?.map((e, index) => ({
+    date: e.stock[0]?.asOfDate,
+    type: "openingStock",
+    total: e.mrp[0]?.mrp,
+    Number: index + 1,
+    balance: e.mrp[0]?.mrp,
+  }))
+
 
   // Add more sample data as needed
 
@@ -619,7 +619,7 @@ const rowData = itemdata?.map((e,index)=>({
                   <h2>
                     SALE PRICE:
                     <span className="text-green-500">
-                     {/* {selectedPartyData.salePrice?.salePrice[0].salePriceWithTax}  */}
+                      {/* {selectedPartyData.salePrice?.salePrice[0].salePriceWithTax}  */}
                     </span>
                     (excl)
                   </h2>
@@ -673,9 +673,8 @@ const rowData = itemdata?.map((e,index)=>({
                     </h3>
                     <div className="flex mx-2 ">
                       <p
-                        className={` font-semibold ${
-                          stock ? "text-gray-400" : "text-blue-500"
-                        } `}
+                        className={` font-semibold ${stock ? "text-gray-400" : "text-blue-500"
+                          } `}
                       >
                         Add Stock
                       </p>
@@ -692,9 +691,8 @@ const rowData = itemdata?.map((e,index)=>({
                         </label>
                       </div>
                       <p
-                        className={` font-semibold ${
-                          stock ? "text-blue-500" : "text-gray-400"
-                        } `}
+                        className={` font-semibold ${stock ? "text-blue-500" : "text-gray-400"
+                          } `}
                       >
                         Reduce Stock
                       </p>
@@ -785,9 +783,8 @@ const rowData = itemdata?.map((e,index)=>({
                     <h3 className="text-xl font-semibold mx-2">Add Item</h3>
                     <div className="flex mx-2 ">
                       <p
-                        className={` font-semibold ${
-                          toggle ? "text-gray-400" : "text-blue-500"
-                        } `}
+                        className={` font-semibold ${toggle ? "text-gray-400" : "text-blue-500"
+                          } `}
                       >
                         Product
                       </p>
@@ -804,9 +801,8 @@ const rowData = itemdata?.map((e,index)=>({
                         </label>
                       </div>
                       <p
-                        className={` font-semibold ${
-                          toggle ? "text-blue-500" : "text-gray-400"
-                        } `}
+                        className={` font-semibold ${toggle ? "text-blue-500" : "text-gray-400"
+                          } `}
                       >
                         Service
                       </p>
@@ -1009,28 +1005,25 @@ const rowData = itemdata?.map((e,index)=>({
                     <div className="p-6">
                       <div className="border-b-2">
                         <button
-                          className={`px-3 py-2 text-xl active:bg-gray-200 ${
-                            viewInputs === "pricing" &&
+                          className={`px-3 py-2 text-xl active:bg-gray-200 ${viewInputs === "pricing" &&
                             "border-b-2 border-blue-500 text-blue-500"
-                          } `}
+                            } `}
                           onClick={() => handleViewInputButton("pricing")}
                         >
                           Pricing
                         </button>
                         <button
-                          className={`px-3 py-2 text-xl active:bg-gray-200 ${
-                            viewInputs === "stock" &&
+                          className={`px-3 py-2 text-xl active:bg-gray-200 ${viewInputs === "stock" &&
                             "border-b-2 border-blue-500 text-blue-500"
-                          } `}
+                            } `}
                           onClick={() => handleViewInputButton("stock")}
                         >
                           Stock
                         </button>
                         <button
-                          className={`px-3 py-2 text-xl active:bg-gray-200 ${
-                            viewInputs === "manufacturing" &&
+                          className={`px-3 py-2 text-xl active:bg-gray-200 ${viewInputs === "manufacturing" &&
                             "border-b-2 border-blue-500 text-blue-500"
-                          } `}
+                            } `}
                           onClick={() => handleViewInputButton("manufacturing")}
                         >
                           Manufacturing
@@ -1754,10 +1747,9 @@ const rowData = itemdata?.map((e,index)=>({
                     <div className="p-6">
                       <div className="border-b-2">
                         <button
-                          className={`px-3 py-2 text-xl active:bg-gray-200 ${
-                            viewInputs === "pricing" &&
+                          className={`px-3 py-2 text-xl active:bg-gray-200 ${viewInputs === "pricing" &&
                             "border-b-2 border-blue-500 text-blue-500"
-                          } `}
+                            } `}
                           onClick={() => handleViewInputButton("pricing")}
                         >
                           Pricing

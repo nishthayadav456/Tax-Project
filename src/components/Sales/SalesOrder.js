@@ -245,7 +245,7 @@ const SalesOrder = () => {
                             </tbody>
                         </table>
                         <div className='flex justify-between items-center'>
-                            <button className='text-white bg-green-600 px-2 py-1 rounded m-2' onClick={addItemFunc}>Add Item</button>
+                            <button className='text-blue-500 border border-blue-500 px-2 py-1 rounded m-2' onClick={addItemFunc}>Add Row</button>
                             <input className="border-2 rounded hover:border-black focus:border-blue-500 px-2 py-1 outline-none " type="text" name="input-name" title="Input title" placeholder="Total" />
                         </div>
 
